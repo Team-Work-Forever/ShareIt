@@ -1,0 +1,6 @@
+# Error List
+
+### Errors From This Shitty Program that The Great Cavas Callahan Coudn't transfor it in graphic interface
+
+- Experience Create -> Null PointerException
+- Skill Create -> Default values not working
