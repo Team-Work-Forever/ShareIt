@@ -16,15 +16,21 @@ public class NavigationHelper {
 
     private Deque<Class<?>> navigationStack;
 
+    private Class<?> currentController;
+
     public NavigationHelper() {
         navigationStack = new LinkedList<>();
     }
 
+    public void setFirstEntry(Class<?> controller) throws IOException {
+        iniController(controller);
+    }
+
     public void navigateTo(Class<?> controller) throws IOException {
 
-        navigationStack.add(controller);
+        navigationStack.add(currentController);
 
-        ((ControllerBase)applicationContext.getBean(controller)).display();
+        iniController(controller);
 
     }
 
@@ -32,10 +38,15 @@ public class NavigationHelper {
 
         if (navigationStack.isEmpty()) return;
 
-        var controller = navigationStack.pollFirst();
+        var controller = navigationStack.pollLast();
 
+        iniController(controller);
+
+    }
+
+    private void iniController(Class<?> controller) throws IOException {
+        this.currentController = controller;
         ((ControllerBase)applicationContext.getBean(controller)).display();
-
     }
 
 }

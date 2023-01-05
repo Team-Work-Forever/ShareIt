@@ -69,7 +69,7 @@ public class TerminalSpringApplication implements CommandLineRunner {
 
             createAdmin();
 
-            navigationHelper().navigateTo(routeManager().authRoute());
+            navigationHelper().setFirstEntry(routeManager().authRoute());
 
         } catch (Exception e) {
             ScreenUtils.printError(e.getMessage());
