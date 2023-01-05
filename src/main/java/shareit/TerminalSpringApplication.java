@@ -60,14 +60,20 @@ public class TerminalSpringApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) throws IOException {
 
-        if (authenticationService().isBeforeAuthenticated())
+        try {
+            
+            if (authenticationService().isBeforeAuthenticated())
             authenticationService().authenticateWithToken();
 
-        createAdmin();
+            createAdmin();
 
-        navigationHelper().navigateTo(routeManager().authRoute());
+            navigationHelper().navigateTo(routeManager().authRoute());
+
+        } catch (Exception e) {
+            ScreenUtils.printError(e.getMessage());
+        }
 
     }
 

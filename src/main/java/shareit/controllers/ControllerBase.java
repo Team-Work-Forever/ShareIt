@@ -27,7 +27,7 @@ public abstract class ControllerBase {
         ScreenUtils.printInfo(message + " (default t| f): ");
         choice = ScreenUtils.bufferInput.readLine().trim();
 
-        return choice.isEmpty() ? false : ( choice.equals("t") ? true : false );
+        return choice.isEmpty() ? true : ( choice.equals("t") ? true : false );
 
     }
 

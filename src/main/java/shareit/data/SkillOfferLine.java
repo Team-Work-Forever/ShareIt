@@ -6,7 +6,7 @@ public class SkillOfferLine implements Serializable {
 
     private Skill skill;
     private JobOffer jobOffer;
-    private int yearOfExpNec = 0;
+    private int yearOfExpNec;
 
     public SkillOfferLine(Skill skill, JobOffer jobOffer, int yearOfExpNec) {
         this.skill = skill;

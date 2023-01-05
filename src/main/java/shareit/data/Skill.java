@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 public class Skill implements Serializable {
 
-    private String name = "";
-    private String desc = "";
-    private int qtyProf = 0;
+    private String name;
+    private String desc;
+    private int qtyProf;
 
     public Skill(String name, String desc) {
         this.name = name;
@@ -49,6 +49,10 @@ public class Skill implements Serializable {
 
     public void incrementQtyProf() {
         this.qtyProf++;
+    }
+
+    public void reduceQtyProf() {
+        this.qtyProf--;
     }
 
 }

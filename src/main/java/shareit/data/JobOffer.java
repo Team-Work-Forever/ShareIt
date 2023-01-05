@@ -13,9 +13,9 @@ public class JobOffer implements Serializable {
 
     private static int increment = 1;
     private int jobOfferId;
-    private String name = "";
-    private int qtyHours = 0;
-    private String desc = "";
+    private String name;
+    private int qtyHours;
+    private String desc;
     private ProfArea profArea;
     private State state;
     private final Collection<IdentityUser> clients = new ArrayList<>();

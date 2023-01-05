@@ -14,11 +14,11 @@ import shareit.errors.auth.IdentityException;
 
 public class Experience implements Serializable {
 
-    private String title = "";
-    private String name = "";
-    private int qtyWorkers = 0;
-    private int qtyManegers = 0;
-    private String desc = "";
+    private String title;
+    private String name;
+    private int qtyWorkers;
+    private int qtyManegers;
+    private String desc;
     private Date startDate;
     private Date finalDate;
     private final Collection<ExperienceLine> experienceLines = new ArrayList<>();
@@ -164,7 +164,7 @@ public class Experience implements Serializable {
             }
         }
 
-        throw new IdentityException("Was not found any user with the email: " + " " + email);
+        throw new IdentityException("Was not found any user with the email: " + email);
 
     }
 

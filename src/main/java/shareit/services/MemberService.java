@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import jakarta.validation.constraints.Email;
 import shareit.repository.GlobalRepository;
 import shareit.validator.BeanValidator;
 import shareit.contracts.member.InviteMemberRequest;

@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 public class ProfArea implements Serializable {
 
-    private String name = "";
-    private String description = "";
-    private int qtyProf = 0;
+    private String name;
+    private String description;
+    private int qtyProf;
 
     public ProfArea(String name, String description, int qtyProf) {
         this.name = name;
@@ -44,6 +44,8 @@ public class ProfArea implements Serializable {
         this.qtyProf++;
     }
 
-    
+    public void reduceQtyProf() {
+        this.qtyProf--;
+    }
 
 }

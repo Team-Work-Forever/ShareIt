@@ -119,7 +119,7 @@ public class DashBoardController extends ControllerBase {
             try {
                 printInfo(invite.toString());
             } catch (IOException e) {
-                    e.printStackTrace();
+                e.printStackTrace();
             }
 
         });

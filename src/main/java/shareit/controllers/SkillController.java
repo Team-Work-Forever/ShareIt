@@ -82,8 +82,6 @@ public class SkillController extends ControllerBase {
 
         try {
 
-            authorize();
-
             System.out.println("Skill Info:");
 
             String name = textField("Name");

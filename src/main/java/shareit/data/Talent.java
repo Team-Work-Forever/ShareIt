@@ -11,8 +11,8 @@ import shareit.errors.SkillException;
 
 public class Talent implements Serializable {
     
-    private String name = "";
-    private float pricePerHour = 0;
+    private String name;
+    private float pricePerHour;
     private boolean isPublic = true;
     private final Collection<Experience> experiences = new ArrayList<>();
     private final Collection<SkillLine> skills = new ArrayList<>();
@@ -55,6 +55,30 @@ public class Talent implements Serializable {
 
     public Collection<SkillLine> getSkills() {
         return skills;
+    }
+
+    public Collection<Skill> getSkillSet() {
+
+        Collection<Skill> skills = new ArrayList<>();
+
+        for (SkillLine skillLine : getSkills()) {
+            skills.add(skillLine.getSkill());
+        }
+
+        return skills;
+
+    }
+
+    public Collection<ProfArea> getProfAreaSet() {
+
+        Collection<ProfArea> profAreas = new ArrayList<>();
+
+        for (ProfAreaLine ProfAreaLine : getProfAreas()) {
+            profAreas.add(ProfAreaLine.getProfArea());
+        }
+
+        return profAreas;
+
     }
 
     public Collection<ProfAreaLine> getProfAreas() {

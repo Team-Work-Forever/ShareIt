@@ -10,7 +10,6 @@ import static shareit.utils.ScreenUtils.clear;
 import static shareit.utils.ScreenUtils.printError;
 import static shareit.utils.ScreenUtils.printInfo;
 import static shareit.utils.ScreenUtils.waitForKeyEnter;
-import static shareit.utils.ScreenUtils.bufferInput;
 import static shareit.utils.ScreenUtils.comboBox;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Controller;
 
 import shareit.contracts.talent.TalentAssociationSkill;
 import shareit.contracts.talent.CreateTalentRequest;
+import shareit.contracts.talent.TalentAssociationProfArea;
 import shareit.data.Experience;
 import shareit.data.JobOffer;
 import shareit.data.ProfArea;
@@ -99,6 +99,8 @@ public class TalentController extends ControllerBase {
                         removeTalent();                        
                         break;
                     case 6:
+                        clear();
+
                         listAllJobOffers();
 
                         waitForKeyEnter();
@@ -117,10 +119,11 @@ public class TalentController extends ControllerBase {
 
     private void selectTalent() throws IOException {
 
+        clear();
+
         listAllTalents();
 
-        printInfo("Chose one Talent by his name");
-        String talentName = bufferInput.readLine();
+        String talentName = textField("Chose one Talent by his name");
 
         navigationHelper.navigateTo(
             routeManager.argumentRoute(
@@ -183,11 +186,11 @@ public class TalentController extends ControllerBase {
                 selectedProfArea.add(profArea);
             }
 
-            // talentService.associateProfAreas(new TalentAssociationProfArea(
-            //     name, 
-            //     selectedProfArea, 
-            //     0
-            // ));
+            // TODO: Resolve-me
+            talentService.associateProfAreas(new TalentAssociationProfArea(
+                name, 
+                null
+            ));
 
         } catch (Exception e) {
             printError(e.getMessage());
@@ -241,9 +244,7 @@ public class TalentController extends ControllerBase {
         }
     }
 
-    private void listAllJobOffers() {
-
-        clear();
+    private void listAllJobOffers() throws IOException {
 
         Collection<IdentityUser> users = memberService.getAllMembers();
 
@@ -251,10 +252,8 @@ public class TalentController extends ControllerBase {
             for (Talent talent : user.getTalents()) {
                 for (Experience experience : talent.getExperiences()) {
                     for (JobOffer jobOffer : experience.getJobOffers()) {
-                    
                         if (jobOffer.getState() == State.Changed || jobOffer.getState() == State.Available)
-                            jobOffer.toString();
-                    
+                            printInfo(jobOffer.toString());
                     }
                 }
             }

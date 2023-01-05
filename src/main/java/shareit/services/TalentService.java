@@ -9,6 +9,8 @@ import org.springframework.validation.annotation.Validated;
 import shareit.contracts.experience.CreateExperienceRequest;
 import shareit.contracts.talent.TalentAssociationProfArea;
 import shareit.contracts.talent.TalentAssociationSkill;
+import shareit.contracts.talent.TalentDisassociateProf;
+import shareit.contracts.talent.TalentDisassociateSkill;
 import shareit.contracts.talent.CreateTalentRequest;
 import shareit.data.Experience;
 import shareit.data.JobOffer;
@@ -28,6 +30,8 @@ public class TalentService {
     private final BeanValidator<TalentAssociationSkill> validatorSkill = new BeanValidator<>();
     private final BeanValidator<TalentAssociationProfArea> validatorProfArea = new BeanValidator<>();
     private final BeanValidator<CreateExperienceRequest> validatorCreateExperience = new BeanValidator<>();
+    private final BeanValidator<TalentDisassociateProf> validatorDisassociateProf = new BeanValidator<>();
+    private final BeanValidator<TalentDisassociateSkill> validatorDisassociateSkill = new BeanValidator<>();
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -85,14 +89,58 @@ public class TalentService {
 
     public boolean removeTalent(String name) throws TalentException {
         
+        Talent talent;
+        Collection<Skill> skills;
+        Collection<ProfArea> profAreas;
+
         var authUser = authenticationService.getAuthenticatedUser();
+
+        talent = getTalentByName(name);
+        skills = talent.getSkillSet();
+        profAreas = talent.getProfAreaSet();       
+        
+        for (ProfArea profArea : profAreas) {
+            
+            if (talent.containsProfArea(profArea.getName())) {
+
+                try {
+
+                    disassociateProfAreas(new TalentDisassociateProf(
+                        talent.getName(), 
+                        profArea
+                    ));
+
+                } catch (Exception e) {
+                    e.getMessage();
+                }
+                
+            }
+            
+        }
+
+        for (Skill skill : skills) {
+
+            if (talent.containsSkill(skill.getName())) {
+
+				try {
+
+					disassociateSkills(new TalentDisassociateSkill(
+                        talent.getName(), 
+                        skill
+                    ));
+
+				} catch (Exception e) {
+					e.getMessage();
+				}
+            }
+        }
+
         authUser.removeTalent(name);       
         
         return true;
 
     }
 
-    // TODO: Desassociar skills
     public void associateSkills(@Validated TalentAssociationSkill request) throws Exception {
 
         var errors = validatorSkill.validate(request);
@@ -124,7 +172,35 @@ public class TalentService {
 
     }
 
-    // TODO: Desassociar profareas
+    public void disassociateSkills(@Validated TalentDisassociateSkill request) throws Exception {
+
+        var errors = validatorDisassociateSkill.validate(request);
+
+        if (!errors.isEmpty()) {
+            throw new TalentException(errors.iterator().next().getMessage());
+        }
+
+        var authUser = authenticationService.getAuthenticatedUser();
+
+        Talent talent = authUser.getTalentoByName(request.getTalentName());
+        
+        var skill = request.getSkill();
+        
+        talent.removeSkillByName(skill.getName());
+            
+        boolean talentFound = authUser.getTalents()
+            .stream()
+                .filter(t -> t.containsSkill(skill.getName()))
+                .findAny().isPresent();
+
+        if (!talentFound)
+            skillService.getSkillByName(skill.getName()).reduceQtyProf();
+      
+        globalRepository.updateIdentityUserByEmail(authUser.getEmail(), authUser);
+        globalRepository.commit();
+
+    }
+
     public void associateProfAreas(@Validated TalentAssociationProfArea request) throws Exception {
 
         var errors = validatorProfArea.validate(request);
@@ -151,6 +227,33 @@ public class TalentService {
 
         }
 
+        globalRepository.updateIdentityUserByEmail(authUser.getEmail(), authUser);
+        globalRepository.commit();
+
+    }
+
+    public void disassociateProfAreas(@Validated TalentDisassociateProf request) throws Exception {
+
+        var errors = validatorDisassociateProf.validate(request);
+
+        if (!errors.isEmpty()) {
+            throw new TalentException(errors.iterator().next().getMessage());
+        }
+
+        var authUser = authenticationService.getAuthenticatedUser();
+
+        Talent talent = authUser.getTalentoByName(request.getTalentName());
+        
+        talent.removeProfAreaByName(request.getProfArea().getName());
+
+        boolean talentFound = authUser.getTalents()
+        .stream()
+            .filter(t -> t.containsProfArea(request.getProfArea().getName()))
+            .findAny().isPresent();
+
+        if (!talentFound)
+            profAreaService.getProfAreaByName(request.getProfArea().getName()).reduceQtyProf();
+        
         globalRepository.updateIdentityUserByEmail(authUser.getEmail(), authUser);
         globalRepository.commit();
 

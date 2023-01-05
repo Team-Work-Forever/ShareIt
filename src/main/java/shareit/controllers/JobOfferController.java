@@ -1,6 +1,8 @@
 package shareit.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +24,7 @@ import shareit.contracts.joboffer.CreateJobOfferRequest;
 import shareit.contracts.member.InviteMemberRequest;
 import shareit.data.Experience;
 import shareit.data.JobOffer;
+import shareit.data.Privilege;
 import shareit.data.ProfArea;
 import shareit.data.Skill;
 import shareit.data.auth.IdentityUser;
@@ -134,14 +137,17 @@ public class JobOfferController extends ControllerBase {
             for (String email : emails) {
             
                 clear();
+
+                printSuccess("Email: " + email);
     
                 memberService.inviteMember(new InviteMemberRequest(
-                    email.trim(), 
-                    currentExperience
+                    currentExperience, 
+                    new Date(), // Expire Date
+                    email,
+                    Privilege.Manager
                 ));
     
                 printSuccess("Invite send with success to user with email "+ email);
-                wait(1);
     
             }
 
