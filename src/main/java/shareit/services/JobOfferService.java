@@ -35,6 +35,7 @@ public class JobOfferService {
     public JobOffer createJobOffer(@Validated CreateJobOfferRequest request) throws Exception {
 
         JobOffer jobOffer;
+        Experience experience;
 
         var errors = validatorCreateJobOffer.validate(request);
 
@@ -42,16 +43,11 @@ public class JobOfferService {
             throw new JobOfferException(errors.iterator().next().getMessage());
         }
 
-        jobOffer = new JobOffer(
-            request.getName(),
-            request.getQtyHours(),
-            request.getDesc(),
-            request.getProfArea()
-        );
+        jobOffer = request.toJobOffer();
 
         var authUser = authenticationService.getAuthenticatedUser();
 
-        Experience experience = authUser.getTalentoByName(request.getTalentName())
+         experience = authUser.getTalentoByName(request.getTalentName())
             .getExperienceByTitle(request.getExperienceTile());
 
         experience.addJobOffer(jobOffer);
@@ -63,15 +59,15 @@ public class JobOfferService {
 
     }
 
-    public JobOffer updateJobOffer(@Validated request) {
+    // public JobOffer updateJobOffer(@Validated request) {
 
-        var errors = validatorCreateJobOffer.validate(request);
+    //     var errors = validatorCreateJobOffer.validate(request);
 
-        if (!errors.isEmpty()) {
-            throw new JobOfferException(errors.iterator().next().getMessage());
-        }
+    //     if (!errors.isEmpty()) {
+    //         throw new JobOfferException(errors.iterator().next().getMessage());
+    //     }
 
-    }
+    // }
 
     public Collection<IdentityUser> getAllClients(int jobOfferId) {
 
@@ -100,13 +96,15 @@ public class JobOfferService {
 
     public boolean associateSkill(@Validated AssociateSkillRequest request) throws Exception {
 
+        JobOffer jobOffer;
+
         var errors = validatorSkill.validate(request);
 
         if (!errors.isEmpty()) {
             throw new JobOfferException(errors.iterator().next().getMessage());
         }
 
-        var jobOffer = talentService.getJobOfferById(request.getJobOfferId());
+        jobOffer = talentService.getJobOfferById(request.getJobOfferId());
 
         for (Skill skill : request.getSkills().keySet()) {
             

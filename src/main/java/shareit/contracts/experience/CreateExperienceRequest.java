@@ -2,6 +2,8 @@ package shareit.contracts.experience;
 
 import java.util.Date;
 
+import shareit.data.Experience;
+
 public class CreateExperienceRequest {
     
     private String talentName;
@@ -84,6 +86,29 @@ public class CreateExperienceRequest {
 
     public void setTalentName(String talentName) {
         this.talentName = talentName;
+    }
+
+    public Experience toExperience() {
+
+        if (finalDate == null) {
+
+            return new Experience(
+                title, 
+                name, 
+                startDate, 
+                desc
+            );
+
+        }
+
+        return new Experience(
+            title, 
+            name, 
+            startDate, 
+            finalDate, 
+            desc
+        );
+
     }
 
 }

@@ -9,7 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import shareit.contracts.experience.CreateExperienceRequest;
 import shareit.contracts.talent.TalentAssociationProfArea;
 import shareit.contracts.talent.TalentAssociationSkill;
-import shareit.contracts.talent.TalentRequest;
+import shareit.contracts.talent.CreateTalentRequest;
 import shareit.data.Experience;
 import shareit.data.JobOffer;
 import shareit.data.ProfArea;
@@ -24,7 +24,7 @@ import shareit.repository.GlobalRepository;
 @Service
 public class TalentService {
     
-    private final BeanValidator<TalentRequest> validatorTalent = new BeanValidator<>();
+    private final BeanValidator<CreateTalentRequest> validatorTalent = new BeanValidator<>();
     private final BeanValidator<TalentAssociationSkill> validatorSkill = new BeanValidator<>();
     private final BeanValidator<TalentAssociationProfArea> validatorProfArea = new BeanValidator<>();
     private final BeanValidator<CreateExperienceRequest> validatorCreateExperience = new BeanValidator<>();
@@ -41,9 +41,11 @@ public class TalentService {
     @Autowired
     private GlobalRepository globalRepository;
 
-    public boolean createTalent(@Validated TalentRequest talentRequest) throws Exception {
+    public boolean createTalent(@Validated CreateTalentRequest request) throws Exception {
 
-        var errors = validatorTalent.validate(talentRequest);
+        Talent talent;
+
+        var errors = validatorTalent.validate(request);
 
         if (!errors.isEmpty()) {
             throw new TalentException(errors.iterator().next().getMessage());
@@ -53,13 +55,10 @@ public class TalentService {
         var authUser = authenticationService.getAuthenticatedUser();
 
         // Get Talent Info
-        Talent newTalent = new Talent(
-            talentRequest.getName(), 
-            talentRequest.getPricePerHour()
-        );
+        talent = request.toTalent();
 
         // Associate talent to user
-        authUser.addTalent(newTalent);
+        authUser.addTalent(talent);
 
         globalRepository.updateIdentityUserByEmail(authUser.getEmail(), authUser);
         globalRepository.commit();
@@ -157,24 +156,21 @@ public class TalentService {
 
     }
 
-    public void createExperience(@Validated CreateExperienceRequest createExperienceRequest) throws Exception {
+    public void createExperience(@Validated CreateExperienceRequest request) throws Exception {
 
-        var errors = validatorCreateExperience.validate(createExperienceRequest);
+        Experience experience;
+        Talent talent;
+
+        var errors = validatorCreateExperience.validate(request);
 
         if (!errors.isEmpty()) {
             throw new ExperienceException(errors.iterator().next().getMessage());
         }
 
-        Experience experience = new Experience(
-            createExperienceRequest.getTitle(), 
-            createExperienceRequest.getName(), 
-            createExperienceRequest.getStartDate(), 
-            createExperienceRequest.getFinalDate(), 
-            createExperienceRequest.getDesc()
-        );
+        experience = request.toExperience();
 
         var authUser = authenticationService.getAuthenticatedUser();
-        Talent talent = authUser.getTalentoByName(createExperienceRequest.getTalentName());
+        talent = authUser.getTalentoByName(request.getTalentName());
 
         talent.addExperience(experience);
 

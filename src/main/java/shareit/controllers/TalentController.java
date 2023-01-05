@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import shareit.contracts.talent.TalentAssociationSkill;
-import shareit.contracts.talent.TalentRequest;
+import shareit.contracts.talent.CreateTalentRequest;
 import shareit.data.Experience;
 import shareit.data.JobOffer;
 import shareit.data.ProfArea;
@@ -54,6 +54,7 @@ public class TalentController extends ControllerBase {
     @Autowired
     private TalentService talentService;
 
+    // TODO: Utilizar ToMapper
     @Override
     public void display() throws IOException {
         
@@ -145,7 +146,7 @@ public class TalentController extends ControllerBase {
             String priceHour = textField("PricePerHour (default : 0)");
             String isPublic = textField("Public/Private (t|f)");
             
-            talentService.createTalent(new TalentRequest(
+            talentService.createTalent(new CreateTalentRequest(
                 name, 
                 priceHour.isEmpty() ? 0 : Float.parseFloat(priceHour), 
                 isPublic == "t" ? true : false 

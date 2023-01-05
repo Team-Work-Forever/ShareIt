@@ -1,5 +1,7 @@
 package shareit.contracts.profArea;
 
+import shareit.data.ProfArea;
+
 public class CreateProfAreaRequest {
     
     private String name;
@@ -34,6 +36,16 @@ public class CreateProfAreaRequest {
 
     public void setQtyProf(int qtyProf) {
         this.qtyProf = qtyProf;
+    }
+
+    public ProfArea toProfArea() {
+
+        return new ProfArea(
+            name, 
+            description, 
+            qtyProf
+        );
+
     }
 
 }

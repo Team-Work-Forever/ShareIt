@@ -23,6 +23,8 @@ public class SkillService {
 
     public void createSkill(@Validated CreateSkillRequest request) throws Exception {
 
+        Skill newSkill;
+
         var errors = validatorSkill.validate(request);
 
         if (!errors.isEmpty())
@@ -30,10 +32,7 @@ public class SkillService {
             throw new SkillException(errors.iterator().next().getMessage());
         }
 
-        Skill newSkill = new Skill(
-            request.getName(), 
-            request.getDesc()
-        );
+        newSkill = request.toSkill();
 
         var result = globalRepository.createSkill(newSkill);
 

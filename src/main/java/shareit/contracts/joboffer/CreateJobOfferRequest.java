@@ -1,5 +1,6 @@
 package shareit.contracts.joboffer;
 
+import shareit.data.JobOffer;
 import shareit.data.ProfArea;
 import shareit.data.State;
 
@@ -76,6 +77,17 @@ public class CreateJobOfferRequest {
 
     public void setTalentName(String talentName) {
         this.talentName = talentName;
+    }
+
+    public JobOffer toJobOffer() {
+        
+        return new JobOffer(
+            name, 
+            qtyHours, 
+            desc, 
+            profArea
+        );
+
     }
 
 }

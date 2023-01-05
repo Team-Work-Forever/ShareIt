@@ -1,6 +1,7 @@
 package shareit.contracts.skill;
 
 import jakarta.validation.constraints.NotEmpty;
+import shareit.data.Skill;
 
 public class CreateSkillRequest {
     
@@ -39,6 +40,15 @@ public class CreateSkillRequest {
 
     public void setQtyProf(int qtyProf) {
         this.qtyProf = qtyProf;
+    }
+
+    public Skill toSkill() {
+
+        return new Skill(
+            name, 
+            desc
+        );
+
     }
 
 }

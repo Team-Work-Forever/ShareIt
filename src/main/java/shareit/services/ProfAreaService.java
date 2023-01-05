@@ -30,13 +30,9 @@ public class ProfAreaService {
             throw new ProfAreaException(errors.iterator().next().getMessage());
         }
 
-        ProfArea newProfArea = new ProfArea(
-            request.getName(), 
-            request.getDescription(),
-            request.getQtyProf()
-        );
+        ProfArea newProfArea = request.toProfArea();
 
-        var result = globalRepository.createProfArea(newProfArea);
+        boolean result = globalRepository.createProfArea(newProfArea);
 
         if (!result)
             throw new ProfAreaException("Something went wrong!");

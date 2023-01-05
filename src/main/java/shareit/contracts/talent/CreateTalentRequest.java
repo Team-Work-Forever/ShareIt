@@ -1,6 +1,8 @@
 package shareit.contracts.talent;
 
-public class TalentRequest {
+import shareit.data.Talent;
+
+public class CreateTalentRequest {
     
     private String name;
 
@@ -8,7 +10,7 @@ public class TalentRequest {
 
     private boolean isPublic;
 
-    public TalentRequest(String name, float pricePerHour, boolean isPublic) {
+    public CreateTalentRequest(String name, float pricePerHour, boolean isPublic) {
         this.name = name;
         this.pricePerHour = pricePerHour;
         this.isPublic = isPublic;
@@ -36,6 +38,15 @@ public class TalentRequest {
 
     public void setPublic(boolean isPublic) {
         this.isPublic = isPublic;
+    }
+
+    public Talent toTalent() {
+
+        return new Talent(
+            name, 
+            pricePerHour
+        );
+
     }
 
 }

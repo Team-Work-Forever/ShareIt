@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import shareit.data.auth.IdentityUser;
 
 public class RegisterRequest {
     
@@ -155,6 +156,25 @@ public class RegisterRequest {
 
     public void setLocality(String locality) {
         this.locality = locality;
+    }
+
+    public IdentityUser toIdentityUser() {
+
+        return new IdentityUser(
+            email, 
+            password, 
+            name, 
+            lastName, 
+            bornDate, 
+            street, 
+            postCode, 
+            locality, 
+            country, 
+            moneyPer, 
+            isPublic, 
+            role
+        );
+
     }
 
 }

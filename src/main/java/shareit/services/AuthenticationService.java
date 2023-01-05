@@ -100,20 +100,7 @@ public class AuthenticationService implements Authentication {
             throw new AuthenticationException(errors.iterator().next().getMessage());
         }
 
-        IdentityUser signUser = new IdentityUser(
-            request.getEmail(), 
-            request.getPassword(),
-            request.getName(),
-            null,
-            null,
-            null,
-            null,
-            null,
-            request.getCountry(),
-            request.getMoneyPer(),
-            request.isPublic(),
-            request.getRole()
-        );
+        IdentityUser signUser = request.toIdentityUser();
         
         // Validate Email
         if(globalRepository.containsEmail(request.getEmail()))
