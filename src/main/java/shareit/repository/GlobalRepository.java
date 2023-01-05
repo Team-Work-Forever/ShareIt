@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import shareit.data.auth.IdentityUser;
+import shareit.helper.Invitation;
 import shareit.helper.Pair;
 import shareit.data.Skill;
 import shareit.data.ProfArea;
@@ -20,12 +21,14 @@ public class GlobalRepository implements Serializable {
     private Collection<IdentityUser> identityUsers;
     private Collection<Skill> skills;
     private Collection<ProfArea> profAreas;
+    private Collection<Invitation> invites;
 
     public GlobalRepository() throws Exception {
 
         this.identityUsers = new ArrayList<>();
         this.skills = new ArrayList<>();
         this.profAreas = new ArrayList<>();
+        this.invites = new ArrayList<>();
 
         if (StoreUtils.verifyFile(DATA_FILE))
         {
@@ -33,6 +36,7 @@ public class GlobalRepository implements Serializable {
             skills = ((GlobalRepository)deserialize(DATA_FILE)).getSkills();
             profAreas = ((GlobalRepository)deserialize(DATA_FILE)).getProfAreas();
             authToken = ((GlobalRepository)deserialize(DATA_FILE)).getAuthToken();
+            invites = ((GlobalRepository)deserialize(DATA_FILE)).getInvites();
         }
         else
             commit();
@@ -167,6 +171,38 @@ public class GlobalRepository implements Serializable {
 
     public void commit() throws Exception {
         serialize(this, DATA_FILE);        
+    }
+
+    // Crud Invites
+
+    public Collection<Invitation> getInvites() {
+        return invites;
+    }
+
+    public boolean containsInvitationWithOwner(String emailOwner) {
+
+        return invites
+            .stream()
+                .filter(invite -> invite.getEmailFrom().equals(emailOwner))
+                .findAny().isPresent();
+
+    }
+
+    public Optional<Invitation> getInvitationByOwner(String emailOwner) {
+
+        return invites
+            .stream()
+                .filter(invite -> invite.getEmailFrom().equals(emailOwner))
+                .findAny();
+
+    }
+
+    public boolean createInvite(Invitation invitation) {
+        return invites.add(invitation);
+    }
+
+    public boolean removeInvite(Invitation invitation) {
+        return invites.remove(invitation);
     }
 
 }

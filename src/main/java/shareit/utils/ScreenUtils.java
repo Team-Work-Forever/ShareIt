@@ -93,7 +93,7 @@ public class ScreenUtils {
         System.out.println(prompt);
 
         System.out.println("\r");
-        output = bufferInput.readLine();
+        output = bufferInput.readLine().trim();
             
        String[] values = output.split(",");
 

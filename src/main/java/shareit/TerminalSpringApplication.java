@@ -74,15 +74,31 @@ public class TerminalSpringApplication implements CommandLineRunner {
     private void createAdmin() throws IOException {
 
         String adminEmail = "admin@gmail.com";
+        String userEmail = "diogo@gmail.com";
 
         try {
 
-            if (globalRepository().containsEmail(adminEmail)) {
+            if (globalRepository().containsEmail(adminEmail) || globalRepository().containsEmail(userEmail)) {
                 return;
             }
 
             authenticationService().signIn(new RegisterRequest(
                 adminEmail, 
+                "password", 
+                adminEmail, 
+                adminEmail, 
+                new Date(), 
+                adminEmail, 
+                adminEmail, 
+                adminEmail, 
+                adminEmail, 
+                true, 
+                0, 
+                Role.ADMIN
+            ));
+
+            authenticationService().signIn(new RegisterRequest(
+                userEmail, 
                 "password", 
                 adminEmail, 
                 adminEmail, 

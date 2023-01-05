@@ -1,19 +1,22 @@
 package shareit.services;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.validation.constraints.Email;
 import shareit.repository.GlobalRepository;
 import shareit.validator.BeanValidator;
 import shareit.contracts.member.InviteMemberRequest;
-import shareit.data.Invite;
-import shareit.data.Privilege;
 import shareit.data.auth.IdentityUser;
 import shareit.errors.MemberFailedInvitation;
 import shareit.errors.auth.IdentityException;
+import shareit.helper.Invitation;
+import shareit.helper.InvitationManager;
 
 @Service
 public class MemberService {
@@ -24,7 +27,7 @@ public class MemberService {
     private GlobalRepository globalRepository;
 
     @Autowired
-    private TalentService talentService;
+    private Authentication authenticationService;
 
     @Autowired
     private SkillService skillService;
@@ -42,7 +45,27 @@ public class MemberService {
         return globalRepository.getIdentityUsers();
     }
 
+    public Collection<Invitation> getInviteInBox(String email) {
+
+        Collection<Invitation> invites = new ArrayList<>();
+
+        for (Invitation invitation : globalRepository.getInvites()) {
+            if (invitation.getEmailTo().equals(email)) {
+                invites.add(invitation);
+            }
+        }
+
+        return invites;
+
+    }
+
+    public boolean containsInvites(String email) {
+        return getInviteInBox(email).size() > 0;
+    }
+
     public boolean inviteMember(@Validated InviteMemberRequest request) throws Exception {
+
+        String authEmail = authenticationService.getAuthenticatedUser().getEmail();
 
         var errors = validatorInviteRequest.validate(request);
 
@@ -50,21 +73,42 @@ public class MemberService {
             throw new MemberFailedInvitation(errors.iterator().next().getMessage());
         }
 
-        if (!globalRepository.containsEmail(request.getEmail())) {
-            throw new IdentityException("User not found!");
-        }
+        request.setEmailFrom(authEmail);
 
-        if (!request.getexperience().containsClient(request.getEmail())) {
+        if (request.getEmailTo().equals(authEmail)) {
             throw new MemberFailedInvitation("You cannot invite yourself!");
         }
 
-        var member = getMemberByEmail(request.getEmail());
+        Optional<IdentityUser> invitedUser = globalRepository.getIdentityUserByEmail(request.getEmailTo());
 
-        member.addInvite(
-            new Invite(
-                request.getexperience(),
-                request.getEmail()
-        ));
+        if (!invitedUser.isPresent()) {
+            throw new IdentityException("User Not Found!");
+        }
+
+        globalRepository.createInvite(request.toInvitation());
+        globalRepository.commit();
+
+        return true;
+
+    }
+
+    /**
+     * @param invite 
+     * @return boolean
+     * @throws Exception
+     */
+    public boolean acceptInvite(Invitation invite) throws Exception {
+
+        // Accept's the invite sent
+        InvitationManager
+            .completeInvite(
+                invite.getObject(),
+                getMemberByEmail(invite.getEmailTo()),
+                invite.getPrivilege()
+            );
+
+        // Removes invite from the system
+        removeInvite(invite);
 
         globalRepository.commit();
 
@@ -72,21 +116,11 @@ public class MemberService {
 
     }
 
-    public boolean acceptInvite(Invite invite) throws Exception {
-
-        var experience = talentService.getExperienceByTitle(invite.getexperience().getTitle());
-
-        experience.addClient(
-            getMemberByEmail(invite.getEmail()), 
-            Privilege.Worker
-        );
-
-        globalRepository.commit();
-
-        return true;
-
+    public boolean removeInvite(Invitation invitation) {
+        return globalRepository.removeInvite(invitation);
     }
 
+    // TODO: What For?
     public int qtyProfUsingSkill(String name) {
 
         var skill = skillService.getSkillByName(name);

@@ -1,35 +1,97 @@
 package shareit.contracts.member;
 
+import java.util.Date;
+
 import jakarta.validation.constraints.Email;
-import shareit.data.Experience;
+import shareit.data.Privilege;
+import shareit.helper.Invitation;
 
 public class InviteMemberRequest {
- 
-    @Email
-    private String email;
 
-    private Experience experience;
+    private Object invitationType;
+    private Date expire;
 
-    public InviteMemberRequest(@Email String email, Experience experience) {
-        this.email = email;
-        this.experience = experience;
+    @Email(message = "Please provide a valid email")
+    private String emailTo;
+    
+    private String emailFrom;
+
+    private Privilege privilege;
+
+    public InviteMemberRequest(Object invitationType, Date expire, String emailTo) {
+
+        if (expire == null)
+            expire = new Date();
+        else 
+            this.expire = expire;
+
+        this.invitationType = invitationType;
+        this.emailTo = emailTo;
     }
 
-    public String getEmail() {
-        return email;
+    public InviteMemberRequest(Object invitationType, Date expire, String emailTo, Privilege privilege) {
+
+        if (expire == null)
+            expire = new Date();
+        else 
+            this.expire = expire;
+
+        this.invitationType = invitationType;
+        this.emailTo = emailTo;
+        this.privilege = privilege;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public Object getObject() {
+        return invitationType;
     }
 
-    public Experience getexperience() {
-        return experience;
+    public void setObject(Object invitationType) {
+        this.invitationType = invitationType;
     }
 
-    public void setexperience(Experience experience) {
-        this.experience = experience;
+    public String getEmailFrom() {
+        return emailFrom;
     }
 
+    public void setEmailFrom(String emailFrom) {
+        this.emailFrom = emailFrom;
+    }
+
+    public Privilege getPrivilege() {
+        return privilege;
+    }
+
+    public void setPrivilege(Privilege privilege) {
+        this.privilege = privilege;
+    }
+
+    public Date getExpire() {
+        return expire;
+    }
+
+    public void setExpire(Date expire) {
+        this.expire = expire;
+    }
+
+    public String getEmailTo() {
+        return emailTo;
+    }
+
+    public void setEmailTo(String emailTo) {
+        this.emailTo = emailTo;
+    }
+
+    public Invitation toInvitation() {
+
+        return new Invitation(
+            invitationType, 
+            false, 
+            expire, 
+            emailFrom,
+            emailTo,
+            privilege
+        );
+
+    }
 
 }

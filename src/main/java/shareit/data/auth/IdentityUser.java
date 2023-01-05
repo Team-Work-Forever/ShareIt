@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-import shareit.data.Invite;
 import shareit.data.Talent;
 import shareit.errors.TalentException;
 
@@ -25,7 +24,6 @@ public class IdentityUser implements Serializable {
     private String role;
 
     private Collection<Talent> talents = new ArrayList<>();
-    private Collection<Invite> invites = new ArrayList<>();
 
     public IdentityUser(String email, String password, String name, String lastName, Date bornDate, String street, String postCode, String locality,
         String country, float moneyPerHour, boolean isPublic, String role) {
@@ -152,27 +150,6 @@ public class IdentityUser implements Serializable {
         this.talents = talents;
     }
 
-    public Collection<Invite> getInvites() {
-        return invites;
-    }
-
-    public void setInvites(Collection<Invite> invites) {
-        this.invites = invites;
-    }
-
-    public void addInvite(Invite invite) {
-        invites.add(invite);
-    }
-
-    public Invite getInviteById(int id) {
-
-        return invites
-            .stream()
-                .filter(invite -> invite.getId() == id)
-                .findAny().get();
-
-    }
-
     public void addTalent(Talent talento) {
 
         boolean found = false;
@@ -188,10 +165,6 @@ public class IdentityUser implements Serializable {
 
         talents.add(talento);
 
-    }
-
-    public boolean thereIsInvites() {
-        return !invites.isEmpty();
     }
 
     public Talent getTalentoByName(String name) {
