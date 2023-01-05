@@ -3,8 +3,6 @@ package shareit.controllers;
 import java.io.IOException;
 import java.util.Collection;
 
-import javax.naming.AuthenticationException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -80,6 +78,8 @@ public class SkillController extends ControllerBase {
 
     private void createSkill() throws IOException {
 
+        clear();
+
         try {
 
             authorize();
@@ -96,6 +96,11 @@ public class SkillController extends ControllerBase {
 
         } catch (SkillException e) {
             printError(e.getMessage());
+
+            if (repitAction("Do you wanna exit creation?")) {
+                createSkill();
+            }
+
         } catch (Exception e) {
             printError(e.getMessage());
         }
@@ -114,25 +119,19 @@ public class SkillController extends ControllerBase {
             return;
         }
 
-        try {
-            
-            authorize();
-
-            for (Skill skill : skills) {
-                System.out.println();
-                printInfo(i  + " - " + skill.toString());
-                i++;
-            }
-
+        for (Skill skill : skills) {
             System.out.println();
-                
-        } catch (AuthenticationException e) {
-            printError(e.getMessage());
+            printInfo(i  + " - " + skill.toString());
+            i++;
         }
+
+        System.out.println();
 
     }
 
     private void updateSkill() throws Exception {
+
+        clear();
 
         listAllSkills();
 
@@ -170,6 +169,8 @@ public class SkillController extends ControllerBase {
 
     private void removeSkill() throws Exception {
 
+        clear();
+
         listAllSkills();
 
         System.out.println();
@@ -186,7 +187,7 @@ public class SkillController extends ControllerBase {
 
         }
 
-      waitForKeyEnter();
+        waitForKeyEnter();
 
     }
     

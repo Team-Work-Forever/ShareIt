@@ -27,7 +27,7 @@ public class ScreenUtils {
         String value;
 
         System.out.print(prompt + ": ");
-        value = bufferInput.readLine();
+        value = bufferInput.readLine().trim();
 
         return value;
 

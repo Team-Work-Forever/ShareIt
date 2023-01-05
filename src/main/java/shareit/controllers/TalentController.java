@@ -54,7 +54,6 @@ public class TalentController extends ControllerBase {
     @Autowired
     private TalentService talentService;
 
-    // TODO: Utilizar ToMapper
     @Override
     public void display() throws IOException {
         

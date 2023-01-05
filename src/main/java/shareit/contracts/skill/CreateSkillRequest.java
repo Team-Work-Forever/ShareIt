@@ -5,13 +5,11 @@ import shareit.data.Skill;
 
 public class CreateSkillRequest {
     
-    @NotEmpty
+    @NotEmpty(message = "Please provide a valid name")
     private String name;
 
-    @NotEmpty
+    @NotEmpty(message = "Please provide a valid description")
     private String desc;
-
-    private int qtyProf;
 
     public CreateSkillRequest(String name, String desc) {
         this.name = name;
@@ -32,14 +30,6 @@ public class CreateSkillRequest {
 
     public void setDesc(String desc) {
         this.desc = desc;
-    }
-
-    public int getQtyProf() {
-        return qtyProf;
-    }
-
-    public void setQtyProf(int qtyProf) {
-        this.qtyProf = qtyProf;
     }
 
     public Skill toSkill() {

@@ -3,8 +3,6 @@ package shareit.controllers;
 import java.io.IOException;
 import java.util.Collection;
 
-import javax.naming.AuthenticationException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -79,6 +77,8 @@ public class ProfAreaController extends ControllerBase {
 
     private void createProfArea() throws IOException {
 
+        clear();
+
         try {
 
             System.out.println("Professional Area Info:");
@@ -95,6 +95,11 @@ public class ProfAreaController extends ControllerBase {
 
         } catch (ProfAreaException e) {
             printError(e.getMessage());
+
+            if (repitAction("Do wanna repit?")) {
+                createProfArea();
+            }
+
         } catch (Exception e) {
             printError(e.getMessage());
         }
@@ -113,25 +118,20 @@ public class ProfAreaController extends ControllerBase {
             return;
         }
 
-        try {
-            
-            authorize();
-
-            for (ProfArea profArea : profAreas) {
-                System.out.println();
-                printInfo(i  + " - " + profArea.toString());
-                i++;
-            }
-
+        for (ProfArea profArea : profAreas) {
             System.out.println();
-                
-        } catch (AuthenticationException e) {
-            printError(e.getMessage());
+            printInfo(i  + " - " + profArea.toString());
+            i++;
         }
+
+        System.out.println();
+            
 
     }
 
     private void updateProfArea() throws Exception {
+
+        clear();
 
         listAllProfAreas();
 
@@ -171,6 +171,8 @@ public class ProfAreaController extends ControllerBase {
     }
 
     private void removeProfArea() throws Exception {
+
+        clear();
 
         listAllProfAreas();
 

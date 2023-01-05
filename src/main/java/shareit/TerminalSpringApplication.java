@@ -1,5 +1,6 @@
 package shareit;
 
+import java.io.IOException;
 import java.util.Date;
 
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -17,6 +18,7 @@ import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
 import shareit.repository.GlobalRepository;
 import shareit.services.AuthenticationService;
+import shareit.utils.ScreenUtils;
 
 
 @Configuration
@@ -69,11 +71,16 @@ public class TerminalSpringApplication implements CommandLineRunner {
 
     }
 
-    private void createAdmin() {
+    private void createAdmin() throws IOException {
 
         String adminEmail = "admin@gmail.com";
 
         try {
+
+            if (globalRepository().containsEmail(adminEmail)) {
+                return;
+            }
+
             authenticationService().signIn(new RegisterRequest(
                 adminEmail, 
                 "password", 
@@ -89,11 +96,18 @@ public class TerminalSpringApplication implements CommandLineRunner {
                 Role.ADMIN
             ));
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            ScreenUtils.clear();
 
-        System.out.println("Admin created!");
+            System.out.println("Generating an default admin...");
+            System.out.println("Admin Generated!");
+            System.out.println("Email: " + adminEmail + "Password: " + "password");
+
+            ScreenUtils.waitForKeyEnter();
+
+        } catch (Exception e) {
+            ScreenUtils.printError("An Error as occorred");
+            Runtime.getRuntime().exit(0);
+        }
 
     }
 
