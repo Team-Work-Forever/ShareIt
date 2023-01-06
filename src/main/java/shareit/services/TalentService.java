@@ -1,5 +1,6 @@
 package shareit.services;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,14 @@ import shareit.data.JobOffer;
 import shareit.data.ProfArea;
 import shareit.data.Skill;
 import shareit.data.Talent;
+import shareit.data.auth.IdentityUser;
 import shareit.errors.ExperienceException;
 import shareit.errors.JobOfferException;
 import shareit.errors.TalentException;
+import shareit.errors.auth.IdentityException;
 import shareit.validator.BeanValidator;
 import shareit.repository.GlobalRepository;
+import shareit.utils.ScreenUtils;
 
 @Service
 public class TalentService {
@@ -41,6 +45,9 @@ public class TalentService {
 
     @Autowired
     private ProfAreaService profAreaService;
+
+    @Autowired
+    private MemberService memberService;
 
     @Autowired
     private GlobalRepository globalRepository;
@@ -75,7 +82,7 @@ public class TalentService {
 
         var authUser = authenticationService.getAuthenticatedUser();
 
-        Talent validateTalent = authUser.getTalentoByName(name);
+        Talent validateTalent = authUser.getTalentByName(name);
 
         return validateTalent;
 
@@ -151,7 +158,7 @@ public class TalentService {
 
         var authUser = authenticationService.getAuthenticatedUser();
 
-        Talent talent = authUser.getTalentoByName(request.getNameTalent());
+        Talent talent = authUser.getTalentByName(request.getNameTalent());
         
         for (Skill skill : request.getSkills()) {
             
@@ -182,7 +189,7 @@ public class TalentService {
 
         var authUser = authenticationService.getAuthenticatedUser();
 
-        Talent talent = authUser.getTalentoByName(request.getTalentName());
+        Talent talent = authUser.getTalentByName(request.getTalentName());
         
         var skill = request.getSkill();
         
@@ -211,7 +218,7 @@ public class TalentService {
 
         var authUser = authenticationService.getAuthenticatedUser();
 
-        Talent talent = authUser.getTalentoByName(request.getTalentName());
+        Talent talent = authUser.getTalentByName(request.getTalentName());
 
         for (ProfArea profArea : request.getProfAreas().keySet()) {
 
@@ -242,7 +249,7 @@ public class TalentService {
 
         var authUser = authenticationService.getAuthenticatedUser();
 
-        Talent talent = authUser.getTalentoByName(request.getTalentName());
+        Talent talent = authUser.getTalentByName(request.getTalentName());
         
         talent.removeProfAreaByName(request.getProfArea().getName());
 
@@ -273,7 +280,7 @@ public class TalentService {
         experience = request.toExperience();
 
         var authUser = authenticationService.getAuthenticatedUser();
-        talent = authUser.getTalentoByName(request.getTalentName());
+        talent = authUser.getTalentByName(request.getTalentName());
 
         talent.addExperience(experience);
 
@@ -301,25 +308,45 @@ public class TalentService {
 
     }
 
-    public JobOffer getJobOfferById(int id) {
+    // JobOffer
 
-        var authUser = authenticationService.getAuthenticatedUser();
-        Collection<Talent> talents = authUser.getTalents();
+    public JobOffer getJobOfferById(int id) throws IOException {
+
+        Collection<IdentityUser> allMembers = memberService.getAllMembers();;
 
         try {
             
-            for (Talent talent : talents) {
-                for (Experience experience : talent.getExperiences())
-                {   
-                    return experience.getJobOfferById(id);
+            for (IdentityUser identityUser : allMembers) {
+                for (Talent talent : identityUser.getTalents()) {
+                    for (Experience experience : talent.getExperiences())
+                    {   
+                        return experience.getJobOfferById(id).get();
+                    }
                 }
             }
 
         } catch (Exception e) {
-            throw new JobOfferException(e.getMessage());
+           e.printStackTrace();
+           ScreenUtils.waitForKeyEnter();
         }
 
         throw new JobOfferException("Was not found any Job Offer with that id!");
+
+    }
+
+    public IdentityUser getCreatorJobOffer(int id) {
+
+        for (IdentityUser user : memberService.getAllMembers()) {
+            for (Talent talent : user.getTalents()) {
+                for (Experience experience : talent.getExperiences()) {
+                    if (experience.getJobOfferById(id).isPresent()) {
+                        return user;
+                    }
+                }
+            }
+        }
+
+        throw new IdentityException("Was not found any user!");
 
     }
 

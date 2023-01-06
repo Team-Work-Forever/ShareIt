@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import shareit.utils.ScreenUtils;
 
+// TODO: Implement KeyLogger with C and conio.h and then link it with java with native keyword and static System.load
 public class Menu {
 
     private String[] options;

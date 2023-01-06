@@ -7,6 +7,8 @@ import shareit.contracts.auth.AuthenticationRequest;
 import shareit.contracts.auth.RegisterRequest;
 import shareit.data.auth.Role;
 import shareit.services.AuthenticationService;
+import shareit.utils.ScreenUtils;
+import shareit.utils.StoreUtils;
 import shareit.errors.auth.AuthenticationException;
 import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
@@ -47,6 +49,7 @@ public class LoginController extends ControllerBase {
                 System.out.println("***************** Menu *****************");
                 System.out.println("1 - SignIn");
                 System.out.println("2 - SignUp");
+                System.out.println("3 - Clean Appdata");
                 System.out.println("0 - Exit");
                 index = input.nextInt();
     
@@ -58,7 +61,12 @@ public class LoginController extends ControllerBase {
                     break;
                 case 2:
                     signIn();
-                break;
+                    break;
+                case 3:
+                    StoreUtils.cleanStorage();
+                    ScreenUtils.printSuccess("It was removed!");
+                    ScreenUtils.waitForKeyEnter();
+                    break;
             }
     
         } while (index != 0);

@@ -18,7 +18,7 @@ import static shareit.utils.ScreenUtils.clear;
 import static shareit.utils.ScreenUtils.printError;
 import static shareit.utils.ScreenUtils.menu;
 import static shareit.utils.ScreenUtils.printInfo;
-import static shareit.utils.ScreenUtils.bufferInput;
+import static shareit.utils.ScreenUtils.comboBox;
 
 @Controller
 public class ProfAreaController extends ControllerBase {
@@ -135,10 +135,7 @@ public class ProfAreaController extends ControllerBase {
 
         listAllProfAreas();
 
-        printInfo("Chose the name seperated by commas");
-
-        var output = bufferInput.readLine();
-        String[] profAreas = output.split(",");
+        String[] profAreas = comboBox("Chose the name seperated by commas (,)");
 
         for (String profAreaName : profAreas) {
 
@@ -175,11 +172,8 @@ public class ProfAreaController extends ControllerBase {
         clear();
 
         listAllProfAreas();
-
-        printInfo("Chose the name seperated by commas");
-
-        var output = bufferInput.readLine();
-        String[] skills = output.split(",");
+        
+        String[] skills = comboBox("Chose the name seperated by commas");
 
         for (String name : skills) {
 

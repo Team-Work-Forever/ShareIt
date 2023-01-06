@@ -1,8 +1,5 @@
 package shareit.helper;
 
-import java.util.Collection;
-import java.util.Optional;
-
 import shareit.data.Experience;
 import shareit.data.JobOffer;
 import shareit.data.Privilege;

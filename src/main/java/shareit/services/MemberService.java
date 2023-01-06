@@ -78,6 +78,10 @@ public class MemberService {
             throw new MemberFailedInvitation("You cannot invite yourself!");
         }
 
+        if (verifyMultiInvitation(request.getEmailFrom(), request.getEmailTo())) {
+            throw new MemberFailedInvitation("You cannot prepose an invite twoice!");
+        }
+
         Optional<IdentityUser> invitedUser = globalRepository.getIdentityUserByEmail(request.getEmailTo());
 
         if (!invitedUser.isPresent()) {
@@ -88,6 +92,17 @@ public class MemberService {
         globalRepository.commit();
 
         return true;
+
+    }
+
+    public boolean verifyMultiInvitation(String emailFrom, String emailTo) {
+
+        return globalRepository.getInvites()
+                .stream()
+                    .filter((invite) -> {
+                        return invite.getEmailFrom().equals(emailFrom) && invite.getEmailTo().equals(emailTo);
+                    })
+                    .findAny().isPresent();
 
     }
 

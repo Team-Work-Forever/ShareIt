@@ -167,7 +167,7 @@ public class IdentityUser implements Serializable {
 
     }
 
-    public Talent getTalentoByName(String name) {
+    public Talent getTalentByName(String name) {
 
         for (Talent talento : talents) {
             if(talento.getName().equals(name))
@@ -182,7 +182,7 @@ public class IdentityUser implements Serializable {
 
     public void removeTalent(String name) throws TalentException {
 
-        Talent talent = getTalentoByName(name);
+        Talent talent = getTalentByName(name);
 
         talents.remove(talent);
 

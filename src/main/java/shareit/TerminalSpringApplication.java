@@ -62,6 +62,23 @@ public class TerminalSpringApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws IOException {
 
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+
+            @Override
+            public void run() {
+                try {
+                    
+                    ScreenUtils.closeBuffer();
+
+                } catch (IOException e) {
+                    
+                    System.out.println("Error as occorred closing buffer");
+
+                }
+            }
+
+        });
+
         try {
             
             if (authenticationService().isBeforeAuthenticated())

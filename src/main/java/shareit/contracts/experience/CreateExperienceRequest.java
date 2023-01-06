@@ -2,23 +2,36 @@ package shareit.contracts.experience;
 
 import java.util.Date;
 
+import jakarta.validation.constraints.NotEmpty;
 import shareit.data.Experience;
 
 public class CreateExperienceRequest {
     
+    @NotEmpty(message = "Please provide an talent name")
     private String talentName;
+
+    @NotEmpty(message = "Please provide an title")
     private String title;
+
+    @NotEmpty(message = "Please provide an name")
     private String name;
+
     private int qtyWorkers;
+
     private int qtyManegers;
+    
+    @NotEmpty(message = "Please provide an description")
     private String desc;
+
     private Date startDate;
+    
     private Date finalDate;
     
     public CreateExperienceRequest(String talentName, String title, String name,
         String desc, Date startDate, Date finalDate) {
         this.talentName = talentName;
         this.title = title;
+        this.name = name;
         this.desc = desc;
         this.startDate = startDate;
         this.finalDate = finalDate;

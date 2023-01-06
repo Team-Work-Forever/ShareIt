@@ -34,18 +34,18 @@ public class ProfArea implements Serializable {
         return qtyProf;
     }
 
-    @Override
-    public String toString() {
-        return "Profissional Area: \n" + 
-            "Name: " + this.name + "\t" + " Description: " + description + " Qty Profissionals: " + Integer.toString(qtyProf);
-    }
-
     public void incrementQtyProf() {
         this.qtyProf++;
     }
 
     public void reduceQtyProf() {
         this.qtyProf--;
+    }
+
+    @Override
+    public String toString() {
+        return "Profissional Area: \n" + 
+            "Name: " + this.name + "\t" + " Description: " + description + " Qty Profissionals: " + Integer.toString(qtyProf);
     }
 
 }

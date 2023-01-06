@@ -19,7 +19,6 @@ import static shareit.utils.ScreenUtils.clear;
 import static shareit.utils.ScreenUtils.printError;
 import static shareit.utils.ScreenUtils.menu;
 import static shareit.utils.ScreenUtils.printInfo;
-import static shareit.utils.ScreenUtils.bufferInput;
 
 @Controller
 public class SkillController extends ControllerBase {
@@ -133,10 +132,7 @@ public class SkillController extends ControllerBase {
 
         listAllSkills();
 
-        printInfo("Chose the name seperated by commas");
-
-        var output = bufferInput.readLine();
-        String[] skills = output.split(",");
+        String[] skills = comboBox("Chose the name seperated by commas");
 
         for (String skillName : skills) {
 

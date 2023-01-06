@@ -1,14 +1,14 @@
 package shareit.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static shareit.utils.ScreenUtils.menu;
 import static shareit.utils.ScreenUtils.textField;
-import static shareit.utils.ScreenUtils.bufferInput;
 import static shareit.utils.ScreenUtils.clear;
 import static shareit.utils.ScreenUtils.printError;
 import static shareit.utils.ScreenUtils.printInfo;
@@ -28,9 +28,14 @@ import shareit.data.Privilege;
 import shareit.data.ProfArea;
 import shareit.data.Skill;
 import shareit.data.auth.IdentityUser;
+import shareit.errors.InviteNotFoundException;
+import shareit.errors.InviteNotValidException;
+import shareit.helper.Invitation;
 import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
+import shareit.services.Authentication;
 import shareit.services.ExperienceService;
+import shareit.services.InviteService;
 import shareit.services.JobOfferService;
 import shareit.services.MemberService;
 import shareit.services.ProfAreaService;
@@ -49,6 +54,9 @@ public class JobOfferController extends ControllerBase {
     private JobOfferService jobOfferService;
 
     @Autowired
+    private Authentication authenticationService;
+
+    @Autowired
     private ExperienceService experienceService;
 
     @Autowired
@@ -59,6 +67,9 @@ public class JobOfferController extends ControllerBase {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private InviteService inviteService;
 
     private Experience currentExperience;
     private String talentName;
@@ -85,7 +96,8 @@ public class JobOfferController extends ControllerBase {
                         "List JobOffers",
                         "Update JobOffers",
                         "Remove JobOffers",
-                        "Envite User"
+                        "Envite User",
+                        "See Applications"
                     });
                     
                 } while (index <= 0 && index >= 5);
@@ -112,6 +124,11 @@ public class JobOfferController extends ControllerBase {
                     case 6:
                         inviteUser();
                         break;
+                    case 7:
+                        manageApplications();
+
+                        waitForKeyEnter();
+                        break;
                     }
 
             } catch (Exception e) {
@@ -124,6 +141,58 @@ public class JobOfferController extends ControllerBase {
 
     }
     
+    private void manageApplications() throws IOException {
+
+        clear();
+
+        Collection<Invitation> inviteInBox = memberService.getInviteInBox(authenticationService.getAuthenticatedUser().getEmail());;
+
+        if (inviteInBox.size() <= 0) {
+            printInfo("There is no Applications!");
+            return;
+        }
+
+        inviteInBox.forEach((invite) -> {
+                
+            try {
+                printInfo(invite.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        });
+
+        try {
+
+            String[] invites = comboBox("Chose Invite by id separeted by commas(,)");
+
+            for (int i = 0; i < invites.length; i++) {
+                
+                if (invites[i].isEmpty() || !invites[i].chars().allMatch(Character::isDigit))
+                    throw new InviteNotValidException();
+
+                Optional<Invitation> invite = inviteService.getInviteById(Integer.parseInt(invites[i]));
+
+                // TODO: Criar Exception para aqui!!
+                if (!invite.isPresent())
+                    throw new InviteNotFoundException();
+
+                var result = memberService.acceptInvite(
+                    invite.get()
+                );
+
+                if (result)
+                    printSuccess("New Client Accepted!");
+                    
+            }
+
+        } catch (Exception e) {
+            printError(e.getMessage());
+        }
+
+
+    }
+
     private void inviteUser() throws Exception {
 
         clear();
@@ -138,8 +207,6 @@ public class JobOfferController extends ControllerBase {
             
                 clear();
 
-                printSuccess("Email: " + email);
-    
                 memberService.inviteMember(new InviteMemberRequest(
                     currentExperience, 
                     new Date(), // Expire Date
@@ -169,8 +236,7 @@ public class JobOfferController extends ControllerBase {
 
         listJobOffer();
 
-        printInfo("Chose one JobOffer by his id");
-        String jobOfferId = bufferInput.readLine();
+        String jobOfferId = textField("Chose one JobOffer by his id");
 
         if (jobOfferId.isEmpty())
             return;
@@ -193,8 +259,7 @@ public class JobOfferController extends ControllerBase {
 
             listAllProfAreas();
             
-            printInfo("Chose one Professional Area by his name");
-            String profAreaName = bufferInput.readLine();
+            String profAreaName = textField("Chose one Professional Area by his name");
 
             listAllSkills();
         
@@ -203,8 +268,8 @@ public class JobOfferController extends ControllerBase {
             try {
                     
                 for (String name : skillNames) {
-                    printInfo("Skill: " + name + " Insert years of experience required: ");
-                    String expYears = bufferInput.readLine();
+                    
+                    String expYears = textField("Skill: " + name + " Insert years of experience required: ");
 
                     selectedSkills.put(
                         skillService.getSkillByName(name),

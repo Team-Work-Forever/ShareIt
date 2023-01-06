@@ -8,6 +8,13 @@ public class StoreUtils {
     public static final String MAIN_FOLDER = "ShareIt";
     public static final String DATA_FILE = getStorageFolder() + "\\" + "data.dat";
 
+    // TODO: Quando Acabar o programa elimina-me
+    public static void cleanStorage() {
+
+        File storageFolder = new File(getStorageFolder());
+        storageFolder.delete();
+    }
+
     public static boolean verifyFile(String file) {
         File verify = new File(file);
 

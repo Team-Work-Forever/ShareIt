@@ -3,6 +3,9 @@ package shareit.controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static shareit.utils.ScreenUtils.menu;
 import static shareit.utils.ScreenUtils.textField;
@@ -11,11 +14,13 @@ import static shareit.utils.ScreenUtils.printError;
 import static shareit.utils.ScreenUtils.printInfo;
 import static shareit.utils.ScreenUtils.waitForKeyEnter;
 import static shareit.utils.ScreenUtils.comboBox;
+import static shareit.utils.ScreenUtils.printSuccess;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import shareit.contracts.talent.TalentAssociationSkill;
+import shareit.contracts.member.InviteMemberRequest;
 import shareit.contracts.talent.CreateTalentRequest;
 import shareit.contracts.talent.TalentAssociationProfArea;
 import shareit.data.Experience;
@@ -25,6 +30,7 @@ import shareit.data.Skill;
 import shareit.data.State;
 import shareit.data.Talent;
 import shareit.data.auth.IdentityUser;
+import shareit.errors.JobOfferException;
 import shareit.errors.TalentException;
 import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
@@ -83,11 +89,15 @@ public class TalentController extends ControllerBase {
                 switch (index) {
                     case 1:
                         selectTalent();
+
+                        waitForKeyEnter();
                         break;
                     case 2:
                         createTalent();
                         break;
                     case 3:
+                        clear();
+                        
                         listAllTalents();
 
                         waitForKeyEnter();
@@ -102,6 +112,12 @@ public class TalentController extends ControllerBase {
                         clear();
 
                         listAllJobOffers();
+
+                        waitForKeyEnter();
+
+                        if (repitAction("Do you wanna to engage into a Job Offer")) {
+                            engageIntoJobOffer();
+                        }
 
                         waitForKeyEnter();
                     break;
@@ -121,7 +137,10 @@ public class TalentController extends ControllerBase {
 
         clear();
 
-        listAllTalents();
+        if (listAllTalents() == -1)
+        {
+            return;
+        }
 
         String talentName = textField("Chose one Talent by his name");
 
@@ -136,7 +155,7 @@ public class TalentController extends ControllerBase {
     private void createTalent() throws IOException {
 
         Collection<Skill> selectedSkill = new ArrayList<>();
-        Collection<ProfArea> selectedProfArea = new ArrayList<>();
+        Map<ProfArea, Integer> selectedProfArea = new HashMap<>();
 
         clear();
 
@@ -168,6 +187,7 @@ public class TalentController extends ControllerBase {
 
             }
 
+            // TODO: Fix this!
             talentService.associateSkills(new TalentAssociationSkill(
                 name, 
                 selectedSkill, 
@@ -178,18 +198,18 @@ public class TalentController extends ControllerBase {
 
             listAllProfAreas();
 
-            String[] profAreas = comboBox("Chose Profissional Areas with commas(,) to associate with the new talent");
+            Map<String,Integer> profAreas = comboBox("Chose Profissional Areas with commas(,). And separeted with (:) the years of experience to associate with the new talent", ":");;
 
-            for (String profAreaName : profAreas) {
+            for (String profAreaName : profAreas.keySet()) {
                 var profArea = profAreaService.getProfAreaByName(profAreaName);
 
-                selectedProfArea.add(profArea);
+                selectedProfArea.put(profArea, profAreas.get(profAreaName));
             }
 
             // TODO: Resolve-me
             talentService.associateProfAreas(new TalentAssociationProfArea(
                 name, 
-                null
+                selectedProfArea
             ));
 
         } catch (Exception e) {
@@ -198,15 +218,24 @@ public class TalentController extends ControllerBase {
 
     }
  
-    private void listAllTalents() throws IOException {
+    private int listAllTalents() throws IOException {
 
         int i = 1;
 
-        for (Talent talent : talentService.getAllTalents()) {
+        Collection<Talent> talents = talentService.getAllTalents();
+
+        if (talents.size() <= 0) {
+            printInfo("There is no talents yet!");
+            return -1;
+        }
+
+        for (Talent talent : talents) {
             System.out.println();
             printInfo(i  + " - " + talent.toString());
             i++;
         }
+
+        return 0;
 
     }
     
@@ -257,6 +286,43 @@ public class TalentController extends ControllerBase {
                     }
                 }
             }
+        }
+
+    }
+
+    private void engageIntoJobOffer() throws IOException {
+
+        listAllJobOffers();
+
+        String[] jobOffers = comboBox("Chose JobOffer with commas(,)");
+
+        try {
+            
+            for (int i = 0; i < jobOffers.length; i++) {
+        
+                if (jobOffers[i].isEmpty() || !jobOffers[i].chars().allMatch(Character::isDigit))
+                        throw new JobOfferException("JobOffer not valid!");
+                        
+                var id = jobOffers[i];
+                
+                JobOffer jobOffer = talentService.getJobOfferById(Integer.parseInt(id));
+
+                // TODO: Compute date to the invites
+                var result = memberService.inviteMember(
+                    new InviteMemberRequest(
+                        jobOffer, 
+                        new Date(),
+                        talentService.getCreatorJobOffer(Integer.parseInt(jobOffers[i])).getEmail()
+                    )
+                );
+
+                if (result)
+                    printSuccess("You have applied to the jobOffer");
+            
+            }
+
+        } catch (Exception e) {
+            printError(e.getMessage());
         }
 
     }

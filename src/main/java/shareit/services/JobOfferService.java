@@ -1,5 +1,6 @@
 package shareit.services;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class JobOfferService {
 
         var authUser = authenticationService.getAuthenticatedUser();
 
-         experience = authUser.getTalentoByName(request.getTalentName())
+         experience = authUser.getTalentByName(request.getTalentName())
             .getExperienceByTitle(request.getExperienceTile());
 
         experience.addJobOffer(jobOffer);
@@ -69,7 +70,7 @@ public class JobOfferService {
 
     // }
 
-    public Collection<IdentityUser> getAllClients(int jobOfferId) {
+    public Collection<IdentityUser> getAllClients(int jobOfferId) throws IOException {
 
         var jobOffer = talentService.getJobOfferById(jobOfferId);
         
@@ -77,7 +78,7 @@ public class JobOfferService {
 
     }
 
-    public Collection<Skill> getAllSkills(int jobOfferId) {
+    public Collection<Skill> getAllSkills(int jobOfferId) throws IOException {
 
         var jobOffer = talentService.getJobOfferById(jobOfferId);
         

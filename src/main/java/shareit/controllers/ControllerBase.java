@@ -6,10 +6,12 @@ import javax.naming.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static shareit.utils.ScreenUtils.clear;
+import static shareit.utils.ScreenUtils.textField;
+
 import shareit.data.auth.IdentityUser;
 import shareit.data.auth.Role;
 import shareit.services.AuthenticationService;
-import shareit.utils.ScreenUtils;
 
 public abstract class ControllerBase {
     
@@ -22,10 +24,9 @@ public abstract class ControllerBase {
 
         String choice;
 
-        ScreenUtils.clear();
+        clear();
 
-        ScreenUtils.printInfo(message + " (default t| f): ");
-        choice = ScreenUtils.bufferInput.readLine().trim();
+        choice = textField(message + " (default t| f): ");
 
         return choice.isEmpty() ? true : ( choice.equals("t") ? true : false );
 

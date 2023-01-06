@@ -94,7 +94,8 @@ public class DashBoardController extends ControllerBase {
                 }
     
             } catch (Exception e) {
-                printError(e.getMessage());
+                e.printStackTrace();
+                waitForKeyEnter();
             }
 
         } while (index != 0);

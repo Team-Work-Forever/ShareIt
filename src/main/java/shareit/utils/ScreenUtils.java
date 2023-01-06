@@ -3,10 +3,12 @@ package shareit.utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ScreenUtils {
     
-    public static BufferedReader bufferInput = new BufferedReader(new InputStreamReader(System.in));
+    private static BufferedReader bufferInput = new BufferedReader(new InputStreamReader(System.in));
 
     public static final String BLACK = "\033[0;30m";   // BLACK
     public static final String RED = "\033[0;31m";     // RED
@@ -99,6 +101,31 @@ public class ScreenUtils {
 
         return values;
 
+    }
+
+    public static Map<String, Integer> comboBox(String prompt, String plus) throws IOException {
+
+        Map<String, Integer> set = new HashMap<>();
+        String output;
+
+        System.out.println(prompt);
+
+        System.out.println("\r");
+        output = bufferInput.readLine().trim();
+            
+        String[] values = output.split(",");
+        String[] subValues = output.split(plus);
+
+        for (int i = 0; i < values.length; i++) {
+            set.put(subValues[0], subValues[i + 1] == null ? 0 : Integer.parseInt(subValues[i + 1]));
+        }
+
+        return set;
+
+    }
+
+    public static void closeBuffer() throws IOException {
+        bufferInput.close();
     }
 
 }

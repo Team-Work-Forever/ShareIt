@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Optional;
 
 import shareit.data.auth.IdentityUser;
 import shareit.errors.ExperienceException;
@@ -235,15 +236,12 @@ public class Experience implements Serializable {
         jobOffers.add(jobOffer);
     }
 
-    public JobOffer getJobOfferById(int id) throws JobOfferException {
+    public Optional<JobOffer> getJobOfferById(int id) throws JobOfferException {
 
-        for (JobOffer jobOffer : jobOffers) {
-            if (jobOffer.getJobOfferId() == id) {
-                return jobOffer;
-            }
-        }
-
-        throw new JobOfferException("Não existe nenhuma oferta de trabalho com o id: " + id);
+        return jobOffers
+            .stream()
+                .filter(jobOffer -> jobOffer.getJobOfferId() == id)
+                .findAny();
 
     }
 

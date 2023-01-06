@@ -110,8 +110,7 @@ public class MemberController extends ControllerBase {
 
         // listAllMembers();
 
-        // printInfo("Chose one Member by his email");
-        // String email = bufferInput.readLine();
+        // String email = textField("Chose one Member by his email");
 
         // navigationHelper.navigateTo(
             

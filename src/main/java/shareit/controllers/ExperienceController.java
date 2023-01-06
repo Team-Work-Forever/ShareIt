@@ -9,7 +9,6 @@ import static shareit.utils.ScreenUtils.clear;
 import static shareit.utils.ScreenUtils.printError;
 import static shareit.utils.ScreenUtils.printInfo;
 import static shareit.utils.ScreenUtils.waitForKeyEnter;
-import static shareit.utils.ScreenUtils.bufferInput;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -98,8 +97,7 @@ public class ExperienceController extends ControllerBase {
 
         listExperience();
 
-        printInfo("Chose one Experience by his name");
-        String experienceTitle = bufferInput.readLine();
+        String experienceTitle = textField("Chose one Experience by his name");
 
         navigationHelper.navigateTo(
             routeManager.argumentRoute(

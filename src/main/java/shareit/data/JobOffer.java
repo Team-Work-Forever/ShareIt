@@ -32,7 +32,7 @@ public class JobOffer implements Serializable {
 
         this.state = State.Available;
 
-        JobOffer.increment++;
+        increment++;
 
     }
 

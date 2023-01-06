@@ -1,8 +1,6 @@
 package shareit.helper;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 
 import shareit.data.Privilege;
@@ -21,7 +19,6 @@ public class Invitation implements Serializable {
 
     public Invitation(Object invitationType, boolean accepted, Date expire, String emailFrom, String emailTo) {
 
-        increment++;
         id = increment;
 
         this.invitationType = invitationType;
@@ -29,6 +26,8 @@ public class Invitation implements Serializable {
         this.expire = expire;
         this.emailFrom = emailFrom;
         this.emailTo = emailTo;
+
+        increment++;
     }
 
     public Invitation(Object invitationType, boolean accepted, Date expire, String emailFrom, String emailTo, Privilege privilege) {
