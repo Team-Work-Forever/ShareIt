@@ -2,6 +2,7 @@ package shareit.services;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -353,7 +354,7 @@ public class TalentService {
 
     // JobOffer
 
-    public JobOffer getJobOfferById(int id) throws IOException {
+    public Optional<JobOffer> getJobOfferById(int id) throws IOException {
 
         Collection<IdentityUser> allMembers = memberService.getAllMembers();;
 
@@ -363,7 +364,7 @@ public class TalentService {
                 for (Talent talent : identityUser.getTalents()) {
                     for (Experience experience : talent.getExperiences())
                     {   
-                        return experience.getJobOfferById(id).get();
+                        return experience.getJobOfferById(id);
                     }
                 }
             }

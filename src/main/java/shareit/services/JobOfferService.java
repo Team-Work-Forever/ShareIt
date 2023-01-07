@@ -2,6 +2,7 @@ package shareit.services;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,32 +73,42 @@ public class JobOfferService {
 
     public Collection<IdentityUser> getAllClients(int jobOfferId) throws IOException {
 
-        var jobOffer = talentService.getJobOfferById(jobOfferId);
+        Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(jobOfferId);
+
+        if (!jobOfferFound.isPresent()) {
+            throw new JobOfferException("No JobOffer was found!");
+        }
         
-        return jobOffer.getClients();
+        return jobOfferFound.get().getClients();
 
     }
 
     public Collection<Skill> getAllSkills(int jobOfferId) throws IOException {
 
-        var jobOffer = talentService.getJobOfferById(jobOfferId);
+        Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(jobOfferId);
         
-        return jobOffer.getAllSkills();
+        if (!jobOfferFound.isPresent()) {
+            throw new JobOfferException("No JobOffer was Found!");
+        }
+
+        return jobOfferFound.get().getAllSkills();
 
     }
 
     public void associateClient(IdentityUser client, int jobOfferId) throws Exception {
 
-        var jobOffer = talentService.getJobOfferById(jobOfferId);
+        Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(jobOfferId);;
 
-        jobOffer.addClient(client);
+        if (!jobOfferFound.isPresent()) {
+            throw new JobOfferException("No JobOffer was Found!");
+        }
+
+        jobOfferFound.get().addClient(client);
         globalRepository.commit();
 
     }
 
     public boolean associateSkill(@Validated AssociateSkillRequest request) throws Exception {
-
-        JobOffer jobOffer;
 
         var errors = validatorSkill.validate(request);
 
@@ -105,11 +116,15 @@ public class JobOfferService {
             throw new JobOfferException(errors.iterator().next().getMessage());
         }
 
-        jobOffer = talentService.getJobOfferById(request.getJobOfferId());
+        Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(request.getJobOfferId());;
+
+        if (!jobOfferFound.isPresent()) {
+            throw new JobOfferException("No JobOffer was found!");
+        }
 
         for (Skill skill : request.getSkills().keySet()) {
             
-            jobOffer.addSkill(
+            jobOfferFound.get().addSkill(
                 skill, 
                 request.getSkills().get(skill)
             );

@@ -42,6 +42,16 @@ public class MemberService {
         return globalRepository.getIdentityUsers();
     }
 
+    public Collection<IdentityUser> getPossibleMembers() {
+
+        return getAllMembers()
+            .stream()
+                .filter(member -> !member
+                    .getEmail().equals(authenticationService.getAuthenticatedUser().getEmail()))
+                    .toList();
+
+    }
+
     public Collection<Invitation> getInviteInBox(String email) {
 
         Collection<Invitation> invites = new ArrayList<>();

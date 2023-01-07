@@ -66,7 +66,7 @@ public class TerminalSpringApplication implements CommandLineRunner {
                     
                     ScreenUtils.closeBuffer();
 
-                } catch (IOException e) {
+                } catch (Exception e) {
                     
                     System.out.println("Error as occorred closing buffer");
 
@@ -85,6 +85,7 @@ public class TerminalSpringApplication implements CommandLineRunner {
             navigationHelper().setFirstEntry(routeManager().authRoute());
 
         } catch (Exception e) {
+            e.printStackTrace();
             ScreenUtils.printError(e.getMessage());
         }
 

@@ -289,11 +289,23 @@ public class JobOfferController extends ControllerBase {
         if (jobOfferId.isEmpty())
             return;
 
-        navigationHelper.navigateTo(
+        try {
+            
+            navigationHelper.navigateTo(
             routeManager.argumentRoute(
                 MemberController.class, 
                 Integer.parseInt(jobOfferId)
-        ));
+            ));
+
+        } catch (NumberFormatException e) {
+
+            printError("Please provide a valid number!");
+
+            if (repitAction("Do you wanna repit?")) {
+                selectJobOffer();
+            }
+
+        }
 
     }
 

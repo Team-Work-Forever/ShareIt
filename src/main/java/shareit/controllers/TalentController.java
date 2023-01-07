@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static shareit.utils.ScreenUtils.menu;
 import static shareit.utils.ScreenUtils.textField;
@@ -86,7 +87,7 @@ public class TalentController extends ControllerBase {
                         "Remove Talent",
                         "List JobOffers Available"
                     }, authenticationService.getAuthenticatedUser().getName());
-                    
+
                 } while (index <= 0 && index >= 6);
 
                 switch (index) {
@@ -359,12 +360,15 @@ public class TalentController extends ControllerBase {
                         
                 var id = jobOffers[i];
                 
-                JobOffer jobOffer = talentService.getJobOfferById(Integer.parseInt(id));
+                Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(Integer.parseInt(id));
+
+                if (!jobOfferFound.isPresent())
+                    throw new JobOfferException("No JobOffer was found!");
 
                 // TODO: Compute date to the invites
                 var result = memberService.inviteMember(
                     new InviteMemberRequest(
-                        jobOffer, 
+                        jobOfferFound.get(), 
                         new Date(),
                         talentService.getCreatorJobOffer(Integer.parseInt(jobOffers[i])).getEmail()
                     )

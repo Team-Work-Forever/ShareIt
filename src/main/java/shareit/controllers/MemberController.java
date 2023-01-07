@@ -3,6 +3,7 @@ package shareit.controllers;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import shareit.contracts.member.InviteMemberRequest;
 import shareit.data.JobOffer;
 import shareit.data.auth.IdentityUser;
+import shareit.errors.JobOfferException;
 import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
 import shareit.services.Authentication;
@@ -47,18 +49,22 @@ public class MemberController extends ControllerBase {
 
     @Override
     public void display() throws IOException {
+        
         int index = 0;
-
-        if (routeManager.getArgs() instanceof Integer) {
-            currentJobOffer = talentService.getJobOfferById(((Integer)routeManager.getArgs()));
-        } else {
-            printError("Something went wrong!");
-            navigationHelper.navigateBack();
-        }
 
         do {
             
             try {
+
+                if (!(routeManager.getArgs() instanceof Integer))
+                    throw new JobOfferException("Please provide a valid id");
+            
+                Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(((Integer)routeManager.getArgs()));;
+            
+                if (!jobOfferFound.isPresent())
+                    throw new JobOfferException("That JobOffer does not exists!");
+                    
+                currentJobOffer = jobOfferFound.get();
                 
                 do {
                     
@@ -127,7 +133,7 @@ public class MemberController extends ControllerBase {
         client = memberService.getMemberByEmail(email);
 
         talentService.getJobOfferById(currentJobOffer.getJobOfferId())
-            .removeClient(client);
+            .get().removeClient(client);
 
         printSuccess("The user with email: " + email + " has been removed!");
 
@@ -177,18 +183,22 @@ public class MemberController extends ControllerBase {
 
         clear();
 
-        Collection<IdentityUser> allMembers = memberService.getAllMembers();
+        Collection<IdentityUser> allMembers = memberService.getPossibleMembers();
         
-        allMembers = allMembers
-            .stream()
-                .filter(member -> !member
-                    .getEmail().equals(authenticationService.getAuthenticatedUser().getEmail()))
-                    .toList();
-
         if (allMembers.isEmpty()) {
             printInfo("There is no other member to invite!");
             return;
         }
+
+        allMembers.forEach(member -> {
+
+            try {
+                printInfo(member.toString());
+            } catch (IOException e) {
+                System.out.println("--- Error ---");
+            }
+
+        });
 
         String[] emails = comboBox("Chose Member separeted by commas(,) to invite members");
 

@@ -1,6 +1,8 @@
 package shareit.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Controller;
 
 import shareit.contracts.auth.AuthenticationRequest;
@@ -16,10 +18,10 @@ import shareit.helper.RouteManager;
 import static shareit.utils.ScreenUtils.textField;
 import static shareit.utils.ScreenUtils.clear;
 import static shareit.utils.ScreenUtils.printError;
+import static shareit.utils.ScreenUtils.menu;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Scanner;
 
 @Controller
 public class LoginController extends ControllerBase {
@@ -33,11 +35,12 @@ public class LoginController extends ControllerBase {
     @Autowired
     private AuthenticationService authenticationService;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @Override
     public void display() throws IOException {
         
-        Scanner input = new Scanner(System.in);
-
         int index = 0;
 
         do {
@@ -45,13 +48,12 @@ public class LoginController extends ControllerBase {
             do {
             
                 clear();
-    
-                System.out.println("***************** Menu *****************");
-                System.out.println("1 - SignIn");
-                System.out.println("2 - SignUp");
-                System.out.println("3 - Clean Appdata");
-                System.out.println("0 - Exit");
-                index = input.nextInt();
+
+                index = menu("***************** Menu *****************", new String[] {
+                    "Sign In",
+                    "Register",
+                    "Clean AppData"
+                }, "anonymous");
     
             } while (index <= 0 && index >= 2);
     
@@ -71,7 +73,9 @@ public class LoginController extends ControllerBase {
     
         } while (index != 0);
 
-        input.close();
+        ScreenUtils.closeBuffer();
+
+        ((ConfigurableApplicationContext)applicationContext).close();
 
     }
 
