@@ -29,9 +29,6 @@ public class MemberService {
     @Autowired
     private Authentication authenticationService;
 
-    @Autowired
-    private SkillService skillService;
-
     public IdentityUser getMemberByEmail(String email) {
 
         if (!globalRepository.containsEmail(email))
