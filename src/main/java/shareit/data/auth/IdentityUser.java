@@ -291,8 +291,7 @@ public class IdentityUser implements Serializable {
     public String toString() {
         return "Member: " + "\n" + 
             "\tEmail: " + email + "\n" + 
-            "\tName: " + name + "\n" +
-            "\tLastName: " + lastName
+            "\tName: " + name + "\tLastName: " + lastName
             ;
     }
 

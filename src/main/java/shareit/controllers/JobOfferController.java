@@ -277,7 +277,7 @@ public class JobOfferController extends ControllerBase {
                     currentExperience, 
                     new Date(), // Expire Date
                     email,
-                    Privilege.Worker
+                    Privilege.WORKER
                 ));
     
                 printSuccess("Invite send with success to user with email "+ email);

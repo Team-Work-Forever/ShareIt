@@ -116,11 +116,7 @@ public class JobOffer implements Serializable {
     }
 
     public boolean removeClient(IdentityUser client) {
-        
-        client.disassociateJobOffer(this);
-
         return clients.remove(client);
-
     }
 
     public IdentityUser getClientByEmail(String email) throws IdentityException {

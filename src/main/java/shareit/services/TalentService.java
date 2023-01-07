@@ -17,6 +17,7 @@ import shareit.contracts.talent.TalentDisassociateSkill;
 import shareit.contracts.talent.CreateTalentRequest;
 import shareit.data.Experience;
 import shareit.data.JobOffer;
+import shareit.data.Privilege;
 import shareit.data.ProfArea;
 import shareit.data.Skill;
 import shareit.data.Talent;
@@ -100,6 +101,21 @@ public class TalentService {
         for (IdentityUser identityUser : members) {
             for (Talent talent : identityUser.getTalents()) {
                 talents.add(talent);     
+            }
+        }
+
+        return talents;
+
+    }
+
+       public Collection<Talent> getAllTalentsPublic() {
+
+        Collection<IdentityUser> members = memberService.getAllMembers();
+        Collection<Talent> talents = new ArrayList<>();
+
+        for (IdentityUser identityUser : members) {
+            for (Talent talent : identityUser.getTalents()) {
+                if(talent.getIsPublic() == true) talents.add(talent);     
             }
         }
 
@@ -313,6 +329,7 @@ public class TalentService {
 
         Experience experience;
         Talent talent;
+        IdentityUser authUser = authenticationService.getAuthenticatedUser();
 
         var errors = validatorCreateExperience.validate(request);
 
@@ -321,8 +338,8 @@ public class TalentService {
         }
 
         experience = request.toExperience();
+        experience.addClient(authUser, Privilege.OWNER);
 
-        var authUser = authenticationService.getAuthenticatedUser();
         talent = authUser.getTalentById(request.getTalent().getTalentId());
 
         talent.addExperience(experience);
@@ -332,13 +349,27 @@ public class TalentService {
 
     }
 
+    public Experience getExperienceByJobOfferId(int id) {
+
+        for (Talent talento : getReallyAllTalents()) {
+            for (Experience experience : talento.getExperiences()) {
+                if (experience.getJobOfferById(id).isPresent()) {
+                    return experience;
+                }
+            }
+        }
+
+        throw new ExperienceException("There is no experience with that name");
+
+    }
+
     public Experience getExperienceById(int id) {
 
         for (Talent talento : getReallyAllTalents()) {
             return talento.getExperienceById(id);
         }
 
-        throw new ExperienceException("There is no shit with that name");
+        throw new ExperienceException("There is no experience with that name");
 
     }
 

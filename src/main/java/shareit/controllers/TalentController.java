@@ -93,7 +93,8 @@ public class TalentController extends ControllerBase {
                         "Remove Talent",
                         "List JobOffers Available",
                         "Enter Associated Experience",
-                        "Enter Associated JobOffer"
+                        "Enter Associated JobOffer",
+                        "Seach Talents"
                     }, authUser.getName());
 
                 } while (index <= 0 && index >= 6);
@@ -147,6 +148,10 @@ public class TalentController extends ControllerBase {
 
                         waitForKeyEnter();
                         break;
+                    case 9:
+                        seachTalents();
+
+                        waitForKeyEnter();
                 }
 
             } catch (Exception e) {
@@ -328,7 +333,7 @@ public class TalentController extends ControllerBase {
             Talent talent = talentService.createTalent(new CreateTalentRequest(
                 name,
                 priceHour.isEmpty() ? 0 : Float.parseFloat(priceHour), 
-                isPublic == "t" ? true : false 
+                isPublic.equals("t") ? true : false 
             ));
 
             if (!skillService.getAll().isEmpty())
@@ -580,6 +585,76 @@ public class TalentController extends ControllerBase {
                     printSuccess("You have applied to the jobOffer");
             
             }
+
+        } catch (Exception e) {
+            printError(e.getMessage());
+        }
+
+    }
+
+    public void seachTalents() throws Exception {
+
+        Collection<Talent> reallyAllTalents = talentService.getAllTalentsPublic();
+        Collection<Skill> selectedSkills = new ArrayList<>();
+        Collection<Talent> selectedTalents = new ArrayList<>();
+        int i;
+
+        clear();
+
+        if (reallyAllTalents.isEmpty()) {
+            printInfo("There is no talents yet!");
+            return;
+        }
+
+        try {
+
+            listAllSkills();
+
+            String[] skillNames = comboBox("Chose Skills by ID separeted by commas(,)");
+
+            for (String name : skillNames) {
+                
+                if (name.isEmpty())
+                    continue;
+
+                selectedSkills.add(
+                    skillService.getSkillById(Integer.parseInt(name))
+                );
+
+            }
+
+            clear();
+ 
+            for (Talent talent : reallyAllTalents) {
+                
+                i = 0;
+
+                for (Skill skill : selectedSkills) {
+                    if (talent.containsSkill(skill.getSkillId())) {
+                        i++;
+                    }
+                }
+
+                if (i == selectedSkills.size()) {
+                    selectedTalents.add(talent);
+                }
+
+            }
+
+            if (selectedTalents.isEmpty()) {
+                printInfo("There is no talents with that skills!");
+                return;
+            }
+
+            selectedTalents.forEach(talent -> {
+                
+                try {
+                    printInfo(talent.toString());
+                } catch (Exception e) {
+                    System.out.println("--- Error ---");
+                }
+                
+            });
 
         } catch (Exception e) {
             printError(e.getMessage());

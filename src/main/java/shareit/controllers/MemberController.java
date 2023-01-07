@@ -15,6 +15,7 @@ import shareit.errors.JobOfferException;
 import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
 import shareit.services.Authentication;
+import shareit.services.JobOfferService;
 import shareit.services.MemberService;
 import shareit.services.TalentService;
 
@@ -41,6 +42,9 @@ public class MemberController extends ControllerBase {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private JobOfferService jobOfferService;
 
     @Autowired
     private Authentication authenticationService;
@@ -132,8 +136,7 @@ public class MemberController extends ControllerBase {
 
         client = memberService.getMemberByEmail(email);
 
-        talentService.getJobOfferById(currentJobOffer.getJobOfferId())
-            .get().removeClient(client);
+        jobOfferService.disassociateJobOffer(currentJobOffer, client);
 
         printSuccess("The user with email: " + email + " has been removed!");
 
@@ -145,7 +148,7 @@ public class MemberController extends ControllerBase {
 
         Collection<IdentityUser> clients = currentJobOffer.getClients();
 
-        if (clients.size() <= 0) {
+        if (clients.isEmpty()) {
             printInfo("There is no member associated yet!");
             return -1;
         }

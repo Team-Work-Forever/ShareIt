@@ -38,16 +38,16 @@ public class JobOfferService {
 
         JobOffer jobOffer;
         Experience experience;
+        IdentityUser authUser = authenticationService.getAuthenticatedUser();
 
         var errors = validatorCreateJobOffer.validate(request);
 
         if (!errors.isEmpty()) {
             throw new JobOfferException(errors.iterator().next().getMessage());
         }
-
+        
         jobOffer = request.toJobOffer();
-
-        var authUser = authenticationService.getAuthenticatedUser();
+        jobOffer.addClient(authUser);
 
         experience = request.getExperience();
 
@@ -124,6 +124,11 @@ public class JobOfferService {
 
         return true;
 
+    }
+
+    public boolean disassociateJobOffer(JobOffer jobOffer, IdentityUser client) {
+        client.disassociateJobOffer(jobOffer);
+        return jobOffer.removeClient(client);
     }
 
 }

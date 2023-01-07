@@ -132,7 +132,7 @@ public class Experience implements Serializable {
             new ExperienceLine(client, this, privilege)
         );
 
-        if (privilege.equals(Privilege.Worker))
+        if (privilege.equals(Privilege.WORKER))
             qtyWorkers++;
         else qtyManegers++;
         
@@ -153,14 +153,14 @@ public class Experience implements Serializable {
                     throw new ExperienceException("User already hold this privilege!");
 
                 else {
-                    if (privilege.equals(Privilege.Worker)) {
-                        expLine.setPrivilege(Privilege.Worker);
+                    if (privilege.equals(Privilege.WORKER)) {
+                        expLine.setPrivilege(Privilege.WORKER);
                         qtyWorkers++;
                         qtyManegers--;
                     };
 
-                    if (privilege.equals(Privilege.Manager)) {
-                        expLine.setPrivilege(Privilege.Manager);
+                    if (privilege.equals(Privilege.MANAGER)) {
+                        expLine.setPrivilege(Privilege.MANAGER);
                         qtyWorkers--;
                         qtyManegers++;
                     };
@@ -209,7 +209,7 @@ public class Experience implements Serializable {
             {
                 it.remove();
                 
-                if (expLine.getPrivilege().equals(Privilege.Worker))
+                if (expLine.getPrivilege().equals(Privilege.WORKER))
                             qtyWorkers--;
                 else qtyManegers--;
 
@@ -234,12 +234,27 @@ public class Experience implements Serializable {
 
     }
 
+    public IdentityUser getOwner() {
+
+        Optional<IdentityUser> client = experienceLines
+                                                .stream()
+                                                    .filter(el -> el.getPrivilege().equals(Privilege.OWNER))          
+                                                    .map(el -> el.getClient())
+                                                    .findAny();
+
+        if (!client.isPresent())
+            throw new IdentityException("No Client own this experience");
+
+        return client.get();
+
+    }
+
     public Collection<IdentityUser> getClientManagers() {
         
         Collection<IdentityUser> clients = new HashSet<>();
 
         for (ExperienceLine expl : experienceLines) {
-            if (expl.getPrivilege() == Privilege.Manager) {
+            if (expl.getPrivilege() == Privilege.MANAGER) {
                 clients.add(expl.getClient());
             }
         }
@@ -271,7 +286,7 @@ public class Experience implements Serializable {
         Collection<IdentityUser> clients = new HashSet<>();
 
         for (ExperienceLine expl : experienceLines) {
-            if (expl.getPrivilege() == Privilege.Worker) {
+            if (expl.getPrivilege() == Privilege.WORKER) {
                 clients.add(expl.getClient());
             }
         }

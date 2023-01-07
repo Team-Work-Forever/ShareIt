@@ -5,6 +5,7 @@ import shareit.data.JobOffer;
 import shareit.data.Privilege;
 import shareit.data.auth.IdentityUser;
 import shareit.errors.InviteNotValidException;
+import shareit.errors.auth.IdentityException;
 
 public class InvitationManager {
 
@@ -50,7 +51,12 @@ public class InvitationManager {
 
     private static void inviteToJobOffer(JobOffer jobOffer, IdentityUser invited) {
 
-        jobOffer.addClient(invited);
+        try {
+            jobOffer.addClient(invited);
+        } catch (IdentityException e) {
+            throw new InviteNotValidException();
+        }
+
         invited.associateJobOffer(jobOffer);
 
     }

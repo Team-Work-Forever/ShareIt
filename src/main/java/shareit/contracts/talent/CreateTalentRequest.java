@@ -44,7 +44,8 @@ public class CreateTalentRequest {
 
         return new Talent(
             name, 
-            pricePerHour
+            pricePerHour, 
+            isPublic
         );
 
     }
