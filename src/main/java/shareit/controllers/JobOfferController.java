@@ -28,9 +28,11 @@ import shareit.data.Privilege;
 import shareit.data.ProfArea;
 import shareit.data.Skill;
 import shareit.data.auth.IdentityUser;
+import shareit.errors.ExperienceNotAllowed;
 import shareit.errors.InviteNotFoundException;
 import shareit.errors.InviteNotValidException;
 import shareit.errors.JobOfferException;
+import shareit.errors.ProfAreaException;
 import shareit.helper.Invitation;
 import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
@@ -41,6 +43,7 @@ import shareit.services.JobOfferService;
 import shareit.services.MemberService;
 import shareit.services.ProfAreaService;
 import shareit.services.SkillService;
+import shareit.services.TalentService;
 
 @Controller
 public class JobOfferController extends ControllerBase {
@@ -67,33 +70,30 @@ public class JobOfferController extends ControllerBase {
     private MemberService memberService;
 
     @Autowired
-    private ExperienceService experienceService;
+    private TalentService talentService;
 
     @Autowired
     private InviteService inviteService;
 
+    @Autowired
+    private ExperienceService experienceService;
+
     private Experience currentExperience;
-    private String talentName;
 
     // TODO: Remove Experience Service
     @Override
     public void display() throws IOException {
         
         int index = 0;
-
-        currentExperience = experienceService.getExperienceByTitle(((String[])routeManager.getArgs())[0]);
         
-        if (routeManager.getArgs() instanceof String[]) {
-            talentName = ((String[])routeManager.getArgs())[1];
-        } else {
-            printError("SomeError as Occorred");
-            return;
-        }
-
         do {
             
             try {
                 
+                currentExperience = talentService.getExperienceById(((int)routeManager.getArgs()));
+
+                IdentityUser authenticatedUser = authenticationService.getAuthenticatedUser();
+
                 do {
                     
                     clear();
@@ -107,7 +107,7 @@ public class JobOfferController extends ControllerBase {
                         "Envite User",
                         "List All Members",
                         "See Applications"
-                    }, authenticationService.getAuthenticatedUser().getName());
+                    }, authenticatedUser.getName());
                     
                 } while (index <= 0 && index >= 5);
 
@@ -119,6 +119,9 @@ public class JobOfferController extends ControllerBase {
                         waitForKeyEnter();
                         break;
                     case 2:
+
+                        authorizeAction(authenticatedUser);
+
                         createJobOffer();
                         break;
                     case 3:
@@ -127,16 +130,25 @@ public class JobOfferController extends ControllerBase {
                         waitForKeyEnter();
                         break;
                     case 4:
+
+                        authorizeAction(authenticatedUser);
+
                         updateJobOffer();
 
                         waitForKeyEnter();
                         break;
                     case 5:
+
+                        authorizeAction(authenticatedUser);
+
                         removeJobOffer();
 
                         waitForKeyEnter();
                         break;
                     case 6:
+
+                        authorizeAction(authenticatedUser);
+
                         inviteUser();
 
                         waitForKeyEnter();
@@ -147,6 +159,9 @@ public class JobOfferController extends ControllerBase {
                         waitForKeyEnter();
                         break;
                     case 8:
+
+                        authorizeAction(authenticatedUser);
+
                         manageApplications();
 
                         waitForKeyEnter();
@@ -179,7 +194,7 @@ public class JobOfferController extends ControllerBase {
             try {
                 printInfo(client.toString());
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("--- Error ---");
             }
 
         });
@@ -204,7 +219,7 @@ public class JobOfferController extends ControllerBase {
             try {
                 printInfo(invite.toString());
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("--- Error ---");
             }
 
         });
@@ -243,7 +258,12 @@ public class JobOfferController extends ControllerBase {
 
         clear();
 
-        listAllMembers();
+        Collection<IdentityUser> possibleMembers = memberService.getPossibleMembers();
+
+        if (possibleMembers.isEmpty()) {
+            printInfo("There is no other members");
+            return;
+        }
 
         String[] emails = comboBox("Chose Member separeted by commas(,) to invite members");
 
@@ -257,7 +277,7 @@ public class JobOfferController extends ControllerBase {
                     currentExperience, 
                     new Date(), // Expire Date
                     email,
-                    Privilege.Manager
+                    Privilege.Worker
                 ));
     
                 printSuccess("Invite send with success to user with email "+ email);
@@ -270,12 +290,6 @@ public class JobOfferController extends ControllerBase {
 
     }
 
-    private void listAllMembers() throws IOException {
-        for (IdentityUser user : memberService.getAllMembers()) {
-            printInfo(user.toString());
-        }
-    }
-
     private void selectJobOffer() throws IOException {
 
         clear();
@@ -284,13 +298,13 @@ public class JobOfferController extends ControllerBase {
             return;
         }
 
-        String jobOfferId = textField("Chose one JobOffer by his id");
-
-        if (jobOfferId.isEmpty())
-            return;
-
         try {
-            
+
+            String jobOfferId = textField("Chose one JobOffer by his id");
+
+            if (jobOfferId.isEmpty())
+                return;
+                
             navigationHelper.navigateTo(
             routeManager.argumentRoute(
                 MemberController.class, 
@@ -301,7 +315,15 @@ public class JobOfferController extends ControllerBase {
 
             printError("Please provide a valid number!");
 
-            if (repitAction("Do you wanna repit?")) {
+            if (repeatAction("Do you wanna repeat?")) {
+                selectJobOffer();
+            }
+
+        } catch (Exception e) {
+
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
                 selectJobOffer();
             }
 
@@ -321,13 +343,20 @@ public class JobOfferController extends ControllerBase {
 
             listAllProfAreas();
             
-            String profAreaName = textField("Chose one Professional Area by his name");
+            String profAreaName = textField("Chose one Professional Area by his ID");
+
+            if (profAreaName.isEmpty()) 
+                throw new ProfAreaException("Please provide an ID");
+
+            if (profAreaService.getProfAreaById(Integer.parseInt(profAreaName)) == null) {
+                throw new ProfAreaException("Please provide a valid ProfArea");
+            }
 
             clear();
 
             listAllSkills();
         
-            String[] skillNames = comboBox("Chose Skills by name separeted by commas(,)");
+            String[] skillNames = comboBox("Chose Skills by ID separeted by commas(,)");
 
             clear();
 
@@ -335,10 +364,13 @@ public class JobOfferController extends ControllerBase {
                     
                 for (String name : skillNames) {
                     
-                    String expYears = textField("Skill: " + name + "\n\tInsert years of experience required");
+                    if (name.isEmpty())
+                        continue;
+
+                    String expYears = textField("Skill: " + name + "\tInsert years of experience required");
 
                     selectedSkills.put(
-                        skillService.getSkillByName(name),
+                        skillService.getSkillById(Integer.parseInt(name)),
                         expYears.isEmpty() ? 0 : Integer.parseInt(expYears)
                     );
 
@@ -357,12 +389,11 @@ public class JobOfferController extends ControllerBase {
             String description = textField("Description (default)");
 
             var jobOffer = jobOfferService.createJobOffer(new CreateJobOfferRequest(
-                talentName, 
-                currentExperience.getTitle(),
+                currentExperience,
                 name,
                 qtyHours.isEmpty() ? 0 : Integer.parseInt(qtyHours),
                 description,
-                profAreaService.getProfAreaByName(profAreaName)
+                profAreaService.getProfAreaById(Integer.parseInt(profAreaName))
             ));
 
             jobOfferService.associateSkill(new AssociateSkillRequest(
@@ -372,6 +403,8 @@ public class JobOfferController extends ControllerBase {
 
             printSuccess("The skills are associated!");
             
+        } catch (NumberFormatException e) {
+            printError(e.getMessage());
         } catch (Exception e) {
             printError(e.getMessage());
         }
@@ -403,7 +436,7 @@ public class JobOfferController extends ControllerBase {
 
     }
 
-    // TODO: fazer mais tarde
+    // TODO: Update JobOffer
     private void updateJobOffer() {
 
 
@@ -422,7 +455,7 @@ public class JobOfferController extends ControllerBase {
         if (jobOfferId.isEmpty()) {
             printInfo("Please provide an id!");
 
-            if (!repitAction("\nDo you wanna exit?")) {
+            if (!repeatAction("Do you wanna exit?")) {
                 removeJobOffer();
             }
 
@@ -454,4 +487,12 @@ public class JobOfferController extends ControllerBase {
         }
     }
     
+    private void authorizeAction(IdentityUser client) {
+        
+        if (currentExperience.isWorker(client.getEmail())) {
+            throw new ExperienceNotAllowed();
+        }
+
+    }
+
 }

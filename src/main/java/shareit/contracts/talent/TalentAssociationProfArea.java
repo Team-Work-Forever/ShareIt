@@ -3,23 +3,24 @@ package shareit.contracts.talent;
 import java.util.Map;
 
 import shareit.data.ProfArea;
+import shareit.data.Talent;
 
 public class TalentAssociationProfArea {
     
-    private String talentName;
+    private Talent talent;
     private Map<ProfArea, Integer> profAreas;
 
-    public TalentAssociationProfArea(String talentName, Map<ProfArea, Integer> profAreas) {
-        this.talentName = talentName;
+    public TalentAssociationProfArea(Talent talent, Map<ProfArea, Integer> profAreas) {
+        this.talent = talent;
         this.profAreas = profAreas;
     }
 
-    public String getTalentName() {
-        return talentName;
+    public Talent getTalent() {
+        return talent;
     }
 
-    public void setTalentName(String talentName) {
-        this.talentName = talentName;
+    public void setTalent(Talent talent) {
+        this.talent = talent;
     }
 
     public Map<ProfArea, Integer> getProfAreas() {

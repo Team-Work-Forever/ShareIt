@@ -69,7 +69,7 @@ public class DashBoardController extends ControllerBase {
                     };
         
                     index = menu("***************** DashBoard *****************", options,
-                        authenticationService.getAuthenticatedUser().getName());
+                        authUser.getName());
         
                 } while (index <= 0 && index >= 4);
 
@@ -95,8 +95,7 @@ public class DashBoardController extends ControllerBase {
                 }
     
             } catch (Exception e) {
-                e.printStackTrace();
-                waitForKeyEnter();
+                printError(e.getMessage());
             }
 
         } while (index != 0);
@@ -121,7 +120,7 @@ public class DashBoardController extends ControllerBase {
             try {
                 printInfo(invite.toString());
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("--- Error ---");
             }
 
         });

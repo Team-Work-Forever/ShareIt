@@ -45,26 +45,26 @@ public class ProfAreaService {
         return globalRepository.getProfAreas();
     }
 
-    public ProfArea getProfAreaByName(String name) {
+    public ProfArea getProfAreaById(int id) {
 
-        Optional<ProfArea> validateProfArea = globalRepository.getProfAreaByName(name);
+        Optional<ProfArea> validateProfArea = globalRepository.getProfAreaById(id);
 
         if (!validateProfArea.isPresent()) {
-            throw new ProfAreaException("Professional area not found by the name: " + name);
+            throw new ProfAreaException("Professional area not found by the id: " + id);
         }
 
         return validateProfArea.get();
     }
 
-    public boolean updateProfArea(ProfArea newProfArea, String name) throws Exception {
+    public boolean updateProfArea(ProfArea newProfArea, int id) throws Exception {
 
-        Optional<ProfArea> validateProfArea = globalRepository.getProfAreaByName(name);
+        Optional<ProfArea> validateProfArea = globalRepository.getProfAreaById(id);
 
         if (!validateProfArea.isPresent()) {
-            throw new ProfAreaException("Professional area not found by the name: " + name);
+            throw new ProfAreaException("Professional area not found by the id: " + id);
         }
 
-        globalRepository.removeProfAreaByName(name);
+        globalRepository.removeProfAreaById(id);
         globalRepository.createProfArea(newProfArea);
         globalRepository.commit();
 
@@ -72,18 +72,18 @@ public class ProfAreaService {
 
     }
 
-    public boolean removeProfArea(String name) throws Exception {
+    public boolean removeProfArea(int id) throws Exception {
 
-        Optional<ProfArea> validateProfArea = globalRepository.getProfAreaByName(name);
+        Optional<ProfArea> validateProfArea = globalRepository.getProfAreaById(id);
 
         if (!validateProfArea.isPresent()) {
-            throw new ProfAreaException("Professional Area not found by the name: " + name);
+            throw new ProfAreaException("Professional Area not found by the id: " + id);
         }
 
         if (validateProfArea.get().getQtyProf() == 0) 
             throw new ProfAreaException("Impossible to remove this professional area! This skill is being used by " + validateProfArea.get().getQtyProf() + " users.");
 
-        globalRepository.removeProfAreaByName(name);
+        globalRepository.removeProfAreaById(id);
         globalRepository.commit();
 
         return true;

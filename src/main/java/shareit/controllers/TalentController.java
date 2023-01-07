@@ -31,7 +31,9 @@ import shareit.data.Skill;
 import shareit.data.State;
 import shareit.data.Talent;
 import shareit.data.auth.IdentityUser;
+import shareit.errors.ExperienceException;
 import shareit.errors.JobOfferException;
+import shareit.errors.TalentException;
 import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
 import shareit.services.AuthenticationService;
@@ -64,6 +66,8 @@ public class TalentController extends ControllerBase {
     @Autowired
     private TalentService talentService;
 
+    private IdentityUser authUser;
+
     @Override
     public void display() throws IOException {
         
@@ -75,6 +79,8 @@ public class TalentController extends ControllerBase {
             
             try {
                 
+                authUser = authenticationService.getAuthenticatedUser();
+
                 do {
                     
                     clear();
@@ -85,14 +91,18 @@ public class TalentController extends ControllerBase {
                         "List Talents",
                         "Update Talent",
                         "Remove Talent",
-                        "List JobOffers Available"
-                    }, authenticationService.getAuthenticatedUser().getName());
+                        "List JobOffers Available",
+                        "Enter Associated Experience",
+                        "Enter Associated JobOffer"
+                    }, authUser.getName());
 
                 } while (index <= 0 && index >= 6);
 
                 switch (index) {
                     case 1:
                         selectTalent();
+
+                        waitForKeyEnter();
                         break;
                     case 2:
                         createTalent();
@@ -121,12 +131,22 @@ public class TalentController extends ControllerBase {
 
                         waitForKeyEnter();
 
-                        if (repitAction("Do you wanna to engage into a Job Offer")) {
+                        if (repeatAction("Do you wanna to engage into a Job Offer")) {
                             engageIntoJobOffer();
                         }
 
                         waitForKeyEnter();
                     break;
+                    case 7:
+                        enterInvitedExperience();
+
+                        waitForKeyEnter();
+                        break;
+                    case 8:
+                        enterInvitedJobOffer();
+
+                        waitForKeyEnter();
+                        break;
                 }
 
             } catch (Exception e) {
@@ -139,6 +159,114 @@ public class TalentController extends ControllerBase {
 
     }
 
+    private void enterInvitedJobOffer() throws IOException {
+
+        clear();
+
+        Collection<JobOffer> associatedJobOffers = authUser.getJobOffers();
+
+        if (associatedJobOffers.isEmpty()) {
+            printInfo("There is no Associated JobOffers yet!");
+            return;
+        }
+
+        associatedJobOffers.forEach(jobOffer -> {
+
+            try {
+                printInfo(jobOffer.toString());
+            } catch (IOException e) {
+                System.out.println("--- Error ---");
+            }
+
+        });
+
+        String jobOfferId = textField("Chose an JobOffer by id");
+
+        try {
+
+            if (jobOfferId.isEmpty()) {
+                throw new ExperienceException("Please provide an id");
+            }
+            
+            navigationHelper.navigateTo(routeManager.argumentRoute(
+                MemberController.class, 
+                Integer.parseInt(jobOfferId)
+            ));
+            
+        } catch (NumberFormatException e) { 
+            
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                enterInvitedExperience();
+            }
+
+        }catch (Exception e) {
+            
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                enterInvitedExperience();
+            }
+
+        }
+
+    }
+
+    private void enterInvitedExperience() throws IOException {
+
+        clear();
+
+        Collection<Experience> associatedExperiences = authUser.getExperiences();
+
+        if (associatedExperiences.isEmpty()) {
+            printInfo("There is no Associated Experiences yet!");
+            return;
+        }
+
+        associatedExperiences.forEach(experience -> {
+
+            try {
+                printInfo(experience.toString());
+            } catch (IOException e) {
+                System.out.println("--- Error ---");
+            }
+
+        });
+
+        String experienceId = textField("Chose an Experience by id");
+
+        try {
+
+            if (experienceId.isEmpty()) {
+                throw new ExperienceException("Please provide an id");
+            }
+            
+            navigationHelper.navigateTo(routeManager.argumentRoute(
+                JobOfferController.class, 
+                Integer.parseInt(experienceId)
+            ));
+            
+        } catch (NumberFormatException e) { 
+            
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                enterInvitedExperience();
+            }
+
+        }catch (Exception e) {
+            
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                enterInvitedExperience();
+            }
+
+        }
+
+    }
+
     private void selectTalent() throws IOException {
 
         clear();
@@ -148,13 +276,37 @@ public class TalentController extends ControllerBase {
             return;
         }
 
-        String talentName = textField("Chose one Talent by his name");
+        try {
+            
+            String talentName = textField("Chose one Talent by his ID");
 
-        navigationHelper.navigateTo(
-            routeManager.argumentRoute(
-                ExperienceController.class, 
-                talentName
-        ));
+            if (talentName.isEmpty())
+                throw new TalentException("Please provide an id");
+
+            navigationHelper.navigateTo(
+                routeManager.argumentRoute(
+                    ExperienceController.class, 
+                    Integer.parseInt(talentName)
+            ));
+
+
+        } catch (NumberFormatException e) {
+            
+            printError(e.getMessage());
+            
+            if (repeatAction("Do you wanna repeat?")) {
+                selectTalent();
+            };
+
+        } catch (Exception e) {
+            
+            printError(e.getMessage());
+            
+            if (repeatAction("Do you wanna repeat?")) {
+                selectTalent();
+            };
+
+        }
 
     }
 
@@ -173,15 +325,17 @@ public class TalentController extends ControllerBase {
             String priceHour = textField("PricePerHour (default : 0)");
             String isPublic = textField("Public/Private (t|f)");
             
-            talentService.createTalent(new CreateTalentRequest(
-                name, 
+            Talent talent = talentService.createTalent(new CreateTalentRequest(
+                name,
                 priceHour.isEmpty() ? 0 : Float.parseFloat(priceHour), 
                 isPublic == "t" ? true : false 
             ));
 
-            associateSkill(selectedSkill, name);
+            if (!skillService.getAll().isEmpty())
+                associateSkill(selectedSkill, talent);
 
-            associateProfArea(selectedProfArea, name);
+            if (!profAreaService.getAll().isEmpty())
+                associateProfArea(selectedProfArea, talent);
 
         } catch (Exception e) {
             printError(e.getMessage());
@@ -189,7 +343,7 @@ public class TalentController extends ControllerBase {
 
     }
 
-    private void associateSkill(Collection<Skill> selectedSkill, String name) throws IOException, Exception {
+    private void associateSkill(Collection<Skill> selectedSkill, Talent talent) throws IOException, Exception {
         
         Map<Skill,Integer> selectedSkills = new HashMap<>();
         
@@ -197,16 +351,21 @@ public class TalentController extends ControllerBase {
 
         listAllSkills();
 
-        String[] skillsNames = comboBox("Chose Skills with commas(,) to associate with the new talent");
+        String[] skillsNames = comboBox("Chose Skills ID between commas(,) to associate them to the new talent");
         
+        clear();
+
         try {
         
             for (String skillName : skillsNames) {
 
-                String expYears = textField("Skill: " + skillName + "\n\tInsert years of experience: ");
+                if (skillName.isEmpty())
+                    continue;
+
+                String expYears = textField("Skill: " + skillName + "\tInsert years of experience: ");
 
                 selectedSkills.put(
-                    skillService.getSkillByName(skillName),
+                    skillService.getSkillById(Integer.parseInt(skillName)),
                     expYears.isEmpty() ? 0 : Integer.parseInt(expYears)
                 );
 
@@ -217,30 +376,51 @@ public class TalentController extends ControllerBase {
         }
 
         talentService.associateSkills(new TalentAssociationSkill(
-            name, 
+            talent, 
             selectedSkills
         ));
     
     }
 
-    private void associateProfArea(Map<ProfArea, Integer> selectedProfArea, String name) throws IOException, Exception {
+    private void associateProfArea(Map<ProfArea, Integer> selectedProfArea, Talent talent) throws IOException, Exception {
         
         clear();
 
         listAllProfAreas();
 
-        Map<String,Integer> profAreas = comboBox("Chose Professional Areas with commas(,). And separeted with (:) the years of experience to associate with the new talent", ":");
+        String[] profAreas = comboBox("Chose Professional Areas ID between commas(,): ");
 
-        for (String profAreaName : profAreas.keySet()) {
-            var profArea = profAreaService.getProfAreaByName(profAreaName);
+        clear();
 
-            selectedProfArea.put(profArea, profAreas.get(profAreaName));
+        try {
+
+            for (String profAreaName : profAreas) {
+
+                if (profAreaName.isEmpty())
+                    continue;
+
+                String expYears = textField("Prof. Area: " + profAreaName + "\tInsert years of experience");
+
+                selectedProfArea.put(
+                    profAreaService.getProfAreaById(Integer.parseInt(profAreaName)),
+                    expYears.isEmpty() ? 0 : Integer.parseInt(expYears));
+
+            }
+
+            talentService.associateProfAreas(new TalentAssociationProfArea(
+                talent,
+                selectedProfArea
+            ));
+
+        } catch (Exception e) {
+            
+            printError(e.getMessage());
+
+            if (repeatAction("Do You wanna repeat?")) {
+                associateProfArea(selectedProfArea, talent);
+            }
+
         }
-
-        talentService.associateProfAreas(new TalentAssociationProfArea(
-            name, 
-            selectedProfArea
-        ));
 
     }
  
@@ -270,17 +450,28 @@ public class TalentController extends ControllerBase {
             return;
         }
 
-        String talentName = textField("Talent Name");
+        String talentName = textField("Talent Id");
 
         try {
 
-            talentService.removeTalent(talentName);
+            if (talentName.isEmpty())
+                throw new TalentException("Please provide an id");
+
+            talentService.removeTalent(Integer.parseInt(talentName));
+
+        } catch (NumberFormatException e) {
+
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                removeTalent();
+            }
 
         } catch (Exception e) {
             
             printError(e.getMessage());
 
-            if (repitAction("Do you wanna repit?")) {
+            if (repeatAction("Do you wanna repeat?")) {
                 removeTalent();
             }
 
@@ -296,19 +487,30 @@ public class TalentController extends ControllerBase {
             return;
         }
 
-        String talentName = textField("Talent Name");
+        String talentName = textField("Talent Id");
 
         try {
+            
+            if (talentName.isEmpty())
+                throw new TalentException("Please provide an id");
 
-            talentService.removeTalent(talentName);
+            talentService.removeTalent(Integer.parseInt(talentName));
         
             printSuccess("Talent was removed!");
+
+        } catch (NumberFormatException e) {
+
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                removeTalent();
+            }
 
         } catch (Exception e) {
             
             printError(e.getMessage());
 
-            if (repitAction("Do you wanna repit?")) {
+            if (repeatAction("Do you wanna repeat?")) {
                 removeTalent();
             }
 

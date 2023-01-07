@@ -4,14 +4,26 @@ import java.io.Serializable;
 
 public class ProfArea implements Serializable {
 
+    private static int increment = 1;
+
+    private int id;
     private String name;
     private String description;
     private int qtyProf;
 
     public ProfArea(String name, String description) {
+
+        this.id = increment;
+
         this.name = name;
         this.description = description;
         this.qtyProf = 0;
+
+        increment++;
+    }
+
+    public int getProfAreaId() {
+        return id;
     }
 
     public String getName() {
@@ -44,11 +56,11 @@ public class ProfArea implements Serializable {
 
     @Override
     public String toString() {
-        return ToStringLow() + "\tQty Professionals: " + Integer.toString(qtyProf) + "\t\t -- Professional Area";
+        return ToStringLow() + "\tQty Professionals: " + Integer.toString(qtyProf);
     }
 
     public String ToStringLow() {
-        return "\tName: " + this.name + "\tDescription: " + description;
+        return "Prof. Area (" + this.getProfAreaId() + "): " + "\tName: " + this.name + "\tDescription: " + description;
     }
 
 }

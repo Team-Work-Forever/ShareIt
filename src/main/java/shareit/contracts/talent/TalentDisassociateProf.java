@@ -1,23 +1,24 @@
 package shareit.contracts.talent;
 
 import shareit.data.ProfArea;
+import shareit.data.Talent;
 
 public class TalentDisassociateProf {
     
-    private String talentName;
+    private Talent talent;
     private ProfArea profArea;
 
-    public TalentDisassociateProf(String talentName, ProfArea profArea) {
-        this.talentName = talentName;
+    public TalentDisassociateProf(Talent talent, ProfArea profArea) {
+        this.talent = talent;
         this.profArea = profArea;
     }
 
-    public String getTalentName() {
-        return talentName;
+    public Talent getTalent() {
+        return talent;
     }
 
-    public void setTalentName(String talentName) {
-        this.talentName = talentName;
+    public void setTalent(Talent talent) {
+        this.talent = talent;
     }
 
     public ProfArea getProfArea() {

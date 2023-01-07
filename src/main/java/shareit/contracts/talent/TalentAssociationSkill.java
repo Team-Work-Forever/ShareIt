@@ -2,27 +2,26 @@ package shareit.contracts.talent;
 
 import java.util.Map;
 
-import jakarta.validation.constraints.NotEmpty;
 import shareit.data.Skill;
+import shareit.data.Talent;
 
 public class TalentAssociationSkill {
     
-    @NotEmpty
-    private String nameTalent;
+    private Talent talent;
 
     private Map<Skill,Integer> skills;
 
-    public TalentAssociationSkill(String nameTalent, Map<Skill,Integer> skills) {
-        this.nameTalent = nameTalent;
+    public TalentAssociationSkill(Talent talent, Map<Skill,Integer> skills) {
+        this.talent = talent;
         this.skills = skills;
     }
 
-    public String getNameTalent() {
-        return nameTalent;
+    public Talent getTalent() {
+        return talent;
     }
 
-    public void setNameTalent(String nameTalent) {
-        this.nameTalent = nameTalent;
+    public void setTalent(Talent talent) {
+        this.talent = talent;
     }
 
     public Map<Skill, Integer> getSkills() {

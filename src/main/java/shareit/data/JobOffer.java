@@ -23,7 +23,7 @@ public class JobOffer implements Serializable {
 
     public JobOffer(String name, int qtyHours, String desc, ProfArea profArea) {
         
-        jobOfferId = JobOffer.increment;
+        jobOfferId = increment;
 
         this.name = name;
         this.qtyHours = qtyHours;
@@ -34,6 +34,10 @@ public class JobOffer implements Serializable {
 
         increment++;
 
+    }
+
+    public int getJobOfferId() {
+        return jobOfferId;
     }
 
     public String getName() {
@@ -112,7 +116,11 @@ public class JobOffer implements Serializable {
     }
 
     public boolean removeClient(IdentityUser client) {
+        
+        client.disassociateJobOffer(this);
+
         return clients.remove(client);
+
     }
 
     public IdentityUser getClientByEmail(String email) throws IdentityException {
@@ -132,7 +140,7 @@ public class JobOffer implements Serializable {
         boolean found = false;
 
         for (SkillOfferLine skl : skillOfferLines) {
-            if (skl.getSkill().getName().equals(skill.getName())) {
+            if (skl.getSkill().getSkillId() == skill.getSkillId()) {
                 found = true;
                 break;
             }
@@ -147,7 +155,7 @@ public class JobOffer implements Serializable {
 
     }
 
-    public boolean removeSkillByName(String name) {
+    public boolean removeSkillById(int id) {
 
         Iterator<SkillOfferLine> it = skillOfferLines.iterator();
     
@@ -155,7 +163,7 @@ public class JobOffer implements Serializable {
             
             var skill = it.next().getSkill();
 
-            if (skill.getName().equals(name))
+            if (skill.getSkillId() == id)
             {
                 it.remove();
                 return true;
@@ -179,15 +187,15 @@ public class JobOffer implements Serializable {
 
     }
 
-    public Skill getSkill(String name) throws SkillException {
+    public Skill getSkillbyId(int id) throws SkillException {
         
         for (SkillOfferLine skill : skillOfferLines) {
-            if (skill.getSkill().getName().equals(name)) {
+            if (skill.getSkill().getSkillId() == id) {
                 return skill.getSkill();
             }
         }
 
-        throw new SkillException("Skill not found by the name: " + " " + name);
+        throw new SkillException("Skill not found by the ID: " + id);
 
     }
 
@@ -197,7 +205,7 @@ public class JobOffer implements Serializable {
 
         for (SkillOfferLine skl : this.skillOfferLines) {
                 skl.getSkill().toStringJobOffer();
-                stringBuilder.append("\tName: " + skl.getSkill().getName() + "\t Qty Years Necessary: " + skl.getYearOfExpNec());
+                stringBuilder.append("\tSkill (" + skl.getSkill().getSkillId() + "): " + "\tName: " + skl.getSkill().getName() + "\t Qty Years Necessary: " + skl.getYearOfExpNec());
         }
 
         return stringBuilder.toString();
@@ -205,16 +213,8 @@ public class JobOffer implements Serializable {
     }
 
     public String toString() {
-        return "Job Offer: \n" + 
-            "Id Job Offer: " + this.getJobOfferId() + "\t Name: " + this.name + "\t Description: " + this.desc + "\t Qty Hours: " + this.getQtyHours() + "\n Professional Area: " + this.profArea.getName() + "\n Skill: " + getAllSkillsToString() + "\n State: " + this.state + "\n";
-    }
-
-    public int getJobOfferId() {
-        return jobOfferId;
-    }
-
-    public void setJobOfferId(int jobOfferId) {
-        this.jobOfferId = jobOfferId;
+        return "Job Offer (" + this.getJobOfferId() + "): \n" + 
+            "\t Name: " + this.name + "\t Description: " + this.desc + "\t Qty Hours: " + this.getQtyHours() + "\n Professional Area: " + this.profArea.getName() + "\n Skill: " + getAllSkillsToString() + "\n State: " + this.state + "\n";
     }
 
 }

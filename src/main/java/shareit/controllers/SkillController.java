@@ -103,7 +103,7 @@ public class SkillController extends ControllerBase {
         } catch (SkillException e) {
             printError(e.getMessage());
 
-            if (repitAction("Do you wanna exit creation?")) {
+            if (repeatAction("Do you wanna exit creation?")) {
                 createSkill();
             }
 
@@ -115,8 +115,6 @@ public class SkillController extends ControllerBase {
 
     private void listAllSkills() throws IOException {
 
-        int i = 1;
-
         Collection<Skill> skills = skillService.getAll();
 
         if (skills.isEmpty())
@@ -127,8 +125,7 @@ public class SkillController extends ControllerBase {
 
         for (Skill skill : skills) {
             System.out.println();
-            printInfo(i  + " - " + skill.toString());
-            i++;
+            printInfo(skill.toString());
         }
 
         System.out.println();
@@ -141,13 +138,18 @@ public class SkillController extends ControllerBase {
 
         listAllSkills();
 
-        String[] skills = comboBox("Chose the name seperated by commas");
+        String[] skills = comboBox("Chose the ID seperated by commas");
 
         for (String skillName : skills) {
 
+            if (skillName.isEmpty())
+                continue;
+
+            int skillId = Integer.parseInt(skillName);
+
             try {
 
-                var skill = skillService.getSkillByName(skillName);
+                var skill = skillService.getSkillById(skillId);
 
                 System.out.println("Update Data: ");
                 String name = textField("Skill Name (default : same): ");
@@ -158,8 +160,7 @@ public class SkillController extends ControllerBase {
                     desc.isEmpty() ? skill.getDesc() : desc
                 );
 
-            
-                skillService.updateSkill(newSkill, skillName);
+                skillService.updateSkill(newSkill, skillId);
             } catch (SkillException e) {
                 printError(e.getMessage());
             }
@@ -178,16 +179,22 @@ public class SkillController extends ControllerBase {
 
         System.out.println();
 
-        String[] skills = comboBox("Chose the Name seperated by commas (,)");
+        String[] skills = comboBox("Chose the ID seperated by commas (,)");
 
-        for (String name : skills) {
+        try {
+            for (String id : skills) {
+                    
+                if (id.isEmpty())
+                    throw new SkillException("Please provide an id");
                 
-            try {
-                skillService.removeSkill(name);
-            } catch (SkillException e) {
-                printError(e.getMessage());
+                skillService.removeSkill(Integer.parseInt(id));
+             
             }
-
+        
+        } catch (NumberFormatException e) {
+            printError(e.getMessage());
+        } catch (Exception e) {
+            printError(e.getMessage());
         }
 
         waitForKeyEnter();

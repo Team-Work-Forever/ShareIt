@@ -81,6 +81,8 @@ public class LoginController extends ControllerBase {
 
     private void authenticate() throws IOException {
 
+        clear();
+
         System.out.println("***************** Login *****************\n");
         
         String email = textField("Email");

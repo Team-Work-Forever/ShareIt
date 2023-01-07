@@ -45,12 +45,12 @@ public class ExperienceController extends ControllerBase {
     public void display() throws IOException {
 
         int index = 0;
-
-        syncTalent();
         
         do {
             
             try {
+
+                syncTalent();
                 
                 do {
                     
@@ -111,13 +111,33 @@ public class ExperienceController extends ControllerBase {
             return;
         }
 
-        String experienceTitle = textField("Chose one Experience by his name");
+        try {
+            
+            String experienceTitle = textField("Chose one Experience by his name");
 
-        navigationHelper.navigateTo(
-            routeManager.argumentRoute(
-                JobOfferController.class, 
-                new String[] { experienceTitle, currentTalent.getName() }
-        ));
+            navigationHelper.navigateTo(
+                routeManager.argumentRoute(
+                    JobOfferController.class, 
+                    Integer.parseInt(experienceTitle)
+            ));
+
+        } catch (NumberFormatException e) {
+           
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                selectExperience();
+            }
+
+        } catch (Exception e) {
+           
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                selectExperience();
+            }
+
+        }
 
     }
 
@@ -159,11 +179,11 @@ public class ExperienceController extends ControllerBase {
             String description = textField("Description");
 
             talentService.createExperience(new CreateExperienceRequest(
-                currentTalent.getName(), 
-                title, 
-                name, 
-                description, 
-                new Date(), 
+                currentTalent,
+                title,
+                name,
+                description,
+                new Date(),
                 new Date()
             ));
 
@@ -190,20 +210,35 @@ public class ExperienceController extends ControllerBase {
             return;
         }
 
-        String experienceTitle = textField("Experience Title");
-
         try {
-            talentService.removeExperienceByTitle(experienceTitle);
-        } catch (ExperienceException e) {
+
+            String experienceId = textField("Experience id");
+
+            if (experienceId.isEmpty())
+            {
+                throw new ExperienceException("Please provide a valid id");
+            }
+        
+            talentService.removeExperienceById(Integer.parseInt(experienceId));
+            
+        } catch (Exception e) {
+            
             printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                removeExperience();
+            }
+
         }
 
         printSuccess("Experience was removed!");
 
     }
 
-    private void syncTalent() {
-        currentTalent = talentService.getTalentByName((String)routeManager.getArgs());
+    private void syncTalent() throws IOException {
+        
+        currentTalent = talentService.getTalentById((int)routeManager.getArgs());
+
     }
 
 }

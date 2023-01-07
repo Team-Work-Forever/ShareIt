@@ -4,13 +4,25 @@ import java.io.Serializable;
 
 public class Skill implements Serializable {
 
+    private static int increment = 1;
+
+    private int id;
     private String name;
     private String desc;
     private int qtyProf;
 
     public Skill(String name, String desc) {
+
+        this.id = increment;
+
         this.name = name;
         this.desc = desc;
+
+        increment++;
+    }
+
+    public int getSkillId() {
+        return id;
     }
 
     public String getName() {
@@ -37,13 +49,14 @@ public class Skill implements Serializable {
         this.qtyProf = qtyProf;
     }
 
+
     @Override
     public String toString() {
-        return "\tName: " + this.name + "\tDescription: " + desc + "\tQty Professionals: " + Integer.toString(qtyProf);
+        return "Skill (" + this.getSkillId() + "): " + "\tName: " + this.name + "\tDescription: " + desc + "\tQty Professionals: " + Integer.toString(qtyProf);
     }
 
     public String toStringJobOffer() {
-        return "\n\tName: " + this.name + "\tDescription: " + desc + "\t\t -- Skill";
+        return "Skill (" + this.getSkillId() + "): " + "\tName: " + this.name + "\tDescription: " + desc;
     }
 
     public void incrementQtyProf() {

@@ -4,7 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Optional;
 
+import shareit.data.Experience;
+import shareit.data.ExperienceLine;
+import shareit.data.JobOffer;
+import shareit.data.Privilege;
 import shareit.data.Talent;
 import shareit.errors.TalentException;
 
@@ -24,6 +30,8 @@ public class IdentityUser implements Serializable {
     private String role;
 
     private Collection<Talent> talents = new ArrayList<>();
+    private Collection<ExperienceLine> invitedExperiences = new ArrayList<>();
+    private Collection<JobOffer> invitedJobOffers = new ArrayList<>();
 
     public IdentityUser(String email, String password, String name, String lastName, Date bornDate, String street, String postCode, String locality,
         String country, float moneyPerHour, boolean isPublic, String role) {
@@ -102,7 +110,7 @@ public class IdentityUser implements Serializable {
         this.role = role;
     }
 
-        public String getLastName() {
+    public String getLastName() {
         return lastName;
     }
 
@@ -167,24 +175,115 @@ public class IdentityUser implements Serializable {
 
     }
 
-    public Talent getTalentByName(String name) {
+    public Talent getTalentById(int id) {
 
         for (Talent talento : talents) {
-            if(talento.getName().equals(name))
+            if(talento.getTalentId() == id)
             {
                 return talento;
             }
         }
 
-        throw new TalentException("Talento com nome " + name + " não existe!");
+        throw new TalentException("Talento com nome " + id + " não existe!");
 
     }
 
-    public void removeTalent(String name) throws TalentException {
+    public void removeTalent(int id) throws TalentException {
 
-        Talent talent = getTalentByName(name);
+        Talent talent = getTalentById(id);
 
         talents.remove(talent);
+
+    }
+
+    // Invited Experiences
+
+    public Collection<ExperienceLine> getInvitedExperiences() {
+        return invitedExperiences;
+    }
+
+    public void setInvitedExperiences(Collection<ExperienceLine> invitedExperiences) {
+        this.invitedExperiences = invitedExperiences;
+    }
+
+    public Collection<Experience> getExperiences() {
+
+        return invitedExperiences
+        .stream()
+            .map(experienceLine -> experienceLine.getExperience())
+            .toList();
+                
+    }
+
+    public Optional<Experience> getInviteExperience(String name) {
+
+        return invitedExperiences
+        .stream()
+            .filter(experienceLine -> experienceLine
+                .getExperience().getName().equals(name))
+                .map(experienceLine -> experienceLine.getExperience())
+                .findAny();
+
+    }
+
+    public boolean associateExperience(Experience experience, Privilege privilege) {
+
+        return invitedExperiences.add(new ExperienceLine(
+            this, 
+            experience, 
+            privilege
+        ));
+
+    }
+
+    public boolean disassociateExperience(Experience experience) {
+
+        if (!getInviteExperience(experience.getName()).isPresent()) {
+            return false;
+        }
+
+        Iterator<ExperienceLine> it = invitedExperiences.iterator();
+
+        while(it.hasNext()) {
+
+           Experience experienceFound = it.next().getExperience();
+           
+            if (experienceFound.getName().equals(experience.getName())) {
+                it.remove();
+            }
+
+        }
+
+        return true;
+
+    }
+
+    // Invited JobOffer
+
+    public Collection<JobOffer> getJobOffers() {
+        return invitedJobOffers;
+    }
+
+    public Optional<JobOffer> getInviteJobOffer(int id) {
+
+        return invitedJobOffers
+            .stream()
+                .filter(jobOffer -> jobOffer.getJobOfferId() == id)
+                .findAny();
+
+    }
+
+    public boolean associateJobOffer(JobOffer jobOffer) {
+        return invitedJobOffers.add(jobOffer);
+    }
+
+    public boolean disassociateJobOffer(JobOffer jobOffer) {
+
+        if (!getInviteJobOffer(jobOffer.getJobOfferId()).isPresent()) {
+            return false;
+        }
+
+        return invitedJobOffers.remove(jobOffer);
 
     }
 

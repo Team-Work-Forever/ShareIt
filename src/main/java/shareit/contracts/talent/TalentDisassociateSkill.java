@@ -1,23 +1,24 @@
 package shareit.contracts.talent;
 
 import shareit.data.Skill;
+import shareit.data.Talent;
 
 public class TalentDisassociateSkill {
     
-    private String talentName;
+    private Talent talent;
     private Skill skill;
 
-    public TalentDisassociateSkill(String talentName, Skill skill) {
-        this.talentName = talentName;
+    public TalentDisassociateSkill(Talent talent, Skill skill) {
+        this.talent = talent;
         this.skill = skill;
     }
 
-    public String getTalentName() {
-        return talentName;
+    public Talent getTalent() {
+        return talent;
     }
 
-    public void setTalentName(String talentName) {
-        this.talentName = talentName;
+    public void setTalent(Talent talent) {
+        this.talent = talent;
     }
 
     public Skill getSkill() {

@@ -49,8 +49,7 @@ public class JobOfferService {
 
         var authUser = authenticationService.getAuthenticatedUser();
 
-         experience = authUser.getTalentByName(request.getTalentName())
-            .getExperienceByTitle(request.getExperienceTile());
+        experience = request.getExperience();
 
         experience.addJobOffer(jobOffer);
 
@@ -60,16 +59,6 @@ public class JobOfferService {
         return jobOffer;
 
     }
-
-    // public JobOffer updateJobOffer(@Validated request) {
-
-    //     var errors = validatorCreateJobOffer.validate(request);
-
-    //     if (!errors.isEmpty()) {
-    //         throw new JobOfferException(errors.iterator().next().getMessage());
-    //     }
-
-    // }
 
     public Collection<IdentityUser> getAllClients(int jobOfferId) throws IOException {
 

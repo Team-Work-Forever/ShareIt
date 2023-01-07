@@ -1,6 +1,7 @@
 package shareit.services;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -55,7 +56,7 @@ public class TalentService {
 
     // Talent
 
-    public boolean createTalent(@Validated CreateTalentRequest request) throws Exception {
+    public Talent createTalent(@Validated CreateTalentRequest request) throws Exception {
 
         Talent talent;
 
@@ -77,17 +78,32 @@ public class TalentService {
         globalRepository.updateIdentityUserByEmail(authUser.getEmail(), authUser);
         globalRepository.commit();
 
-        return true;
+        return talent;
 
     }
 
-    public Talent getTalentByName(String name) {
+    public Talent getTalentById(int id) {
 
         var authUser = authenticationService.getAuthenticatedUser();
 
-        Talent validateTalent = authUser.getTalentByName(name);
+        Talent validateTalent = authUser.getTalentById(id);
 
         return validateTalent;
+
+    }
+
+    public Collection<Talent> getReallyAllTalents() {
+
+        Collection<IdentityUser> members = memberService.getAllMembers();
+        Collection<Talent> talents = new ArrayList<>();
+
+        for (IdentityUser identityUser : members) {
+            for (Talent talent : identityUser.getTalents()) {
+                talents.add(talent);     
+            }
+        }
+
+        return talents;
 
     }
 
@@ -97,7 +113,7 @@ public class TalentService {
         return authUser.getTalents();
     }
 
-    public boolean removeTalent(String name) throws TalentException {
+    public boolean removeTalent(int id) throws TalentException {
         
         Talent talent;
         Collection<Skill> skills;
@@ -105,18 +121,18 @@ public class TalentService {
 
         var authUser = authenticationService.getAuthenticatedUser();
 
-        talent = getTalentByName(name);
+        talent = getTalentById(id);
         skills = talent.getSkillSet();
         profAreas = talent.getProfAreaSet();       
         
         for (ProfArea profArea : profAreas) {
             
-           if  (talent.containsProfArea(profArea.getName())) {
+           if  (talent.containsProfAreaById(profArea.getProfAreaId())) {
 
                 try {
 
                     disassociateProfAreas(new TalentDisassociateProf(
-                        talent.getName(), 
+                        talent, 
                         profArea
                     ));
 
@@ -130,12 +146,12 @@ public class TalentService {
 
         for (Skill skill : skills) {
 
-            if (talent.containsSkill(skill.getName())) {
+            if (talent.containsSkill(skill.getSkillId())) {
 
 				try {
 
 					disassociateSkills(new TalentDisassociateSkill(
-                        talent.getName(), 
+                        talent, 
                         skill
                     ));
 
@@ -145,16 +161,16 @@ public class TalentService {
             }
         }
 
-        authUser.removeTalent(name);       
+        authUser.removeTalent(id);       
         
         return true;
 
     }
 
-    public boolean updateTalent(String name, @Validated CreateTalentRequest request) throws Exception {
+    public boolean updateTalent(int id, @Validated CreateTalentRequest request) throws Exception {
 
         var authUser = authenticationService.getAuthenticatedUser();
-        Talent currentTalent = authUser.getTalentByName(name);
+        Talent currentTalent = authUser.getTalentById(id);
 
         var erros = validatorTalent.validate(request);
 
@@ -164,7 +180,7 @@ public class TalentService {
 
         Talent updatedTalent = request.toTalent();
 
-        authUser.removeTalent(currentTalent.getName());
+        authUser.removeTalent(currentTalent.getTalentId());
         authUser.addTalent(updatedTalent);
 
         globalRepository.commit();
@@ -183,17 +199,17 @@ public class TalentService {
 
         var authUser = authenticationService.getAuthenticatedUser();
 
-        Talent talent = authUser.getTalentByName(request.getNameTalent());
+        Talent talent = authUser.getTalentById(request.getTalent().getTalentId());
         
         for (Skill skill : request.getSkills().keySet()) {
             
             boolean talentFound = authUser.getTalents()
                 .stream()
-                    .filter(t -> t.containsSkill(skill.getName()))
+                    .filter(t -> t.containsSkill(skill.getSkillId()))
                     .findAny().isPresent();
 
             if (!talentFound)
-                skillService.getSkillByName(skill.getName()).incrementQtyProf();
+                skillService.getSkillById(skill.getSkillId()).incrementQtyProf();
 
             talent.addSkill(skill, request.getSkills().get(skill));
                 
@@ -214,19 +230,19 @@ public class TalentService {
 
         var authUser = authenticationService.getAuthenticatedUser();
 
-        Talent talent = authUser.getTalentByName(request.getTalentName());
+        Talent talent = authUser.getTalentById(request.getTalent().getTalentId());
         
         var skill = request.getSkill();
         
-        talent.removeSkillByName(skill.getName());
+        talent.removeSkillById(skill.getSkillId());
             
         boolean talentFound = authUser.getTalents()
             .stream()
-                .filter(t -> t.containsSkill(skill.getName()))
+                .filter(t -> t.containsSkill(skill.getSkillId()))
                 .findAny().isPresent();
 
         if (!talentFound)
-            skillService.getSkillByName(skill.getName()).reduceQtyProf();
+            skillService.getSkillById(skill.getSkillId()).reduceQtyProf();
       
         globalRepository.updateIdentityUserByEmail(authUser.getEmail(), authUser);
         globalRepository.commit();
@@ -243,17 +259,17 @@ public class TalentService {
 
         var authUser = authenticationService.getAuthenticatedUser();
 
-        Talent talent = authUser.getTalentByName(request.getTalentName());
+        Talent talent = authUser.getTalentById(request.getTalent().getTalentId());
 
         for (ProfArea profArea : request.getProfAreas().keySet()) {
 
             boolean talentFound = authUser.getTalents()
             .stream()
-                .filter(t -> t.containsProfArea(profArea.getName()))
+                .filter(t -> t.containsProfAreaById(profArea.getProfAreaId()))
                 .findAny().isPresent();
 
             if (!talentFound)
-                profAreaService.getProfAreaByName(profArea.getName()).incrementQtyProf();
+                profAreaService.getProfAreaById(profArea.getProfAreaId()).incrementQtyProf();
 
             talent.addProfArea(profArea, request.getProfAreas().get(profArea));
 
@@ -274,17 +290,17 @@ public class TalentService {
 
         var authUser = authenticationService.getAuthenticatedUser();
 
-        Talent talent = authUser.getTalentByName(request.getTalentName());
+        Talent talent = authUser.getTalentById(request.getTalent().getTalentId());
         
-        talent.removeProfAreaByName(request.getProfArea().getName());
+        talent.removeProfAreaById(request.getProfArea().getProfAreaId());
 
         boolean talentFound = authUser.getTalents()
         .stream()
-            .filter(t -> t.containsProfArea(request.getProfArea().getName()))
+            .filter(t -> t.containsProfAreaById(request.getProfArea().getProfAreaId()))
             .findAny().isPresent();
 
         if (!talentFound)
-            profAreaService.getProfAreaByName(request.getProfArea().getName()).reduceQtyProf();
+            profAreaService.getProfAreaById(request.getProfArea().getProfAreaId()).reduceQtyProf();
         
         globalRepository.updateIdentityUserByEmail(authUser.getEmail(), authUser);
         globalRepository.commit();
@@ -307,7 +323,7 @@ public class TalentService {
         experience = request.toExperience();
 
         var authUser = authenticationService.getAuthenticatedUser();
-        talent = authUser.getTalentByName(request.getTalentName());
+        talent = authUser.getTalentById(request.getTalent().getTalentId());
 
         talent.addExperience(experience);
 
@@ -316,26 +332,17 @@ public class TalentService {
 
     }
 
-    public Experience getExperienceByTitle(String title) {
+    public Experience getExperienceById(int id) {
 
-        var authUser = authenticationService.getAuthenticatedUser();
-        Collection<Talent> talents = authUser.getTalents();
-
-        try {
-            
-            for (Talent talent : talents) {
-                return talent.getExperienceByTitle(title);
-            }
-
-        } catch (Exception e) {
-            throw new TalentException(e.getMessage());
+        for (Talent talento : getReallyAllTalents()) {
+            return talento.getExperienceById(id);
         }
 
-        throw new TalentException("Was not found any Experience with that title!");        
+        throw new ExperienceException("There is no shit with that name");
 
     }
 
-        public void removeExperienceByTitle(String title) {
+        public void removeExperienceById(int id) {
         
         var authUser = authenticationService.getAuthenticatedUser();
         Collection<Talent> talents = authUser.getTalents();
@@ -343,7 +350,7 @@ public class TalentService {
         try {
             
             for (Talent talent : talents) {
-                talent.removeExperienceByName(getExperienceByTitle(title).getName());
+                talent.removeExperienceById(getExperienceById(id).getExperienceId());
             }
 
         } catch (Exception e) {
@@ -370,7 +377,7 @@ public class TalentService {
             }
 
         } catch (Exception e) {
-           e.printStackTrace();
+           System.out.println("--- Error ---");
            ScreenUtils.waitForKeyEnter();
         }
 

@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import shareit.contracts.auth.RegisterRequest;
+import shareit.data.ProfArea;
+import shareit.data.Skill;
 import shareit.data.auth.Role;
 import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
@@ -80,18 +82,17 @@ public class TerminalSpringApplication implements CommandLineRunner {
             if (authenticationService().isBeforeAuthenticated())
             authenticationService().authenticateWithToken();
 
-            createAdmin();
+            seeder();
 
             navigationHelper().setFirstEntry(routeManager().authRoute());
 
         } catch (Exception e) {
-            e.printStackTrace();
             ScreenUtils.printError(e.getMessage());
         }
 
     }
 
-    private void createAdmin() throws IOException {
+    private void seeder() throws IOException {
 
         String adminEmail = "admin@gmail.com";
         String userEmail = "diogo@gmail.com";
@@ -130,6 +131,35 @@ public class TerminalSpringApplication implements CommandLineRunner {
                 true, 
                 0, 
                 Role.USER
+            ));
+            
+            authenticationService().signIn(new RegisterRequest(
+                "david@gmail.com", 
+                "password", 
+                "ReiNaldo", 
+                adminEmail, 
+                new Date(), 
+                adminEmail, 
+                adminEmail, 
+                adminEmail, 
+                adminEmail, 
+                true, 
+                0, 
+                Role.USER
+            ));
+
+            // Generate Skills
+
+            globalRepository().createSkill(new Skill(
+                "skill", 
+                "description"
+            ));
+            
+            // Generate Professional Areas
+
+            globalRepository().createProfArea(new ProfArea(
+                "profarea", 
+                "description"
             ));
 
             ScreenUtils.clear();

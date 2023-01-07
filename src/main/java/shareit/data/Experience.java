@@ -15,6 +15,9 @@ import shareit.errors.auth.IdentityException;
 
 public class Experience implements Serializable {
 
+    private static int increment = 1;
+
+    private int id;
     private String title;
     private String name;
     private int qtyWorkers;
@@ -26,18 +29,33 @@ public class Experience implements Serializable {
     private final Collection<JobOffer> jobOffers = new ArrayList<>();
     
     public Experience(String title, String name, Date startDate, String desc) {
+        
+        this.id = increment;
+
         this.title = title;
         this.name = name;
         this.startDate = startDate;
         this.desc = desc;
+
+        increment++;
     }
 
     public Experience(String title, String name, Date startDate, Date finalDate, String desc) {
+        
+        this.id = increment;
+
         this.title = title;
         this.name = name;
         this.startDate = startDate;
         this.finalDate = finalDate;
         this.desc = desc;
+
+        increment++;
+        
+    }
+
+    public int getExperienceId() {
+        return id;
     }
 
     public String getTitle() {
@@ -230,6 +248,24 @@ public class Experience implements Serializable {
 
     }
 
+    public boolean isManager(String email) {
+
+        return getClientManagers()
+            .stream()
+                .filter(client -> client.getEmail().equals(email))
+                .findAny().isPresent();
+
+    }
+
+    public boolean isWorker(String email) {
+
+        return getClientWorkers()
+            .stream()
+                .filter(client -> client.getEmail().equals(email))
+                .findAny().isPresent();
+
+    }
+
     public Collection<IdentityUser> getClientWorkers() {
         
         Collection<IdentityUser> clients = new HashSet<>();
@@ -279,7 +315,7 @@ public class Experience implements Serializable {
 
     @Override
     public String toString() {
-        return "Experience: \n" + 
+        return "Experience (" + this.id + "): \n" + 
             "Title: " + this.title + "\t" + 
             "Name: " + this.name + "\t" + 
             "Description: " + desc + "\n" +

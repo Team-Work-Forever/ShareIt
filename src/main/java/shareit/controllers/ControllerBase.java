@@ -21,7 +21,7 @@ public abstract class ControllerBase {
 
     public abstract void display() throws IOException;
     
-    public boolean repitAction(String message) throws IOException {
+    public boolean repeatAction(String message) throws IOException {
 
         String choice;
 

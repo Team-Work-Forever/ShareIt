@@ -18,23 +18,23 @@ public class ExperienceService {
     @Autowired
     private AuthenticationService authenticationService;
 
-    public Collection<Experience> getAllExperiences(String talentName) {
+    public Collection<Experience> getAllExperiences(int talentId) {
 
         var authUser = authenticationService.getAuthenticatedUser();
 
         Optional<Talent> talent = authUser.getTalents()
             .stream()
-                .filter(t -> t.getName().equals(talentName))
+                .filter(t -> t.getTalentId() == talentId)
                 .findFirst();
 
         if (!talent.isPresent())
-            throw new TalentException("There is no talent with that name");
+            throw new TalentException("There is no talent with that ID!");
 
         return talent.get().getExperiences();
 
     }
 
-    public Experience getExperienceByTitle(String title) {
+    public Experience getExperienceById(int experienceId) {
 
         var authUser = authenticationService.getAuthenticatedUser();
         Collection<Talent> talents = authUser.getTalents();
@@ -42,14 +42,14 @@ public class ExperienceService {
         try {
             
             for (Talent talent : talents) {
-                return talent.getExperienceByTitle(title);
+                return talent.getExperienceById(experienceId);
             }
 
         } catch (Exception e) {
             throw new TalentException(e.getMessage());
         }
 
-        throw new TalentException("Was not found any Experience with that title!");        
+        throw new TalentException("Was not found any Experience with that ID!");        
 
     }
 
@@ -59,7 +59,7 @@ public class ExperienceService {
 
     }
 
-    public void removeJobOfferById(int id) {
+    public void removeJobOfferById(int jobOfferId) {
         
         var authUser = authenticationService.getAuthenticatedUser();
         Collection<Talent> talents = authUser.getTalents();
@@ -67,7 +67,7 @@ public class ExperienceService {
         try {
             for (Talent talent : talents) {
                 for(Experience experience : talent.getExperiences()) {
-                    experience.removeJobOfferById(id);
+                    experience.removeJobOfferById(jobOfferId);
                 }
             }
         } catch (Exception e) {

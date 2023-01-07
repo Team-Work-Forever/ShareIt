@@ -1,22 +1,21 @@
 package shareit.contracts.joboffer;
 
+import shareit.data.Experience;
 import shareit.data.JobOffer;
 import shareit.data.ProfArea;
 import shareit.data.State;
 
 public class CreateJobOfferRequest {
     
-    private String talentName;
-    private String experienceTitle;
+    private Experience experience;
     private String name;
     private int qtyHours;
     private String desc;
     private ProfArea profArea;
     private State state;
     
-    public CreateJobOfferRequest(String talentName, String experienceTitle, String name, int qtyHours, String desc, ProfArea profArea) {
-        this.talentName = talentName;
-        this.experienceTitle = experienceTitle;
+    public CreateJobOfferRequest(Experience experience, String name, int qtyHours, String desc, ProfArea profArea) {
+        this.experience = experience;
         this.name = name;
         this.qtyHours = qtyHours;
         this.desc = desc;
@@ -63,20 +62,12 @@ public class CreateJobOfferRequest {
         this.state = state;
     }
 
-    public String getExperienceTile() {
-        return experienceTitle;
+    public Experience getExperience() {
+        return experience;
     }
 
-    public void setexperienceTitle(String experienceTitle) {
-        this.experienceTitle = experienceTitle;
-    }
-
-    public String getTalentName() {
-        return talentName;
-    }
-
-    public void setTalentName(String talentName) {
-        this.talentName = talentName;
+    public void setExperience(Experience experience) {
+        this.experience = experience;
     }
 
     public JobOffer toJobOffer() {

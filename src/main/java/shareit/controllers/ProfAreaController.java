@@ -103,7 +103,7 @@ public class ProfAreaController extends ControllerBase {
         } catch (ProfAreaException e) {
             printError(e.getMessage());
 
-            if (repitAction("Do wanna exit creation?")) {
+            if (repeatAction("Do wanna exit creation?")) {
                 createProfArea();
             }
 
@@ -115,8 +115,6 @@ public class ProfAreaController extends ControllerBase {
 
     private void listAllProfAreas() throws IOException {
 
-        int i = 1;
-
         Collection<ProfArea> profAreas = profAreaService.getAll();
 
         if (profAreas.isEmpty())
@@ -127,8 +125,7 @@ public class ProfAreaController extends ControllerBase {
 
         for (ProfArea profArea : profAreas) {
             System.out.println();
-            printInfo(i  + " - " + profArea.toString());
-            i++;
+            printInfo(profArea.toString());
         }
 
         System.out.println();
@@ -142,13 +139,18 @@ public class ProfAreaController extends ControllerBase {
 
         listAllProfAreas();
 
-        String[] profAreas = comboBox("Chose the name seperated by commas (,)");
+        String[] profAreas = comboBox("Chose the ID seperated by commas (,)");
 
         for (String profAreaName : profAreas) {
 
+            if (profAreaName.isEmpty())
+                continue;
+
+            int profAreaId = Integer.parseInt(profAreaName);
+
             try {
 
-                var profArea = profAreaService.getProfAreaByName(profAreaName);
+                var profArea = profAreaService.getProfAreaById(profAreaId);
 
                 System.out.println("Update Data: ");
 
@@ -160,7 +162,7 @@ public class ProfAreaController extends ControllerBase {
                     desc.isEmpty() ? profArea.getDescription() : desc
                 );
             
-                profAreaService.updateProfArea(newProfArea, profAreaName);
+                profAreaService.updateProfArea(newProfArea, profAreaId);
             } catch (ProfAreaException e) {
                 printError(e.getMessage());
             }
@@ -177,12 +179,12 @@ public class ProfAreaController extends ControllerBase {
 
         listAllProfAreas();
         
-        String[] skills = comboBox("Chose the name seperated by commas");
+        String[] skills = comboBox("Chose the ID seperated by commas");
 
-        for (String name : skills) {
+        for (String id : skills) {
 
             try {
-                profAreaService.removeProfArea(name);
+                profAreaService.removeProfArea(Integer.parseInt(id));
             } catch (ProfAreaException e) {
                 printError(e.getMessage());
             }

@@ -75,12 +75,21 @@ public class GlobalRepository implements Serializable {
         identityUsers.add(identityUser);
     }
 
+    public boolean removeIdentityUserByEmail(String email) {
+        
+        if (!containsEmail(email))
+            return false;
+
+        return identityUsers.remove(getIdentityUserByEmail(email).get());
+
+    }
+
     public boolean updateIdentityUserByEmail(String email, IdentityUser identityUser) {
 
         if (containsEmail(email))
             return false;
 
-        removeSkillByName(email);
+        removeIdentityUserByEmail(email);
         createIdentityUser(identityUser);
 
         return true;
@@ -93,22 +102,22 @@ public class GlobalRepository implements Serializable {
         return skills;
     }
 
-    public Optional<Skill> getSkillByName(String name) {
+    public Optional<Skill> getSkillById(int id) {
 
         return skills
             .stream()
-                .filter(skill -> skill.getName().equals(name))
+                .filter(skill -> skill.getSkillId() == id)
                 .findAny();
 
     }
 
-    public boolean containsSkillName(String name) {
-        return getSkillByName(name).isPresent();
+    public boolean containsSkillById(int id) {
+        return getSkillById(id).isPresent();
     }
 
     public boolean createSkill(Skill skill) {
 
-        if (containsSkillName(skill.getName()))
+        if (containsSkillById(skill.getSkillId()))
             return false;
 
         skills.add(skill);
@@ -117,12 +126,12 @@ public class GlobalRepository implements Serializable {
 
     }
 
-    public boolean removeSkillByName(String name) {
+    public boolean removeSkillById(int id) {
 
-        if (!containsSkillName(name))
+        if (!containsSkillById(id))
             return false;
 
-        skills.remove(getSkillByName(name).get());
+        skills.remove(getSkillById(id).get());
 
         return true;
 
@@ -134,22 +143,22 @@ public class GlobalRepository implements Serializable {
         return profAreas;
     }
     
-    public Optional<ProfArea> getProfAreaByName(String name) {
+    public Optional<ProfArea> getProfAreaById(int id) {
 
         return profAreas
             .stream()
-                .filter(profArea -> profArea.getName().equals(name))
+                .filter(profArea -> profArea.getProfAreaId() == id)
                 .findAny();
 
     }
 
-    public boolean containsProfAreaName(String name) {
-        return getSkillByName(name).isPresent();
+    public boolean containsProfAreaById(int id) {
+        return getProfAreaById(id).isPresent();
     }
 
     public boolean createProfArea(ProfArea profArea) {
 
-        if (containsSkillName(profArea.getName()))
+        if (containsProfAreaById(profArea.getProfAreaId()))
             return false;
 
         profAreas.add(profArea);
@@ -158,12 +167,12 @@ public class GlobalRepository implements Serializable {
 
     }
 
-    public boolean removeProfAreaByName(String name) {
+    public boolean removeProfAreaById(int id) {
 
-        if (!containsProfAreaName(name))
+        if (!containsProfAreaById(id))
             return false;
 
-        profAreas.remove(getProfAreaByName(name).get());
+        profAreas.remove(getProfAreaById(id).get());
 
         return true;
 

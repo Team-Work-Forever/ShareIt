@@ -47,26 +47,26 @@ public class SkillService {
         return globalRepository.getSkills();
     }
 
-    public Skill getSkillByName(String name) {
+    public Skill getSkillById(int id) {
 
-        Optional<Skill> validateSkill = globalRepository.getSkillByName(name);
+        Optional<Skill> validateSkill = globalRepository.getSkillById(id);
 
         if (!validateSkill.isPresent()) {
-            throw new SkillException("Skill not found by the name: " + name);
+            throw new SkillException("Skill not found by the id: " + id);
         }
 
         return validateSkill.get();
     }
 
-    public boolean updateSkill(Skill newSkill, String name) throws Exception {
+    public boolean updateSkill(Skill newSkill, int id) throws Exception {
 
-        Optional<Skill> validateSkill = globalRepository.getSkillByName(name);
+        Optional<Skill> validateSkill = globalRepository.getSkillById(id);
 
         if (!validateSkill.isPresent()) {
-            throw new SkillException("Skill not found by the name: " + name);
+            throw new SkillException("Skill not found by the id: " + id);
         }
 
-        globalRepository.removeSkillByName(name);
+        globalRepository.removeSkillById(id);
         globalRepository.createSkill(newSkill);
         globalRepository.commit();
 
@@ -74,18 +74,18 @@ public class SkillService {
 
     }
 
-    public boolean removeSkill(String name) throws Exception {
+    public boolean removeSkill(int id) throws Exception {
 
-        Optional<Skill> validateSkill = globalRepository.getSkillByName(name);
+        Optional<Skill> validateSkill = globalRepository.getSkillById(id);
 
         if (!validateSkill.isPresent()) {
-            throw new SkillException("Skill not found by the name: " + name);
+            throw new SkillException("Skill not found by the id: " + id);
         }
 
         if (validateSkill.get().getQtyProf() == 0) 
             throw new SkillException("Impossible to remove this skill! This skill is being used by " + validateSkill.get().getQtyProf() + " users.");
 
-        globalRepository.removeSkillByName(name);
+        globalRepository.removeSkillById(id);
         globalRepository.commit();
 
         return true;

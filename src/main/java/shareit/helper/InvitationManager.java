@@ -10,6 +10,9 @@ public class InvitationManager {
 
     public static boolean checkInvite(Object inviteType, IdentityUser invited) {
 
+        if (inviteType == null || invited == null)
+            throw new InviteNotValidException();
+
         if ((inviteType instanceof Experience))
             return ((Experience)inviteType).containsClient(invited.getEmail());
 
@@ -21,6 +24,9 @@ public class InvitationManager {
     }
 
     public static Object completeInvite(Object inviteType, IdentityUser invited, Privilege privilege) {
+
+        if (inviteType == null || inviteType == null)
+            throw new InviteNotValidException();
 
         if ((inviteType instanceof Experience))
             inviteToExperience((Experience)inviteType, privilege, invited);
@@ -38,11 +44,15 @@ public class InvitationManager {
             throw new InviteNotValidException();
         
         experience.addClient(invited, (Privilege)privilege);
+        invited.associateExperience(experience, privilege);
 
     }
 
     private static void inviteToJobOffer(JobOffer jobOffer, IdentityUser invited) {
+
         jobOffer.addClient(invited);
+        invited.associateJobOffer(jobOffer);
+
     }
 
 }

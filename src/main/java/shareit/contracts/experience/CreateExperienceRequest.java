@@ -4,11 +4,11 @@ import java.util.Date;
 
 import jakarta.validation.constraints.NotEmpty;
 import shareit.data.Experience;
+import shareit.data.Talent;
 
 public class CreateExperienceRequest {
     
-    @NotEmpty(message = "Please provide an talent name")
-    private String talentName;
+    private Talent talent;
 
     @NotEmpty(message = "Please provide an title")
     private String title;
@@ -27,9 +27,9 @@ public class CreateExperienceRequest {
     
     private Date finalDate;
     
-    public CreateExperienceRequest(String talentName, String title, String name,
+    public CreateExperienceRequest(Talent talent, String title, String name,
         String desc, Date startDate, Date finalDate) {
-        this.talentName = talentName;
+        this.talent = talent;
         this.title = title;
         this.name = name;
         this.desc = desc;
@@ -93,12 +93,12 @@ public class CreateExperienceRequest {
         this.finalDate = finalDate;
     }
 
-    public String getTalentName() {
-        return talentName;
+    public Talent getTalent() {
+        return talent;
     }
 
-    public void setTalentName(String talentName) {
-        this.talentName = talentName;
+    public void setTalent(Talent talent) {
+        this.talent = talent;
     }
 
     public Experience toExperience() {

@@ -10,7 +10,10 @@ import shareit.errors.ProfAreaException;
 import shareit.errors.SkillException;
 
 public class Talent implements Serializable {
-    
+
+    private static int increment = 1;
+
+    private int talentId;
     private String name;
     private float pricePerHour;
     private boolean isPublic = true;
@@ -19,14 +22,29 @@ public class Talent implements Serializable {
     private final Collection<ProfAreaLine> profAreas = new ArrayList<>();
 
     public Talent(String name, float pricePerHour) {
+
+        talentId = increment;
+
         this.name = name;
         this.pricePerHour = pricePerHour;
+
+        increment++;
     }
 
     public Talent(String name, float pricePerHour, boolean isPublic) {
+        
+        talentId = increment;
+        
         this.name = name;
         this.pricePerHour = pricePerHour;
         this.isPublic = isPublic;
+        
+        increment++;
+        
+    }
+
+    public int getTalentId() {
+        return talentId;
     }
 
     public String getName() {
@@ -94,40 +112,40 @@ public class Talent implements Serializable {
         boolean found = false;
 
         for (Experience exp : experiences) {
-            if (exp.getTitle().equals(experience.getTitle())) {
+            if (exp.getExperienceId() == experience.getExperienceId()) {
                 found = true;
             }
         }
 
         if (found)
-            throw new ExperienceException("Already exists a experience with that title!");
+            throw new ExperienceException("Already exists a experience with that ID!");
 
         experiences.add(experience);
 
     }
 
-    public Experience getExperienceByTitle(String name) throws ExperienceException {
+    public Experience getExperienceById(int id) throws ExperienceException {
 
         for (Experience exp : experiences) {
-            if(exp.getTitle().equals(name))
+            if(exp.getExperienceId() == id)
             {
                 return exp;
             }
         }
 
-        throw new ExperienceException("Experience with title " + name + " not found!");
+        throw new ExperienceException("Experience with ID " + id + " not found!");
 
     }
 
-    public boolean removeExperienceByName(String name) {
+    public boolean removeExperienceById(int id) {
 
         Iterator<Experience> it = experiences.iterator();
 
         while(it.hasNext()) {
 
-            var experience = it.next();
+            Experience experience = it.next();
 
-            if (experience.getName().equals(name)) {
+            if (experience.getExperienceId() == id) {
                 it.remove();
                 return true;
             }
@@ -143,7 +161,7 @@ public class Talent implements Serializable {
         boolean found = false;
 
         for (SkillLine skl : skills) {
-            if (skl.getSkill().getName().equals(skill.getName())) {
+            if (skl.getSkill().getSkillId() == skill.getSkillId()) {
                 found = true;
                 break;
             }
@@ -158,29 +176,29 @@ public class Talent implements Serializable {
 
     }
 
-    public Skill getSkillByName(String name) throws SkillException {
+    public Skill getSkillById(int id) throws SkillException {
 
         for (SkillLine skl : skills) {
-            if (skl.getSkill().getName().equals(name))
+            if (skl.getSkill().getSkillId() == id)
             {
                 return skl.getSkill();
             }
         }
 
-        throw new SkillException("Not found any Skill of that type!");
+        throw new SkillException("Not found any Skill with that ID!");
 
     }
 
-    public boolean containsSkill(String name) {
+    public boolean containsSkill(int id) {
 
         return skills
             .stream()
-                .filter(sl -> sl.getSkill().getName().equals(name))
+                .filter(sl -> sl.getSkill().getSkillId() == id)
                 .findAny().isPresent();
 
     }
 
-    public boolean removeSkillByName(String name) {
+    public boolean removeSkillById(int id) {
 
         Iterator<SkillLine> it = skills.iterator();
 
@@ -188,7 +206,7 @@ public class Talent implements Serializable {
 
             var skill = it.next().getSkill();
 
-            if (skill.getName().equals(name))
+            if (skill.getSkillId() == id)
             {
                 it.remove();
                 return true;
@@ -205,7 +223,7 @@ public class Talent implements Serializable {
         boolean found = false;
 
         for (ProfAreaLine pf : profAreas) {
-            if (pf.getProfArea().getName().equals(profArea.getName())) {
+            if (pf.getProfArea().getProfAreaId() == profArea.getProfAreaId()) {
                 found = true;
                 break;
             }
@@ -220,20 +238,27 @@ public class Talent implements Serializable {
 
     }
 
-    public ProfArea getProfAreaByName(String name) {
+    public ProfArea getProfAreaById(int id) {
 
         for (ProfAreaLine pf : profAreas) {
-            if (pf.getProfArea().getName().equals(name))
+            if (pf.getProfArea().getProfAreaId() == id)
             {
                 return pf.getProfArea();
             }
         }
 
-        throw new ProfAreaException("Not found any Professional Area of that type!");
+        throw new ProfAreaException("Not found any Professional Area with that ID!");
 
     }
 
-    public boolean removeProfAreaByName(String name) {
+    public boolean containsProfAreaById(int id) {
+        return profAreas
+            .stream()
+                .filter(sl -> sl.getProfArea().getProfAreaId() == id)
+                .findAny().isPresent();
+    }
+
+    public boolean removeProfAreaById(int id) {
 
         Iterator<ProfAreaLine> it = profAreas.iterator();
 
@@ -241,7 +266,7 @@ public class Talent implements Serializable {
 
             var profArea = it.next().getProfArea();
 
-            if (profArea.getName().equals(name))
+            if (profArea.getProfAreaId() == id)
             {
                 it.remove();
                 return true;
@@ -270,7 +295,7 @@ public class Talent implements Serializable {
             profAreas.add(pal.getProfArea());
         }
         
-        result.append("\tName: " + this.name + "\tPricePerHour: " + pricePerHour + "\tPerfil Visibility: " + isPublic + "\n\n");
+        result.append("Talent (" + this.getTalentId() + "): " + "\tName: " + this.name + "\tPricePerHour: " + pricePerHour + "\tPerfil Visibility: " + isPublic + "\n");
 
         Iterator<Skill> itSkill = skills.iterator();
         Iterator<ProfArea> itProfArea = profAreas.iterator();
@@ -287,13 +312,6 @@ public class Talent implements Serializable {
 
         return result.toString();
 
-    }
-
-    public boolean containsProfArea(String name) {
-        return profAreas
-            .stream()
-                .filter(sl -> sl.getProfArea().getName().equals(name))
-                .findAny().isPresent();
     }
 
 }

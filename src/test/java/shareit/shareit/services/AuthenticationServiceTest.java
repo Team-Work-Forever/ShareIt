@@ -32,7 +32,7 @@ public class AuthenticationServiceTest {
             assertTrue(result);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("--- Error ---");
         }
 
 
