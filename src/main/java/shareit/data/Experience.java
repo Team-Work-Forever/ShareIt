@@ -108,7 +108,7 @@ public class Experience implements Serializable {
         }
 
         if (found)
-            throw new IdentityException("Este Cliente já se encontra registado nesta Experiência!");
+            throw new IdentityException("This User already exists in the experience!");
         
         experienceLines.add(
             new ExperienceLine(client, this, privilege)
@@ -132,7 +132,7 @@ public class Experience implements Serializable {
             if (client.getEmail().equals(email))
             {
                 if (expLine.getPrivilege().equals(privilege)) 
-                    throw new ExperienceException("Cliente já detêm este privilégio!");
+                    throw new ExperienceException("User already hold this privilege!");
 
                 else {
                     if (privilege.equals(Privilege.Worker)) {
@@ -204,6 +204,18 @@ public class Experience implements Serializable {
 
     }
 
+    public Collection<IdentityUser> getAllClients() {
+
+        Collection<IdentityUser> clients = new HashSet<>();
+
+        for (ExperienceLine expl : experienceLines) {
+            clients.add(expl.getClient());
+        }
+
+        return clients;
+
+    }
+
     public Collection<IdentityUser> getClientManagers() {
         
         Collection<IdentityUser> clients = new HashSet<>();
@@ -245,15 +257,15 @@ public class Experience implements Serializable {
 
     }
 
-    public boolean removeJobOfferByName(String name) {
+    public boolean removeJobOfferById(int id) {
 
         Iterator<JobOffer> it = jobOffers.iterator();
-    
+
         while (it.hasNext()) {
             
             var jobOffer = it.next();
 
-            if (jobOffer.getName().equals(name))
+            if (jobOffer.getJobOfferId() == id)
             {
                 it.remove();
                 return true;
@@ -270,9 +282,9 @@ public class Experience implements Serializable {
         return "Experience: \n" + 
             "Title: " + this.title + "\t" + 
             "Name: " + this.name + "\t" + 
-            "Description: " + desc + "\t" +
+            "Description: " + desc + "\n" +
             "Qty Works: " + Integer.toString(qtyWorkers) + "\t" +
-            "Qty Managers: " + Integer.toString(qtyManegers) + "\t" +
+            "Qty Managers: " + Integer.toString(qtyManegers) + "\n" +
             "Start Date: " + startDate.toString() + "\t" +
             "Final Date: " + finalDate.toString();
     }

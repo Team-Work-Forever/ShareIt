@@ -8,12 +8,18 @@ import shareit.errors.InviteNotValidException;
 
 public class InvitationManager {
 
-    /**
-     * @param Object inviteType
-     * @param IdentityUser invited
-     * @param Collection<Object> params
-     * @return
-     */
+    public static boolean checkInvite(Object inviteType, IdentityUser invited) {
+
+        if ((inviteType instanceof Experience))
+            return ((Experience)inviteType).containsClient(invited.getEmail());
+
+        if ((inviteType instanceof JobOffer))
+            return ((JobOffer)inviteType).containsClient(invited.getEmail());
+        
+        return false;
+
+    }
+
     public static Object completeInvite(Object inviteType, IdentityUser invited, Privilege privilege) {
 
         if ((inviteType instanceof Experience))
@@ -32,6 +38,7 @@ public class InvitationManager {
             throw new InviteNotValidException();
         
         experience.addClient(invited, (Privilege)privilege);
+
     }
 
     private static void inviteToJobOffer(JobOffer jobOffer, IdentityUser invited) {

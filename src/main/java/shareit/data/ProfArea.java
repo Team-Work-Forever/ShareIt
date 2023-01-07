@@ -8,10 +8,10 @@ public class ProfArea implements Serializable {
     private String description;
     private int qtyProf;
 
-    public ProfArea(String name, String description, int qtyProf) {
+    public ProfArea(String name, String description) {
         this.name = name;
         this.description = description;
-        this.qtyProf = qtyProf;
+        this.qtyProf = 0;
     }
 
     public String getName() {
@@ -44,8 +44,11 @@ public class ProfArea implements Serializable {
 
     @Override
     public String toString() {
-        return "Profissional Area: \n" + 
-            "Name: " + this.name + "\t" + " Description: " + description + " Qty Profissionals: " + Integer.toString(qtyProf);
+        return ToStringLow() + "\tQty Professionals: " + Integer.toString(qtyProf) + "\t\t -- Professional Area";
+    }
+
+    public String ToStringLow() {
+        return "\tName: " + this.name + "\tDescription: " + description;
     }
 
 }

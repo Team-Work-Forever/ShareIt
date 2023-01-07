@@ -12,6 +12,7 @@ import static shareit.utils.ScreenUtils.textField;
 import shareit.data.auth.IdentityUser;
 import shareit.data.auth.Role;
 import shareit.services.AuthenticationService;
+import shareit.utils.ScreenUtils;
 
 public abstract class ControllerBase {
     
@@ -25,8 +26,10 @@ public abstract class ControllerBase {
         String choice;
 
         clear();
-
-        choice = textField(message + " (default t| f): ");
+    
+        System.out.print(ScreenUtils.PURPLE);
+        choice = textField(message + " (default t| f)");
+        ScreenUtils.resetColors();
 
         return choice.isEmpty() ? true : ( choice.equals("t") ? true : false );
 

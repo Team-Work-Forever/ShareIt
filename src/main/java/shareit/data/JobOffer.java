@@ -96,10 +96,23 @@ public class JobOffer implements Serializable {
         }
 
         if (found)
-            throw new IdentityException("Este User já se encontra registado nesta Experiência!");
+            throw new IdentityException("This User already exists in the experience!");
         
         clients.add(client);
 
+    }
+
+    public boolean containsClient(String email) {
+
+        return clients
+            .stream()
+                .filter(client -> client.getEmail().equals(email))
+                .findAny().isPresent();
+
+    }
+
+    public boolean removeClient(IdentityUser client) {
+        return clients.remove(client);
     }
 
     public IdentityUser getClientByEmail(String email) throws IdentityException {
@@ -110,7 +123,7 @@ public class JobOffer implements Serializable {
             }
         }
 
-        throw new IdentityException("Não foi encontrada nenhuma experiência com o email: " + " " + email);
+        throw new IdentityException("Experience not found by the email: " + " " + email);
 
     }
 
@@ -126,7 +139,7 @@ public class JobOffer implements Serializable {
         }
 
         if (found)
-            throw new SkillException("Skill já existente na proposta!");
+            throw new SkillException("This Skill already exists in the Job Offer!");
         
         skillOfferLines.add(
             new SkillOfferLine(skill, this, qtyYearNec)
@@ -174,7 +187,7 @@ public class JobOffer implements Serializable {
             }
         }
 
-        throw new SkillException("Não foi encontrada nenhuma skill com o nome: " + " " + name);
+        throw new SkillException("Skill not found by the name: " + " " + name);
 
     }
 
@@ -184,7 +197,7 @@ public class JobOffer implements Serializable {
 
         for (SkillOfferLine skl : this.skillOfferLines) {
                 skl.getSkill().toStringJobOffer();
-                stringBuilder.append("\t Qty Years Necessary: " + skl.getYearOfExpNec());
+                stringBuilder.append("\tName: " + skl.getSkill().getName() + "\t Qty Years Necessary: " + skl.getYearOfExpNec());
         }
 
         return stringBuilder.toString();

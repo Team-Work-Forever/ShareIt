@@ -10,6 +10,7 @@ import shareit.contracts.skill.CreateSkillRequest;
 import shareit.data.Skill;
 import shareit.errors.SkillException;
 import shareit.helper.NavigationHelper;
+import shareit.services.AuthenticationService;
 import shareit.services.SkillService;
 
 import static shareit.utils.ScreenUtils.comboBox;
@@ -29,6 +30,9 @@ public class SkillController extends ControllerBase {
     @Autowired
     private NavigationHelper navigationHelper;
 
+    @Autowired
+    private AuthenticationService authenticationService;
+
     @Override
     public void display() throws IOException {
        
@@ -45,7 +49,7 @@ public class SkillController extends ControllerBase {
                             "List All Skills",
                             "Update Skill",
                             "Remove Skill",
-                        });
+                        }, authenticationService.getAuthenticatedUser().getName());
         
                     } while (index <= 0 && index >= 4);
 
@@ -55,13 +59,18 @@ public class SkillController extends ControllerBase {
                     break;
                     case 2:
                         listAllSkills();
+
                         waitForKeyEnter();
                     break;
                     case 3:
                         updateSkill();
+
+                        waitForKeyEnter();
                     break;
                     case 4:
                         removeSkill();
+
+                        waitForKeyEnter();
                     break;
                 } 
         
@@ -141,8 +150,8 @@ public class SkillController extends ControllerBase {
                 var skill = skillService.getSkillByName(skillName);
 
                 System.out.println("Update Data: ");
-                String name = textField("Skill Name: (default : same)");
-                String desc = textField("Skill Description: (default : same)");
+                String name = textField("Skill Name (default : same): ");
+                String desc = textField("Skill Description (default : same): ");
 
                 Skill newSkill = new Skill(
                     name.isEmpty() ? skill.getName() : name, 

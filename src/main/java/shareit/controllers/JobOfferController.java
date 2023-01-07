@@ -30,6 +30,7 @@ import shareit.data.Skill;
 import shareit.data.auth.IdentityUser;
 import shareit.errors.InviteNotFoundException;
 import shareit.errors.InviteNotValidException;
+import shareit.errors.JobOfferException;
 import shareit.helper.Invitation;
 import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
@@ -57,9 +58,6 @@ public class JobOfferController extends ControllerBase {
     private Authentication authenticationService;
 
     @Autowired
-    private ExperienceService experienceService;
-
-    @Autowired
     private ProfAreaService profAreaService;
    
     @Autowired
@@ -69,18 +67,28 @@ public class JobOfferController extends ControllerBase {
     private MemberService memberService;
 
     @Autowired
+    private ExperienceService experienceService;
+
+    @Autowired
     private InviteService inviteService;
 
     private Experience currentExperience;
     private String talentName;
 
+    // TODO: Remove Experience Service
     @Override
     public void display() throws IOException {
         
         int index = 0;
 
         currentExperience = experienceService.getExperienceByTitle(((String[])routeManager.getArgs())[0]);
-        talentName = ((String[])routeManager.getArgs())[1];
+        
+        if (routeManager.getArgs() instanceof String[]) {
+            talentName = ((String[])routeManager.getArgs())[1];
+        } else {
+            printError("SomeError as Occorred");
+            return;
+        }
 
         do {
             
@@ -97,8 +105,9 @@ public class JobOfferController extends ControllerBase {
                         "Update JobOffers",
                         "Remove JobOffers",
                         "Envite User",
+                        "List All Members",
                         "See Applications"
-                    });
+                    }, authenticationService.getAuthenticatedUser().getName());
                     
                 } while (index <= 0 && index >= 5);
 
@@ -106,6 +115,8 @@ public class JobOfferController extends ControllerBase {
 
                     case 1:
                         selectJobOffer();
+
+                        waitForKeyEnter();
                         break;
                     case 2:
                         createJobOffer();
@@ -117,14 +128,25 @@ public class JobOfferController extends ControllerBase {
                         break;
                     case 4:
                         updateJobOffer();
+
+                        waitForKeyEnter();
                         break;
                     case 5:
                         removeJobOffer();
+
+                        waitForKeyEnter();
                         break;
                     case 6:
                         inviteUser();
+
+                        waitForKeyEnter();
                         break;
                     case 7:
+                        listMembers();
+
+                        waitForKeyEnter();
+                        break;
+                    case 8:
                         manageApplications();
 
                         waitForKeyEnter();
@@ -141,6 +163,31 @@ public class JobOfferController extends ControllerBase {
 
     }
     
+    private int listMembers() throws IOException {
+
+        clear();
+
+        Collection<IdentityUser> allClients = currentExperience.getAllClients();
+
+        if (allClients.isEmpty()) {
+            printInfo("There is no Clients in this Experience!");
+            return -1;
+        }
+
+        allClients.forEach(client -> {
+            
+            try {
+                printInfo(client.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        });
+
+        return 0;
+
+    }
+
     private void manageApplications() throws IOException {
 
         clear();
@@ -173,7 +220,6 @@ public class JobOfferController extends ControllerBase {
 
                 Optional<Invitation> invite = inviteService.getInviteById(Integer.parseInt(invites[i]));
 
-                // TODO: Criar Exception para aqui!!
                 if (!invite.isPresent())
                     throw new InviteNotFoundException();
 
@@ -234,7 +280,9 @@ public class JobOfferController extends ControllerBase {
 
         clear();
 
-        listJobOffer();
+        if (listJobOffer() == -1) {
+            return;
+        }
 
         String jobOfferId = textField("Chose one JobOffer by his id");
 
@@ -257,19 +305,25 @@ public class JobOfferController extends ControllerBase {
 
         try {
 
+            clear();
+
             listAllProfAreas();
             
             String profAreaName = textField("Chose one Professional Area by his name");
+
+            clear();
 
             listAllSkills();
         
             String[] skillNames = comboBox("Chose Skills by name separeted by commas(,)");
 
+            clear();
+
             try {
                     
                 for (String name : skillNames) {
                     
-                    String expYears = textField("Skill: " + name + " Insert years of experience required: ");
+                    String expYears = textField("Skill: " + name + "\n\tInsert years of experience required");
 
                     selectedSkills.put(
                         skillService.getSkillByName(name),
@@ -312,19 +366,28 @@ public class JobOfferController extends ControllerBase {
 
     }
 
-    private void listJobOffer() throws IOException {
+    private int listJobOffer() throws IOException {
 
         clear();
 
+        Collection<JobOffer> jobOffers = currentExperience.getJobOffers();
+
+        if (jobOffers.size() <= 0) {
+            printInfo("There is no JobOffer available");
+            return -1;
+        }
+
         try {
             
-            for (JobOffer jobOffer : currentExperience.getJobOffers()) {
+            for (JobOffer jobOffer : jobOffers) {
                 printInfo(jobOffer.toString());
             }
 
         } catch (Exception e) {
             printError(e.getMessage());
         }
+
+        return 0;
 
     }
 
@@ -334,10 +397,36 @@ public class JobOfferController extends ControllerBase {
 
     }
 
-    // TODO: fazer mais tarde
-    private void removeJobOffer() {
+    private void removeJobOffer() throws IOException {
 
+        clear();
 
+        if (listJobOffer() == -1) {
+            return;
+        }
+
+        String jobOfferId = textField("Job Offer Id");
+
+        if (jobOfferId.isEmpty()) {
+            printInfo("Please provide an id!");
+
+            if (!repitAction("\nDo you wanna exit?")) {
+                removeJobOffer();
+            }
+
+        }
+
+        try {
+            experienceService.removeJobOfferById(
+                Integer.parseInt(jobOfferId)
+            );
+        } catch (JobOfferException e) {
+            printError(e.getMessage());
+        }
+
+        printSuccess("Job Offer was removed!");
+
+        waitForKeyEnter();
 
     }
 

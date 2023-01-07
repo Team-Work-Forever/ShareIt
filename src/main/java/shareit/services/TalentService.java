@@ -52,6 +52,8 @@ public class TalentService {
     @Autowired
     private GlobalRepository globalRepository;
 
+    // Talent
+
     public boolean createTalent(@Validated CreateTalentRequest request) throws Exception {
 
         Talent talent;
@@ -108,7 +110,7 @@ public class TalentService {
         
         for (ProfArea profArea : profAreas) {
             
-            if (talent.containsProfArea(profArea.getName())) {
+           if  (talent.containsProfArea(profArea.getName())) {
 
                 try {
 
@@ -148,6 +150,28 @@ public class TalentService {
 
     }
 
+    public boolean updateTalent(String name, @Validated CreateTalentRequest request) throws Exception {
+
+        var authUser = authenticationService.getAuthenticatedUser();
+        Talent currentTalent = authUser.getTalentByName(name);
+
+        var erros = validatorTalent.validate(request);
+
+        if (!erros.isEmpty()) {
+            throw new TalentException(erros.iterator().next().getMessage());
+        }
+
+        Talent updatedTalent = request.toTalent();
+
+        authUser.removeTalent(currentTalent.getName());
+        authUser.addTalent(updatedTalent);
+
+        globalRepository.commit();
+
+        return true;
+
+    }
+
     public void associateSkills(@Validated TalentAssociationSkill request) throws Exception {
 
         var errors = validatorSkill.validate(request);
@@ -160,7 +184,7 @@ public class TalentService {
 
         Talent talent = authUser.getTalentByName(request.getNameTalent());
         
-        for (Skill skill : request.getSkills()) {
+        for (Skill skill : request.getSkills().keySet()) {
             
             boolean talentFound = authUser.getTalents()
                 .stream()
@@ -170,7 +194,7 @@ public class TalentService {
             if (!talentFound)
                 skillService.getSkillByName(skill.getName()).incrementQtyProf();
 
-            talent.addSkill(skill, request.getYearOfExp());
+            talent.addSkill(skill, request.getSkills().get(skill));
                 
         }
 
@@ -266,6 +290,8 @@ public class TalentService {
 
     }
 
+    //Experience
+
     public void createExperience(@Validated CreateExperienceRequest request) throws Exception {
 
         Experience experience;
@@ -305,6 +331,23 @@ public class TalentService {
         }
 
         throw new TalentException("Was not found any Experience with that title!");        
+
+    }
+
+        public void removeExperienceByTitle(String title) {
+        
+        var authUser = authenticationService.getAuthenticatedUser();
+        Collection<Talent> talents = authUser.getTalents();
+
+        try {
+            
+            for (Talent talent : talents) {
+                talent.removeExperienceByName(getExperienceByTitle(title).getName());
+            }
+
+        } catch (Exception e) {
+            throw new TalentException(e.getMessage());
+        }
 
     }
 

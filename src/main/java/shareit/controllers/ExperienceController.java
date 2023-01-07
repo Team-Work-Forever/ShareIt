@@ -1,6 +1,7 @@
 package shareit.controllers;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 
 import static shareit.utils.ScreenUtils.menu;
@@ -9,6 +10,7 @@ import static shareit.utils.ScreenUtils.clear;
 import static shareit.utils.ScreenUtils.printError;
 import static shareit.utils.ScreenUtils.printInfo;
 import static shareit.utils.ScreenUtils.waitForKeyEnter;
+import static shareit.utils.ScreenUtils.printSuccess;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,7 @@ import shareit.data.Talent;
 import shareit.errors.ExperienceException;
 import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
+import shareit.services.AuthenticationService;
 import shareit.services.TalentService;
 
 @Controller
@@ -29,6 +32,9 @@ public class ExperienceController extends ControllerBase {
 
     @Autowired
     private NavigationHelper navigationHelper;
+
+    @Autowired
+    private AuthenticationService authenticationService;
 
     @Autowired
     private TalentService talentService;
@@ -54,9 +60,9 @@ public class ExperienceController extends ControllerBase {
                         "Select Experience",
                         "Create Experience",
                         "List Experiences",
-                        "Update Experience",
+                        "Update Experience -- Not Implemented",
                         "Remove Experience"
-                    });
+                    }, authenticationService.getAuthenticatedUser().getName());
                     
                 } while (index <= 0 && index >= 5);
 
@@ -64,6 +70,8 @@ public class ExperienceController extends ControllerBase {
 
                     case 1:
                         selectExperience();
+
+                        waitForKeyEnter();
                         break;
                     case 2:
                         createExperience();
@@ -75,9 +83,13 @@ public class ExperienceController extends ControllerBase {
                         break;
                     case 4:
                         updateExperience();
+
+                        waitForKeyEnter();
                         break;
                     case 5:
                         removeExperience();
+
+                        waitForKeyEnter();
                         break;
                     }
 
@@ -95,7 +107,9 @@ public class ExperienceController extends ControllerBase {
 
         clear();
 
-        listExperience();
+        if (listExperience() == -1) {
+            return;
+        }
 
         String experienceTitle = textField("Chose one Experience by his name");
 
@@ -107,19 +121,28 @@ public class ExperienceController extends ControllerBase {
 
     }
 
-    private void listExperience() throws IOException {
+    private int listExperience() throws IOException {
 
         clear();
 
+        Collection<Experience> experiences = currentTalent.getExperiences();
+
+        if (experiences.size() <= 0) {
+            printInfo("There is no Experience yet!");
+            return -1;
+        }
+
         try {
             
-            for (Experience experience : currentTalent.getExperiences()) {
+            for (Experience experience : experiences) {
                 printInfo(experience.toString());
             }
 
         } catch (Exception e) {
             printError(e.getMessage());
         }
+
+        return 0;
 
     }
 
@@ -159,10 +182,23 @@ public class ExperienceController extends ControllerBase {
 
     }
 
-    // TODO: Acabar remove Expereriencia
-    private void removeExperience() {
+    private void removeExperience() throws IOException {
 
+        clear();
 
+        if (listExperience() == -1) {
+            return;
+        }
+
+        String experienceTitle = textField("Experience Title");
+
+        try {
+            talentService.removeExperienceByTitle(experienceTitle);
+        } catch (ExperienceException e) {
+            printError(e.getMessage());
+        }
+
+        printSuccess("Experience was removed!");
 
     }
 

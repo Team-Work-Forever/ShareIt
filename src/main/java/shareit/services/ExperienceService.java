@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import shareit.data.Experience;
 import shareit.data.JobOffer;
 import shareit.data.Talent;
+import shareit.errors.JobOfferException;
 import shareit.errors.TalentException;
 
 @Service
@@ -56,6 +57,23 @@ public class ExperienceService {
 
         return true;
 
+    }
+
+    public void removeJobOfferById(int id) {
+        
+        var authUser = authenticationService.getAuthenticatedUser();
+        Collection<Talent> talents = authUser.getTalents();
+
+        try {
+            for (Talent talent : talents) {
+                for(Experience experience : talent.getExperiences()) {
+                    experience.removeJobOfferById(id);
+                }
+            }
+        } catch (Exception e) {
+            throw new JobOfferException(e.getMessage());
+        }
+ 
     }
 
 }

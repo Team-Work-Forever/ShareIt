@@ -68,7 +68,8 @@ public class DashBoardController extends ControllerBase {
                         "Invites Available"
                     };
         
-                    index = menu("***************** DashBoard *****************", options);
+                    index = menu("***************** DashBoard *****************", options,
+                        authenticationService.getAuthenticatedUser().getName());
         
                 } while (index <= 0 && index >= 4);
 
@@ -136,7 +137,6 @@ public class DashBoardController extends ControllerBase {
 
                 Optional<Invitation> invite = inviteService.getInviteById(Integer.parseInt(invites[i]));
 
-                // TODO: Criar Exception para aqui!!
                 if (!invite.isPresent())
                     throw new InviteNotFoundException();
 

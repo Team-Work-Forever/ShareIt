@@ -40,7 +40,7 @@ public class ScreenUtils {
         System.out.print(ScreenUtils.WHITE);
     }
 
-    public static int menu(String title, String[] opt) throws IOException {
+    public static int menu(String title, String[] opt, String authUser) throws IOException {
 
         int index = 0;
 
@@ -48,13 +48,12 @@ public class ScreenUtils {
 
         do {
             
-            
             for (int i = 0; i < opt.length; i++) {
                 System.out.println("\t " + (i+1) + " - " + opt[i]);
             }
 
             System.out.println("\t 0 - Go Back");
-            System.out.print("# ");
+            System.out.print(authUser.isEmpty() ? "# " : "(" + authUser + ")# ");
             index = Integer.parseInt(bufferInput.readLine());
 
         } while (index <= 0 && index >= opt.length);

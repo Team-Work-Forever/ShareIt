@@ -100,7 +100,7 @@ public class Talent implements Serializable {
         }
 
         if (found)
-            throw new ExperienceException("Já existe uma experiência com esse título!");
+            throw new ExperienceException("Already exists a experience with that title!");
 
         experiences.add(experience);
 
@@ -115,7 +115,7 @@ public class Talent implements Serializable {
             }
         }
 
-        throw new ExperienceException("Esperiência com título " + name + " não existe!");
+        throw new ExperienceException("Experience with title " + name + " not found!");
 
     }
 
@@ -150,7 +150,7 @@ public class Talent implements Serializable {
         }
 
         if (found)
-            throw new SkillException("Skill já existente na proposta!");
+            throw new SkillException("This Skill already exists in the Job Offer!");
         
         skills.add(
             new SkillLine(skill, this, qtyYearExp)
@@ -167,7 +167,7 @@ public class Talent implements Serializable {
             }
         }
 
-        throw new SkillException("Não existe nenhuma Skill deste tipo!");
+        throw new SkillException("Not found any Skill of that type!");
 
     }
 
@@ -212,7 +212,7 @@ public class Talent implements Serializable {
         }
 
         if (found)
-            throw new ProfAreaException("Esta Área Profissional já existente na proposta!");
+            throw new ProfAreaException("This Professional Area already exists in the Job Offer!");
         
         profAreas.add(
             new ProfAreaLine(profArea, this, qtyYearExp)
@@ -229,7 +229,7 @@ public class Talent implements Serializable {
             }
         }
 
-        throw new ProfAreaException("Não existe nenhuma Área Profissional deste tipo!");
+        throw new ProfAreaException("Not found any Professional Area of that type!");
 
     }
 
@@ -270,8 +270,7 @@ public class Talent implements Serializable {
             profAreas.add(pal.getProfArea());
         }
         
-        result.append("Talent: \n" + 
-        "Name: " + this.name + "\t" + " PricePerHour: " + pricePerHour + " Perfil Visibility: " + isPublic + "\n\t");
+        result.append("\tName: " + this.name + "\tPricePerHour: " + pricePerHour + "\tPerfil Visibility: " + isPublic + "\n\n");
 
         Iterator<Skill> itSkill = skills.iterator();
         Iterator<ProfArea> itProfArea = profAreas.iterator();

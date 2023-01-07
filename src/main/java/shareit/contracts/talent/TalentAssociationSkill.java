@@ -1,6 +1,6 @@
 package shareit.contracts.talent;
 
-import java.util.Collection;
+import java.util.Map;
 
 import jakarta.validation.constraints.NotEmpty;
 import shareit.data.Skill;
@@ -10,14 +10,11 @@ public class TalentAssociationSkill {
     @NotEmpty
     private String nameTalent;
 
-    private Collection<Skill> skills;
+    private Map<Skill,Integer> skills;
 
-    private int yearOfExp;
-
-    public TalentAssociationSkill(String nameTalent, Collection<Skill> skills, int yearOfExp) {
+    public TalentAssociationSkill(String nameTalent, Map<Skill,Integer> skills) {
         this.nameTalent = nameTalent;
         this.skills = skills;
-        this.yearOfExp = yearOfExp;
     }
 
     public String getNameTalent() {
@@ -28,20 +25,12 @@ public class TalentAssociationSkill {
         this.nameTalent = nameTalent;
     }
 
-    public Collection<Skill> getSkills() {
+    public Map<Skill, Integer> getSkills() {
         return skills;
     }
 
-    public void setSkills(Collection<Skill> skills) {
+    public void setSkills(Map<Skill, Integer> skills) {
         this.skills = skills;
-    }
-        
-    public int getYearOfExp() {
-        return yearOfExp;
-    }
-
-    public void setYearOfExp(int yearOfExp) {
-        this.yearOfExp = yearOfExp;
     }
 
 }

@@ -39,12 +39,11 @@ public class Skill implements Serializable {
 
     @Override
     public String toString() {
-        return "Skill: \n" + 
-            "Name: " + this.name + "\t" + " Description: " + desc + " Qty Profissionals: " + Integer.toString(qtyProf);
+        return "\tName: " + this.name + "\tDescription: " + desc + "\tQty Professionals: " + Integer.toString(qtyProf);
     }
 
     public String toStringJobOffer() {
-        return "\n\tName: " + this.name + "\t Description: " + desc;
+        return "\n\tName: " + this.name + "\tDescription: " + desc + "\t\t -- Skill";
     }
 
     public void incrementQtyProf() {

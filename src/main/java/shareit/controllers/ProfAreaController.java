@@ -10,6 +10,7 @@ import shareit.contracts.profArea.CreateProfAreaRequest;
 import shareit.data.ProfArea;
 import shareit.errors.ProfAreaException;
 import shareit.helper.NavigationHelper;
+import shareit.services.AuthenticationService;
 import shareit.services.ProfAreaService;
 
 import static shareit.utils.ScreenUtils.waitForKeyEnter;
@@ -25,6 +26,9 @@ public class ProfAreaController extends ControllerBase {
 
     @Autowired
     private ProfAreaService profAreaService;
+
+    @Autowired
+    private AuthenticationService authenticationService;
 
     @Autowired
     private NavigationHelper navigationHelper;
@@ -45,7 +49,7 @@ public class ProfAreaController extends ControllerBase {
                             "List All Professional Areas",
                             "Update Professional Area",
                             "Remove Professional Area",
-                        });
+                        }, authenticationService.getAuthenticatedUser().getName());
         
                     } while (index <= 0 && index >= 4);
 
@@ -55,13 +59,18 @@ public class ProfAreaController extends ControllerBase {
                     break;
                     case 2:
                         listAllProfAreas();
+
                         waitForKeyEnter();
                     break;
                     case 3:
                         updateProfArea();
+
+                        waitForKeyEnter();
                     break;
                     case 4:
                         removeProfArea();
+
+                        waitForKeyEnter();
                     break;
                 } 
         
@@ -85,18 +94,16 @@ public class ProfAreaController extends ControllerBase {
 
             String name = textField("Name");
             String description = textField("Description");
-            String qtyProf = textField("QtyProf (default: 0)");
-            
+
             profAreaService.createProfArea(new CreateProfAreaRequest(
                 name, 
-                description, 
-                qtyProf.isEmpty() ? 0 : Integer.parseInt(qtyProf)
+                description
             ));
 
         } catch (ProfAreaException e) {
             printError(e.getMessage());
 
-            if (repitAction("Do wanna repit?")) {
+            if (repitAction("Do wanna exit creation?")) {
                 createProfArea();
             }
 
@@ -145,16 +152,13 @@ public class ProfAreaController extends ControllerBase {
 
                 System.out.println("Update Data: ");
 
-                String name = textField("Professional Area Name: (default : same)");
-                String desc = textField("Professional Area Description: (default : same)");
-                String qtyProf = textField("Professional Area QtyProf (default : 0) ");
+                String name = textField("Professional Area Name (default : same): ");
+                String desc = textField("Professional Area Description (default : same): ");
 
                 ProfArea newProfArea = new ProfArea(
                     name.isEmpty() ? profArea.getName() : name, 
-                    desc.isEmpty() ? profArea.getDescription() : desc, 
-                    qtyProf.isEmpty() ? 0 : Integer.parseInt(qtyProf)
+                    desc.isEmpty() ? profArea.getDescription() : desc
                 );
-
             
                 profAreaService.updateProfArea(newProfArea, profAreaName);
             } catch (ProfAreaException e) {

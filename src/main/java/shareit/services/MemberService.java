@@ -12,6 +12,7 @@ import shareit.repository.GlobalRepository;
 import shareit.validator.BeanValidator;
 import shareit.contracts.member.InviteMemberRequest;
 import shareit.data.auth.IdentityUser;
+import shareit.errors.ExperienceException;
 import shareit.errors.MemberFailedInvitation;
 import shareit.errors.auth.IdentityException;
 import shareit.helper.Invitation;
@@ -62,33 +63,44 @@ public class MemberService {
         return getInviteInBox(email).size() > 0;
     }
 
-    public boolean inviteMember(@Validated InviteMemberRequest request) throws Exception {
+    public boolean inviteMember(@Validated InviteMemberRequest inviteMemberRequest) throws Exception {
 
         String authEmail = authenticationService.getAuthenticatedUser().getEmail();
 
-        var errors = validatorInviteRequest.validate(request);
+        var errors = validatorInviteRequest.validate(inviteMemberRequest);
 
         if (!errors.isEmpty()) {
             throw new MemberFailedInvitation(errors.iterator().next().getMessage());
         }
 
-        request.setEmailFrom(authEmail);
+        inviteMemberRequest.setEmailFrom(authEmail);
 
-        if (request.getEmailTo().equals(authEmail)) {
+        if (inviteMemberRequest.getEmailTo().equals(authEmail)) {
             throw new MemberFailedInvitation("You cannot invite yourself!");
         }
 
-        if (verifyMultiInvitation(request.getEmailFrom(), request.getEmailTo())) {
+        if (verifyMultiInvitation(inviteMemberRequest.getEmailFrom(), inviteMemberRequest.getEmailTo())) {
             throw new MemberFailedInvitation("You cannot prepose an invite twoice!");
         }
 
-        Optional<IdentityUser> invitedUser = globalRepository.getIdentityUserByEmail(request.getEmailTo());
+        Optional<IdentityUser> invitedUser = globalRepository.getIdentityUserByEmail(inviteMemberRequest.getEmailTo());
 
         if (!invitedUser.isPresent()) {
             throw new IdentityException("User Not Found!");
         }
 
-        globalRepository.createInvite(request.toInvitation());
+        Invitation invite = inviteMemberRequest.toInvitation();
+
+        boolean occorredError = InvitationManager
+            .checkInvite(
+                invite.getInvitationType(), 
+                invitedUser.get()
+            );
+
+        if (occorredError)
+            throw new ExperienceException("You cannot invite the same user again!");
+
+        globalRepository.createInvite(inviteMemberRequest.toInvitation());
         globalRepository.commit();
 
         return true;
@@ -132,15 +144,6 @@ public class MemberService {
 
     public boolean removeInvite(Invitation invitation) {
         return globalRepository.removeInvite(invitation);
-    }
-
-    // TODO: What For?
-    public int qtyProfUsingSkill(String name) {
-
-        var skill = skillService.getSkillByName(name);
-
-        return skill.getQtyProf();
-
     }
 
 }

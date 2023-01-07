@@ -1,8 +1,6 @@
 package shareit.contracts.profArea;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import shareit.data.ProfArea;
 
 public class CreateProfAreaRequest {
@@ -13,14 +11,9 @@ public class CreateProfAreaRequest {
     @NotEmpty(message = "Please provide a valid description")
     private String description;
 
-    @NotNull(message = "Please provide a Quatity of profissionals")
-    @Min(value = 0)
-    private int qtyProf;
-    
-    public CreateProfAreaRequest(String name, String description, int qtyProf) {
+    public CreateProfAreaRequest(String name, String description) {
         this.name = name;
         this.description = description;
-        this.qtyProf = qtyProf;
     }
 
     public String getName() {
@@ -39,20 +32,11 @@ public class CreateProfAreaRequest {
         this.description = description;
     }
 
-    public int getQtyProf() {
-        return qtyProf;
-    }
-
-    public void setQtyProf(int qtyProf) {
-        this.qtyProf = qtyProf;
-    }
-
     public ProfArea toProfArea() {
 
         return new ProfArea(
             name, 
-            description, 
-            qtyProf
+            description
         );
 
     }

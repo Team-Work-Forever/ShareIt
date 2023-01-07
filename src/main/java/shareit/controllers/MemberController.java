@@ -1,14 +1,18 @@
 package shareit.controllers;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import shareit.contracts.member.InviteMemberRequest;
 import shareit.data.JobOffer;
 import shareit.data.auth.IdentityUser;
 import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
+import shareit.services.Authentication;
 import shareit.services.MemberService;
 import shareit.services.TalentService;
 
@@ -18,6 +22,8 @@ import static shareit.utils.ScreenUtils.printError;
 import static shareit.utils.ScreenUtils.printInfo;
 import static shareit.utils.ScreenUtils.waitForKeyEnter;
 import static shareit.utils.ScreenUtils.comboBox;
+import static shareit.utils.ScreenUtils.printSuccess;
+import static shareit.utils.ScreenUtils.textField;
 
 @Controller
 public class MemberController extends ControllerBase {
@@ -34,13 +40,21 @@ public class MemberController extends ControllerBase {
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private Authentication authenticationService;
+
     private JobOffer currentJobOffer;
 
     @Override
     public void display() throws IOException {
         int index = 0;
 
-        currentJobOffer = talentService.getJobOfferById((int)routeManager.getArgs());
+        if (routeManager.getArgs() instanceof Integer) {
+            currentJobOffer = talentService.getJobOfferById(((Integer)routeManager.getArgs()));
+        } else {
+            printError("Something went wrong!");
+            navigationHelper.navigateBack();
+        }
 
         do {
             
@@ -54,8 +68,8 @@ public class MemberController extends ControllerBase {
                         "Select Member",
                         "Add Member",
                         "List Members",
-                        "Remove JobOffers"
-                    });
+                        "Remove Member"
+                    }, authenticationService.getAuthenticatedUser().getName());
                     
                 } while (index <= 0 && index >= 5);
 
@@ -63,9 +77,13 @@ public class MemberController extends ControllerBase {
 
                     case 1:
                         selectMember();
+
+                        waitForKeyEnter();
                         break;
                     case 2:
                         addMember();
+
+                        waitForKeyEnter();
                         break;
                     case 3:
                         listMembers();
@@ -74,6 +92,8 @@ public class MemberController extends ControllerBase {
                         break;
                     case 4:
                         removeMember();
+
+                        waitForKeyEnter();
                         break;
                 }
 
@@ -87,56 +107,109 @@ public class MemberController extends ControllerBase {
 
     }
 
-    // TODO: Implement Remove Member
-    private void removeMember() {
+    private void removeMember() throws IOException {
 
-
-
-    }
-
-    private void listMembers() throws IOException {
+        String email;
+        IdentityUser client;
 
         clear();
 
-        for (IdentityUser client : currentJobOffer.getClients()) {
+        if (listMembers() == -1)
+            return;
+
+        email = textField("Chose a Member by his email");
+
+        if (email.isEmpty()) {
+            printError("Please Provid an email");
+            return;
+        }
+
+        client = memberService.getMemberByEmail(email);
+
+        talentService.getJobOfferById(currentJobOffer.getJobOfferId())
+            .removeClient(client);
+
+        printSuccess("The user with email: " + email + " has been removed!");
+
+    }
+
+    private int listMembers() throws IOException {
+
+        clear();
+
+        Collection<IdentityUser> clients = currentJobOffer.getClients();
+
+        if (clients.size() <= 0) {
+            printInfo("There is no member associated yet!");
+            return -1;
+        }
+
+        for (IdentityUser client : clients) {
             printInfo(client.toString());
         }
+
+        return 0;
+
     }
 
-    // TODO: Implement Select Member
     private void selectMember() throws IOException {
 
-        // clear();
+        clear();
 
-        // listAllMembers();
+        if (listMembers() == -1)
+            return;
 
-        // String email = textField("Chose one Member by his email");
+        String email = textField("Chose a Member by his email");
 
-        // navigationHelper.navigateTo(
-            
-        // );
+        displayMember(email);
+
+        waitForKeyEnter();
 
     }
 
-    // TODO: Implement Add Member
+    private void displayMember(String email) throws IOException {
+
+        IdentityUser member = memberService.getMemberByEmail(email);;
+        printInfo(member.toString());
+    }
+
     private void addMember() throws IOException {
 
-        listAllMembers();
+        clear();
 
-        String[] users = comboBox("Chose Member separeted by commas(,) to invite members");
+        Collection<IdentityUser> allMembers = memberService.getAllMembers();
+        
+        allMembers = allMembers
+            .stream()
+                .filter(member -> !member
+                    .getEmail().equals(authenticationService.getAuthenticatedUser().getEmail()))
+                    .toList();
 
-        for (String member : users) {
-            memberService.getMemberByEmail(member);
+        if (allMembers.isEmpty()) {
+            printInfo("There is no other member to invite!");
+            return;
         }
 
+        String[] emails = comboBox("Chose Member separeted by commas(,) to invite members");
 
-    }
+        try {
+            
+            for (String email : emails) {
+            
+                clear();
 
-    // TODO: Remove this shit
-    private void listAllMembers() throws IOException {
+                memberService.inviteMember(new InviteMemberRequest(
+                    currentJobOffer, 
+                    new Date(), // Expire Date
+                    email
+                ));
+    
+                printSuccess("Invite send with success to user with email "+ email);
+    
+            }
 
-        for (IdentityUser user : memberService.getAllMembers()) {
-            printInfo(user.toString());
+        } catch (Exception e) {
+            printError(e.getMessage());
         }
 
     }

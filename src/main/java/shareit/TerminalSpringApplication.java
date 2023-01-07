@@ -5,7 +5,6 @@ import java.util.Date;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,10 +23,6 @@ import shareit.utils.ScreenUtils;
 @Configuration
 @SpringBootApplication
 public class TerminalSpringApplication implements CommandLineRunner {
-
-    public static void main(String[] args) {
-        SpringApplication.run(TerminalSpringApplication.class, args);
-    }
 
     @Scope(value = BeanDefinition.SCOPE_SINGLETON)
     @Bean
@@ -62,6 +57,7 @@ public class TerminalSpringApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws IOException {
 
+        // TODO: Fix the buffer not closing issue
         Runtime.getRuntime().addShutdownHook(new Thread() {
 
             @Override
@@ -108,7 +104,7 @@ public class TerminalSpringApplication implements CommandLineRunner {
             authenticationService().signIn(new RegisterRequest(
                 adminEmail, 
                 "password", 
-                adminEmail, 
+                "admin", 
                 adminEmail, 
                 new Date(), 
                 adminEmail, 
@@ -123,7 +119,7 @@ public class TerminalSpringApplication implements CommandLineRunner {
             authenticationService().signIn(new RegisterRequest(
                 userEmail, 
                 "password", 
-                adminEmail, 
+                "C.A.V.A.S", 
                 adminEmail, 
                 new Date(), 
                 adminEmail, 
@@ -132,7 +128,7 @@ public class TerminalSpringApplication implements CommandLineRunner {
                 adminEmail, 
                 true, 
                 0, 
-                Role.ADMIN
+                Role.USER
             ));
 
             ScreenUtils.clear();
