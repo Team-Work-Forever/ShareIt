@@ -3,8 +3,10 @@ package shareit.controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -455,31 +457,49 @@ public class TalentController extends ControllerBase {
             return;
         }
 
-        String talentName = textField("Talent Id");
+        listAllTalents();
+
+        String talentNameTemp = textField("Chose one Talent by his ID");
+
+        if (talentNameTemp.isEmpty())
+            throw new TalentException("Please provide an id");
+
+        clear();
+
+        String talentName = textField("Talent Name (default : same)");
+        String pricePerHour = textField("Price Per Hour (default : same)");
+        String isPublic = textField("Public/Private (t|f)");
 
         try {
 
-            if (talentName.isEmpty())
+            var talent = talentService.getTalentById(Integer.parseInt(talentId));
+
+            if (talentId.isEmpty())
                 throw new TalentException("Please provide an id");
 
-            talentService.removeTalent(Integer.parseInt(talentName));
+            talentService.updateTalent(
+                Integer.parseInt(talentId),
+                new CreateTalentRequest(
+                    talentName.isEmpty() ? talent.getName() : talentName, 
+                    pricePerHour.isEmpty() ? talent.getPricePerHour() : Float.parseFloat(pricePerHour), 
+                    isPublic.isEmpty() ? talent.getIsPublic() : true
+                )
+            );
 
         } catch (NumberFormatException e) {
-
-            printError(e.getMessage());
-
-            if (repeatAction("Do you wanna repeat?")) {
-                removeTalent();
-            }
-
+            exitDisplay(e.getMessage());
         } catch (Exception e) {
-            
-            printError(e.getMessage());
+            exitDisplay(e.getMessage());
+        }
 
-            if (repeatAction("Do you wanna repeat?")) {
-                removeTalent();
-            }
+    }
 
+    private void exitDisplay(String msg) throws IOException {
+
+        printError(msg);
+
+        if (repeatAction("Do you wanna repeat?")) {
+            updateTalent();
         }
 
     }
@@ -596,7 +616,7 @@ public class TalentController extends ControllerBase {
 
         Collection<Talent> reallyAllTalents = talentService.getAllTalentsPublic();
         Collection<Skill> selectedSkills = new ArrayList<>();
-        Collection<Talent> selectedTalents = new ArrayList<>();
+        List<Talent> selectedTalents = new ArrayList<>();
         int i;
 
         clear();
@@ -640,6 +660,8 @@ public class TalentController extends ControllerBase {
                 }
 
             }
+
+            selectedTalents.sort(Comparator.comparing(Talent::getName));
 
             if (selectedTalents.isEmpty()) {
                 printInfo("There is no talents with that skills!");

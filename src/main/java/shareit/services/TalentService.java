@@ -351,8 +351,8 @@ public class TalentService {
 
     public Experience getExperienceByJobOfferId(int id) {
 
-        for (Talent talento : getReallyAllTalents()) {
-            for (Experience experience : talento.getExperiences()) {
+        for (Talent talent : getReallyAllTalents()) {
+            for (Experience experience : talent.getExperiences()) {
                 if (experience.getJobOfferById(id).isPresent()) {
                     return experience;
                 }
@@ -429,6 +429,26 @@ public class TalentService {
         }
 
         throw new IdentityException("Was not found any user!");
+
+    }
+
+    public boolean removeJobOffer(JobOffer jobOffer) {
+
+        boolean result = false;
+
+        Collection<IdentityUser> allMembers = memberService.getAllMembers();
+
+        for (IdentityUser member : allMembers) {
+            for (Talent talent : member.getTalents()) {
+                for (Experience experience : talent.getExperiences()) {
+                    if (experience.containsJobOffer(jobOffer.getJobOfferId())) {
+                        result = experience.removeJobOfferById(jobOffer.getJobOfferId());
+                    }
+                }
+            }
+        }
+
+        return result;
 
     }
 

@@ -13,6 +13,8 @@ import shareit.contracts.joboffer.CreateJobOfferRequest;
 import shareit.data.Experience;
 import shareit.data.JobOffer;
 import shareit.data.Skill;
+import shareit.data.State;
+import shareit.data.Talent;
 import shareit.data.auth.IdentityUser;
 import shareit.errors.JobOfferException;
 import shareit.repository.GlobalRepository;
@@ -52,11 +54,56 @@ public class JobOfferService {
         experience = request.getExperience();
 
         experience.addJobOffer(jobOffer);
+        
+        for (Talent talent : authUser.getTalents()) {
+            if (talent.getExperienceById(experience.getExperienceId()) != null ) {
+                talent.removeExperienceById(experience.getExperienceId());
+                talent.addExperience(experience);
+            }
+        }
 
         globalRepository.updateIdentityUserByEmail(authUser.getEmail(), authUser);
         globalRepository.commit();
 
         return jobOffer;
+
+    }
+
+    public boolean removeJobOffer(JobOffer jobOffer) {
+        return talentService.removeJobOffer(jobOffer);
+    }
+
+    public boolean updateJobOffer(JobOffer newJobOffer, int id) throws IOException {
+
+        Optional<JobOffer> validateJobOffer = talentService.getJobOfferById(id);
+
+        if (!validateJobOffer.isPresent()) {
+            throw new JobOfferException("JobOffer not found by the id: " + id);
+        }
+
+        try {
+
+            talentService.removeJobOffer(validateJobOffer.get());
+
+            newJobOffer = createJobOffer(
+                new CreateJobOfferRequest(
+                    talentService.getExperienceByJobOfferId(id),
+                    newJobOffer.getName(), 
+                    newJobOffer.getQtyHours(), 
+                    newJobOffer.getDesc(),
+                    newJobOffer.getProfArea()
+                )
+            );
+
+            newJobOffer.setState(State.Changed);
+
+            globalRepository.commit();
+
+        } catch (Exception e) {
+            throw new JobOfferException(e.getMessage());
+        }
+
+        return true;
 
     }
 

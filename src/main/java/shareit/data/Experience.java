@@ -196,6 +196,15 @@ public class Experience implements Serializable {
 
     }
 
+    public boolean containsJobOffer(int id) {
+
+        return jobOffers
+                .stream()
+                    .filter(jobOffer -> jobOffer.getJobOfferId() == id)
+                    .findAny().isPresent();
+
+    }
+
     public boolean removeClient(String email) {
 
         Iterator<ExperienceLine> it = experienceLines.iterator();

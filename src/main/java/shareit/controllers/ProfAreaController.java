@@ -154,8 +154,8 @@ public class ProfAreaController extends ControllerBase {
 
                 System.out.println("Update Data: ");
 
-                String name = textField("Professional Area Name (default : same): ");
-                String desc = textField("Professional Area Description (default : same): ");
+                String name = textField("Professional Area Name (default : same)");
+                String desc = textField("Professional Area Description (default : same)");
 
                 ProfArea newProfArea = new ProfArea(
                     name.isEmpty() ? profArea.getName() : name, 

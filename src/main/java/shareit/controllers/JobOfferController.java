@@ -404,7 +404,7 @@ public class JobOfferController extends ControllerBase {
             printSuccess("The skills are associated!");
             
         } catch (NumberFormatException e) {
-            printError(e.getMessage());
+            errorDisplay(e.getMessage());
         } catch (Exception e) {
             printError(e.getMessage());
         }
@@ -436,9 +436,79 @@ public class JobOfferController extends ControllerBase {
 
     }
 
-    // TODO: Update JobOffer
-    private void updateJobOffer() {
+    private void updateJobOffer() throws IOException {
 
+        clear();
+
+        listJobOffer();
+
+        String[] jobOffers = comboBox("Chose the Id seperated by commas (,)");
+
+        for (String jobOfferName : jobOffers) {
+
+            if (jobOfferName.isEmpty())
+                throw new JobOfferException("Please provide an id");
+
+            try {
+            
+                int jobOfferId = Integer.parseInt(jobOfferName);
+
+                Optional<JobOffer> oldJobOffer = talentService.getJobOfferById(jobOfferId);
+
+                if (!oldJobOffer.isPresent()) {
+                    throw new JobOfferException("JobOffer not valid!");
+                }
+
+                clear();
+
+                System.out.println("Update Data: ");
+
+                String name = textField("JobOffer Name (default : same)");
+
+                int qtyHours = Integer.parseInt(
+                    textField("Quatity Of Hours (default : same)")
+                );
+
+                String desc = textField("Description (default : same)");
+
+                clear();
+
+                listAllProfAreas();
+
+                String profAreaName = textField("Please provide an id for a Profissional Area");
+
+                var profArea = profAreaService.getProfAreaById(
+                    Integer.parseInt(profAreaName)
+                );
+
+                JobOffer newJobOffer = new JobOffer(
+                    name.isEmpty() ? oldJobOffer.get().getName() : name, 
+                    qtyHours, 
+                    desc.isEmpty() ? oldJobOffer.get().getDesc() : desc, 
+                    profArea
+                );
+            
+                jobOfferService.updateJobOffer(newJobOffer, oldJobOffer.get().getJobOfferId());
+
+            } catch (NumberFormatException e) {
+                errorDisplay(e.getMessage());
+            } catch (Exception e) {
+                errorDisplay(e.getMessage());
+            }
+
+        }
+
+      waitForKeyEnter();
+
+    }
+
+    private void errorDisplay(String msg) throws IOException {
+        
+        printError(msg);
+
+        if (repeatAction("Do you wanna repeat?")) {
+            updateJobOffer();
+        }
 
     }
 
