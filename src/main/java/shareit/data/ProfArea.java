@@ -2,7 +2,9 @@ package shareit.data;
 
 import java.io.Serializable;
 
-public class ProfArea implements Serializable {
+import shareit.helper.CSVSerializable;
+
+public class ProfArea implements Serializable, CSVSerializable {
 
     private static int increment = 1;
 
@@ -61,6 +63,13 @@ public class ProfArea implements Serializable {
 
     public String ToStringLow() {
         return "Prof. Area (" + this.getProfAreaId() + "): " + "\tName: " + this.name + "\tDescription: " + description;
+    }
+
+    @Override
+    public String[] serialize() {
+        return new String[] {
+            this.name
+        };
     }
 
 }

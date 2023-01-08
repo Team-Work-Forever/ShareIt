@@ -2,7 +2,9 @@ package shareit.data;
 
 import java.io.Serializable;
 
-public class Skill implements Serializable {
+import shareit.helper.CSVSerializable;
+
+public class Skill implements Serializable, CSVSerializable {
 
     private static int increment = 1;
 
@@ -65,6 +67,13 @@ public class Skill implements Serializable {
 
     public void reduceQtyProf() {
         this.qtyProf--;
+    }
+
+    @Override
+    public String[] serialize() {
+        return new String[] {
+            this.name
+        };
     }
 
 }

@@ -10,7 +10,6 @@ import shareit.contracts.auth.RegisterRequest;
 import shareit.data.auth.Role;
 import shareit.services.AuthenticationService;
 import shareit.utils.ScreenUtils;
-import shareit.utils.StoreUtils;
 import shareit.errors.auth.AuthenticationException;
 import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
@@ -65,7 +64,6 @@ public class LoginController extends ControllerBase {
                     signIn();
                     break;
                 case 3:
-                    StoreUtils.cleanStorage();
                     ScreenUtils.printSuccess("It was removed!");
                     ScreenUtils.waitForKeyEnter();
                     break;

@@ -59,23 +59,23 @@ public class TerminalSpringApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws IOException {
 
-        // TODO: Fix the buffer not closing issue
-        Runtime.getRuntime().addShutdownHook(new Thread() {
+        // // TODO: Fix the buffer not closing issue
+        // Runtime.getRuntime().addShutdownHook(new Thread() {
 
-            @Override
-            public void run() {
-                try {
+        //     @Override
+        //     public void run() {
+        //         try {
                     
-                    ScreenUtils.closeBuffer();
+        //             ScreenUtils.closeBuffer();
 
-                } catch (Exception e) {
+        //         } catch (Exception e) {
                     
-                    System.out.println("Error as occorred closing buffer");
+        //             System.out.println("Error as occorred closing buffer");
 
-                }
-            }
+        //         }
+        //     }
 
-        });
+        // });
 
         try {
             
@@ -112,7 +112,7 @@ public class TerminalSpringApplication implements CommandLineRunner {
                 adminEmail, 
                 adminEmail, 
                 adminEmail, 
-                adminEmail, 
+                "Portugal", 
                 true, 
                 0, 
                 Role.ADMIN
@@ -127,7 +127,7 @@ public class TerminalSpringApplication implements CommandLineRunner {
                 adminEmail, 
                 adminEmail, 
                 adminEmail, 
-                adminEmail, 
+                "Espanha", 
                 true, 
                 0, 
                 Role.USER
@@ -142,7 +142,7 @@ public class TerminalSpringApplication implements CommandLineRunner {
                 adminEmail, 
                 adminEmail, 
                 adminEmail, 
-                adminEmail, 
+                "Republica das Bananas", 
                 true, 
                 0, 
                 Role.USER

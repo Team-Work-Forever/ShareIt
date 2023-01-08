@@ -40,6 +40,7 @@ public class GlobalRepository implements Serializable {
         }
         else
             commit();
+            
     }
 
     // Crud Authentication
