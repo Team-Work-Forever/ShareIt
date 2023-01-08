@@ -1,6 +1,7 @@
 package shareit.services;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -30,6 +31,9 @@ public class JobOfferService {
     
     @Autowired
     private AuthenticationService authenticationService;
+    
+    @Autowired
+    private MemberService memberService;
     
     @Autowired
     private GlobalRepository globalRepository;
@@ -176,6 +180,25 @@ public class JobOfferService {
     public boolean disassociateJobOffer(JobOffer jobOffer, IdentityUser client) {
         client.disassociateJobOffer(jobOffer);
         return jobOffer.removeClient(client);
+    }
+
+    public Collection<JobOffer> getAllJobOffers() {
+
+        Collection<IdentityUser> allMembers = memberService.getAllMembers();
+        Collection<JobOffer> jobOffers = new ArrayList<>();
+
+        for (IdentityUser user : allMembers) {
+            for (Talent talent : user.getTalents()) {
+                for (Experience experience : talent.getExperiences()) {
+                    for (JobOffer jobOffer : experience.getJobOffers()) {
+                        jobOffers.add(jobOffer);
+                    }
+                }
+            }
+        }
+
+        return jobOffers;
+
     }
 
 }

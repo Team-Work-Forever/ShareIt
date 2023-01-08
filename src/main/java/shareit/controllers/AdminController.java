@@ -12,23 +12,30 @@ import shareit.data.JobOffer;
 import shareit.data.Talent;
 import shareit.data.auth.IdentityUser;
 import shareit.data.auth.Role;
+import shareit.errors.auth.AuthenticationException;
+import shareit.errors.auth.IdentityException;
 import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
 import shareit.services.Authentication;
 import shareit.services.MemberService;
 import shareit.services.TalentService;
+import shareit.services.JobOfferService;
 
 import static shareit.utils.ScreenUtils.menu;
 import static shareit.utils.ScreenUtils.clear;
 import static shareit.utils.ScreenUtils.printError;
 import static shareit.utils.ScreenUtils.waitForKeyEnter;
 import static shareit.utils.ScreenUtils.printInfo;
+import static shareit.utils.ScreenUtils.textField;
 
 @Controller
 public class AdminController extends ControllerBase {
 
     @Autowired
     private TalentService talentService;
+    
+    @Autowired
+    private JobOfferService jobOfferService;
 
     @Autowired
     private MemberService memberService;
@@ -65,7 +72,8 @@ public class AdminController extends ControllerBase {
                         "List All Users",
                         "Skill Menu",
                         "Professinal Area Menu",
-                        "Generate Report"
+                        "Generate Report",
+                        "Alter Privilege"
                     }, authUser.getName());
                     
                 } while (index <= 0 && index >= 8);
@@ -107,9 +115,12 @@ public class AdminController extends ControllerBase {
                         profAreaMenu();
                     break;
                     case 8:
-                    case 10:
                         authorize(Role.ADMIN);
                         generateReport();
+                        break;
+                    case 9:
+                        authorize(Role.ADMIN);
+                        alterPrivilege();
                         break;
                 }
 
@@ -120,6 +131,70 @@ public class AdminController extends ControllerBase {
         } while (index != 0);
         
         navigationHelper.navigateTo(routeManager.authRoute());
+
+    }
+
+    private void alterPrivilege() throws IOException {
+
+        clear();
+
+        if (listAllUsers() == -1) {
+            return;
+        }
+
+        String email = textField("Chose an user by his email");
+        String role = textField("Chose an role ( USER(1) | COMPANY/INSTITUTION(2) | MANAGER(3) | ADMIN(4) )");
+
+        try {
+            
+            if (role.isEmpty())
+                throw new AuthenticationException("Please provide an Role");
+
+            int roleId = Integer.parseInt(role);
+
+            if (roleId < 1 && roleId > 4) {
+                throw new AuthenticationException("Please provide represented role");
+            }
+
+            switch (roleId) {
+                case 1:
+                    role = Role.USER;
+                    break;
+                case 2:
+                    role = Role.COMPANYINSTITUTION;
+                    break;
+                case 3:
+                    role = Role.USERMANAGER;
+                    break;
+                case 4:
+                    role = Role.ADMIN;
+                    break;
+            }
+
+            IdentityUser user = memberService.getMemberByEmail(email);
+
+            authenticationService.alterPrivilege(role, user);
+
+        } catch (IdentityException e) {
+            
+            exitError(e.getMessage());
+
+        } catch (Exception e) {
+            
+            exitError(e.getMessage());
+
+        }
+
+
+    }
+
+    private void exitError(String value) throws IOException {
+
+        printError(value);
+
+        if (repeatAction("Do you wanna repeat?")) {
+            alterPrivilege();
+        }
 
     }
 
@@ -173,22 +248,15 @@ public class AdminController extends ControllerBase {
 
         clear();
 
-        Collection<IdentityUser> users = memberService.getAllMembers();
+        Collection<JobOffer> jobOffers = jobOfferService.getAllJobOffers();
 
-        for (IdentityUser user : users) {
-            for (Talent talent : user.getTalents()) {
-                for (Experience experience : talent.getExperiences()) {
+        if (jobOffers.isEmpty()) {
+            printInfo("There is no job offer yet!");
+            return -1;
+        }
 
-                    if (experience.getJobOffers().isEmpty()) {
-                        printInfo("There is no job offer yet!");
-                        return -1;
-                    }
-
-                    for (JobOffer jobOffer : experience.getJobOffers()) {
-                        printInfo(jobOffer.toString());
-                    }
-                }
-            }
+        for (JobOffer jobOffer : jobOffers) {
+            printInfo(jobOffer.toString());
         }
 
         return 0;

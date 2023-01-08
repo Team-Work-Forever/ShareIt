@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import shareit.contracts.auth.AuthenticationRequest;
 import shareit.contracts.auth.RegisterRequest;
 import shareit.data.auth.IdentityUser;
+import shareit.data.auth.Role;
 import shareit.errors.auth.AuthenticationException;
 import shareit.repository.GlobalRepository;
 import shareit.validator.BeanValidator;
@@ -121,6 +122,23 @@ public class AuthenticationService implements Authentication {
         globalRepository.commit();
 
         currentUser = null;
+
+    }
+
+    @Override
+    public boolean alterPrivilege(String role, IdentityUser identityUser) throws AuthenticationException {
+        
+        if (!getAuthenticatedUser().getRole().equals(Role.ADMIN)) {
+            throw new AuthenticationException("You don't have permition to change roles!");
+        }
+
+        if (identityUser.getRole().equals(role)) {
+            throw new AuthenticationException("This user already as assigned this role!");
+        }
+
+        identityUser.setRole(role);
+
+        return true;
 
     }
 
