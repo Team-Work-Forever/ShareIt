@@ -11,6 +11,7 @@ import shareit.data.Experience;
 import shareit.data.ExperienceLine;
 import shareit.data.JobOffer;
 import shareit.data.Privilege;
+import shareit.data.Skill;
 import shareit.data.Talent;
 import shareit.errors.TalentException;
 
@@ -30,6 +31,7 @@ public class IdentityUser implements Serializable {
     private String role;
 
     private Collection<Talent> talents = new ArrayList<>();
+    private Collection<Skill> mySkills = new ArrayList<>();
     private Collection<ExperienceLine> invitedExperiences = new ArrayList<>();
     private Collection<JobOffer> invitedJobOffers = new ArrayList<>();
 
@@ -196,6 +198,20 @@ public class IdentityUser implements Serializable {
 
     }
 
+    public boolean containsTalent(int id) {
+
+        try {
+
+            getTalentById(id);
+
+            return true;
+            
+        } catch (TalentException e) {
+            return false;
+        }
+
+    }
+
     // Invited Experiences
 
     public Collection<ExperienceLine> getInvitedExperiences() {
@@ -284,6 +300,28 @@ public class IdentityUser implements Serializable {
         }
 
         return invitedJobOffers.remove(jobOffer);
+
+    }
+
+    // Skills
+
+    public Collection<Skill> getMySkills() {
+        return mySkills;
+    }
+
+    public void setMySkills(Collection<Skill> mySkills) {
+        this.mySkills = mySkills;
+    }
+
+    public Collection<Skill> getAllSkillsByTalentId(int id) {
+
+        Collection<Skill> skills = new ArrayList<>();
+
+        for (Talent talent : talents) {
+                skills.addAll(talent.getSkillSet());
+        }
+
+        return skills;
 
     }
 

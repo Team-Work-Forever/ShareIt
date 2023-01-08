@@ -258,12 +258,22 @@ public class JobOfferController extends ControllerBase {
 
         clear();
 
-        Collection<IdentityUser> possibleMembers = memberService.getPossibleMembers();
-
-        if (possibleMembers.isEmpty()) {
-            printInfo("There is no other members");
+        Collection<IdentityUser> allMembers = memberService.getPossibleMembers();
+        
+        if (allMembers.isEmpty()) {
+            printInfo("There is no other member to invite!");
             return;
         }
+
+        allMembers.forEach(member -> {
+
+            try {
+                printInfo(member.toString());
+            } catch (IOException e) {
+                System.out.println("--- Error ---");
+            }
+
+        });
 
         String[] emails = comboBox("Chose Member separeted by commas(,) to invite members");
 
@@ -287,6 +297,7 @@ public class JobOfferController extends ControllerBase {
         } catch (Exception e) {
             printError(e.getMessage());
         }
+
 
     }
 

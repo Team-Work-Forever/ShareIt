@@ -1,8 +1,13 @@
 package shareit.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +15,8 @@ import org.springframework.stereotype.Controller;
 
 import shareit.contracts.member.InviteMemberRequest;
 import shareit.data.JobOffer;
+import shareit.data.Skill;
+import shareit.data.Talent;
 import shareit.data.auth.IdentityUser;
 import shareit.errors.JobOfferException;
 import shareit.helper.NavigationHelper;
@@ -17,6 +24,7 @@ import shareit.helper.RouteManager;
 import shareit.services.Authentication;
 import shareit.services.JobOfferService;
 import shareit.services.MemberService;
+import shareit.services.SkillService;
 import shareit.services.TalentService;
 
 import static shareit.utils.ScreenUtils.menu;
@@ -48,6 +56,9 @@ public class MemberController extends ControllerBase {
 
     @Autowired
     private Authentication authenticationService;
+   
+    @Autowired
+    private SkillService skillService;
 
     private JobOffer currentJobOffer;
 
@@ -184,24 +195,79 @@ public class MemberController extends ControllerBase {
 
     private void addMember() throws IOException {
 
+        Collection<Talent> reallyAllTalents = talentService.getAllTalentsPublic();
+        Collection<Skill> selectedSkills = new ArrayList<>();
+        Map<Talent, IdentityUser> selectedUsers = new HashMap<>();
+        List<Talent> selectedTalents = new ArrayList<>();
+        Collection<IdentityUser> users = memberService.getAllMembers();
+
         clear();
 
-        Collection<IdentityUser> allMembers = memberService.getPossibleMembers();
-        
-        if (allMembers.isEmpty()) {
-            printInfo("There is no other member to invite!");
+        if (reallyAllTalents.isEmpty()) {
+            printInfo("There is no talents yet!");
             return;
         }
 
-        allMembers.forEach(member -> {
+        try {
 
-            try {
-                printInfo(member.toString());
-            } catch (IOException e) {
-                System.out.println("--- Error ---");
+            if (listAllSkills() == -1) {
+                return;
             }
 
-        });
+            String[] skillNames = comboBox("Chose Skills by ID separeted by commas(,)");
+
+            for (String name : skillNames) {
+                
+                if (name.isEmpty())
+                    continue;
+
+                selectedSkills.add(
+                    skillService.getSkillById(Integer.parseInt(name))
+                );
+
+            }
+            
+            clear();
+        
+            selectedTalents = ((List<Talent>)talentService.getAllTalentsByOrder(
+                Comparator.comparing(Talent::getPricePerHour), 
+                selectedSkills
+            ));
+
+            if (selectedTalents.isEmpty()) {
+                printInfo("There is no talents with that skills!");
+                return;
+            }
+
+            selectedTalents.forEach(talent -> {
+                
+                for (IdentityUser user : users) {
+                    if (user.containsTalent(talent.getTalentId())) {
+                            selectedUsers.put(talent, user);
+                    }
+                }
+  
+            });
+
+        } catch (Exception e) {
+            printError(e.getMessage());
+        }
+        
+        Map<Talent,IdentityUser> possibleMembers = memberService.getPossibleMembersToJobOffer(selectedUsers);
+
+        for (Talent talent : possibleMembers.keySet()) {
+            try {
+                printInfo(possibleMembers.get(talent).toString());
+                printInfo(talent.toString());
+            } catch (Exception e) {
+                System.out.println("--- Error ---");
+            }  
+        }
+        
+        if (possibleMembers.isEmpty()) {
+            printInfo("There is no other members");
+            return;
+        }
 
         String[] emails = comboBox("Chose Member separeted by commas(,) to invite members");
 
@@ -224,6 +290,30 @@ public class MemberController extends ControllerBase {
         } catch (Exception e) {
             printError(e.getMessage());
         }
+
+        
+    }
+
+    private int listAllSkills() throws IOException {
+
+        Collection<Skill> allSkills = skillService.getAll();
+
+        if (allSkills.isEmpty()) {
+            printInfo("There is no Skill available");
+            return -1;
+        }
+
+        try {
+            
+            for (Skill skill : allSkills) {
+                printInfo(skill.toString());
+            }
+
+        } catch (Exception e) {
+            printError(e.getMessage());
+        }
+
+        return 0;
 
     }
 

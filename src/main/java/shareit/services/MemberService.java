@@ -2,6 +2,7 @@ package shareit.services;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import shareit.repository.GlobalRepository;
 import shareit.validator.BeanValidator;
 import shareit.contracts.member.InviteMemberRequest;
+import shareit.data.Talent;
 import shareit.data.auth.IdentityUser;
 import shareit.errors.ExperienceException;
 import shareit.errors.MemberFailedInvitation;
@@ -49,6 +51,18 @@ public class MemberService {
                 .filter(member -> !member
                     .getEmail().equals(authenticationService.getAuthenticatedUser().getEmail()))
                     .toList();
+
+    }
+
+    public Map<Talent, IdentityUser> getPossibleMembersToJobOffer(Map<Talent, IdentityUser> users) {
+
+        for (Talent talent : users.keySet()) {
+            if (users.get(talent).getEmail().equals(authenticationService.getAuthenticatedUser().getEmail())) {
+                users.remove(talent);
+            }
+        }
+
+        return users;
 
     }
 
@@ -98,14 +112,15 @@ public class MemberService {
 
         Invitation invite = inviteMemberRequest.toInvitation();
 
+        
         boolean occorredError = InvitationManager
-            .checkInvite(
-                invite.getInvitationType(), 
-                invitedUser.get()
-            );
+        .checkInvite(
+            invite.getInvitationType(), 
+            invitedUser.get()
+        );
 
         if (occorredError)
-            throw new ExperienceException("You cannot invite the same user again!");
+        throw new ExperienceException("You cannot invite the same user again! / Ou Não tens skills");
 
         globalRepository.createInvite(inviteMemberRequest.toInvitation());
         globalRepository.commit();

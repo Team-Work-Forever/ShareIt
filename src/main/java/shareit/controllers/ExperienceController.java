@@ -113,12 +113,12 @@ public class ExperienceController extends ControllerBase {
 
         try {
             
-            String experienceTitle = textField("Chose one Experience by his name");
+            String experienceID = textField("Chose one Experience by his ID");
 
             navigationHelper.navigateTo(
                 routeManager.argumentRoute(
                     JobOfferController.class, 
-                    Integer.parseInt(experienceTitle)
+                    Integer.parseInt(experienceID)
             ));
 
         } catch (NumberFormatException e) {
@@ -195,11 +195,59 @@ public class ExperienceController extends ControllerBase {
 
     }
     
-    // TODO: Acabar update Expereriencia
-    private void updateExperience() {
+    private void updateExperience() throws IOException {
 
-     
+        clear();
 
+        if (listExperience() == -1) {
+            return;
+        }
+
+        listExperience();
+
+        String experienceNameTemp = textField("Chose one Experience by his ID");
+
+        if (experienceNameTemp.isEmpty())
+            throw new ExperienceException("Please provide an id!");
+
+        clear();
+
+        String experienceTitle = textField("Experience Title (default : same)");
+        String experienceName = textField("Experience Name (default : same)");
+        String description = textField("Description (default : same)");
+        String startDate = textField("Start Date (default : same)");
+        String finalDate = textField("Finish Date (default : same)");
+
+        try {
+
+            var experience = talentService.getExperienceById(Integer.parseInt(experienceNameTemp));
+
+            talentService.updateExperience(
+                new CreateExperienceRequest(
+                    currentTalent,
+                    experienceTitle.isEmpty() ? experience.getTitle() : experienceTitle, 
+                    experienceName.isEmpty() ? experience.getName() : experienceName, 
+                    description.isEmpty() ? experience.getDesc() : description, 
+                    startDate.isEmpty() ? experience.getStartDate() : new Date(), 
+                    finalDate.isEmpty() ? experience.getFinalDate() : new Date()
+                ),
+                Integer.parseInt(experienceNameTemp)
+            );
+
+        } catch (NumberFormatException e) {
+            exitDisplay(e.getMessage());
+        } catch (Exception e) {
+            exitDisplay(e.getMessage());
+        }
+
+    }
+
+    private void exitDisplay(String msg) throws IOException {
+        printError(msg);
+
+        if (repeatAction("Do you wanna repeat?")) {
+            updateExperience();
+        }
     }
 
     private void removeExperience() throws IOException {

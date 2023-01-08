@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Optional;
 
 import shareit.errors.ExperienceException;
 import shareit.errors.ProfAreaException;
@@ -124,16 +125,16 @@ public class Talent implements Serializable {
 
     }
 
-    public Experience getExperienceById(int id) throws ExperienceException {
+    public boolean containsExperience(int id) {
+        return getExperienceById(id).isPresent();
+    }
 
-        for (Experience exp : experiences) {
-            if(exp.getExperienceId() == id)
-            {
-                return exp;
-            }
-        }
+    public Optional<Experience> getExperienceById(int id) throws ExperienceException {
 
-        throw new ExperienceException("Experience with ID " + id + " not found!");
+        return experiences
+                .stream()
+                    .filter(exp -> exp.getExperienceId() == id)
+                    .findAny();
 
     }
 

@@ -80,8 +80,8 @@ public class ProfAreaService {
             throw new ProfAreaException("Professional Area not found by the id: " + id);
         }
 
-        if (validateProfArea.get().getQtyProf() == 0) 
-            throw new ProfAreaException("Impossible to remove this professional area! This skill is being used by " + validateProfArea.get().getQtyProf() + " users.");
+        if (validateProfArea.get().getQtyProf() != 0) 
+            throw new ProfAreaException("Impossible to remove this Professional Area! This Professional Area is being used by " + validateProfArea.get().getQtyProf() + " users.");
 
         globalRepository.removeProfAreaById(id);
         globalRepository.commit();

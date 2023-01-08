@@ -82,7 +82,7 @@ public class SkillService {
             throw new SkillException("Skill not found by the id: " + id);
         }
 
-        if (validateSkill.get().getQtyProf() == 0) 
+        if (validateSkill.get().getQtyProf() != 0) 
             throw new SkillException("Impossible to remove this skill! This skill is being used by " + validateSkill.get().getQtyProf() + " users.");
 
         globalRepository.removeSkillById(id);

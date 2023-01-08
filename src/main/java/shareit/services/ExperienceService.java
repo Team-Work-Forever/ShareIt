@@ -39,14 +39,10 @@ public class ExperienceService {
         var authUser = authenticationService.getAuthenticatedUser();
         Collection<Talent> talents = authUser.getTalents();
 
-        try {
-            
-            for (Talent talent : talents) {
-                return talent.getExperienceById(experienceId);
+        for (Talent talent : talents) {
+            if (talent.containsExperience(experienceId)) {
+                return talent.getExperienceById(experienceId).get();
             }
-
-        } catch (Exception e) {
-            throw new TalentException(e.getMessage());
         }
 
         throw new TalentException("Was not found any Experience with that ID!");        

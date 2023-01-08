@@ -3,6 +3,8 @@ package shareit.services;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,7 +110,35 @@ public class TalentService {
 
     }
 
-       public Collection<Talent> getAllTalentsPublic() {
+    public Collection<Talent> getAllTalentsByOrder(Comparator<Talent> comparator, Collection<Skill> selectedSkills) {
+
+        int i;
+        Collection<Talent> reallyAllTalents = getReallyAllTalents();
+        List<Talent> selectedTalents = new ArrayList<>();
+
+        for (Talent talent : reallyAllTalents) {
+                
+            i = 0;
+
+            for (Skill skill : selectedSkills) {
+                if (talent.containsSkill(skill.getSkillId())) {
+                    i++;
+                }
+            }
+
+            if (i == selectedSkills.size()) {
+                selectedTalents.add(talent);
+            }
+
+        }
+        
+        selectedTalents.sort(comparator);
+
+        return selectedTalents;
+
+    }
+
+    public Collection<Talent> getAllTalentsPublic() {
 
         Collection<IdentityUser> members = memberService.getAllMembers();
         Collection<Talent> talents = new ArrayList<>();
@@ -195,6 +225,8 @@ public class TalentService {
         }
 
         Talent updatedTalent = request.toTalent();
+
+        // TODO: OS UPDATES ELIMINAM TUDO!
 
         authUser.removeTalent(currentTalent.getTalentId());
         authUser.addTalent(updatedTalent);
@@ -325,7 +357,7 @@ public class TalentService {
 
     //Experience
 
-    public void createExperience(@Validated CreateExperienceRequest request) throws Exception {
+    public Experience createExperience(@Validated CreateExperienceRequest request) throws Exception {
 
         Experience experience;
         Talent talent;
@@ -347,6 +379,8 @@ public class TalentService {
         globalRepository.updateIdentityUserByEmail(authUser.getEmail(), authUser);
         globalRepository.commit();
 
+        return experience;
+
     }
 
     public Experience getExperienceByJobOfferId(int id) {
@@ -359,21 +393,46 @@ public class TalentService {
             }
         }
 
-        throw new ExperienceException("There is no experience with that name");
+        throw new ExperienceException("There is no experience with that ID");
 
     }
 
     public Experience getExperienceById(int id) {
 
-        for (Talent talento : getReallyAllTalents()) {
-            return talento.getExperienceById(id);
+        for (Talent talent : getReallyAllTalents()) {
+            if (talent.containsExperience(id)) {
+                return talent.getExperienceById(id).get();
+            }
         }
-
-        throw new ExperienceException("There is no experience with that name");
+        
+        throw new ExperienceException("Id does not exists!");
 
     }
 
-        public void removeExperienceById(int id) {
+    public void updateExperience(CreateExperienceRequest request, int id) {
+
+        var errors = validatorCreateExperience.validate(request);
+
+        if (!errors.isEmpty()) {
+            throw new ExperienceException(errors.iterator().next().getMessage());
+        }
+
+        try {
+
+            //TODO: apaga todo o que esta na experiencia
+
+            removeExperienceById(id);
+            createExperience(request);
+
+            globalRepository.commit();
+
+        } catch (Exception e) {
+            throw new JobOfferException(e.getMessage());
+        }
+
+    }
+
+    public void removeExperienceById(int id) {
         
         var authUser = authenticationService.getAuthenticatedUser();
         Collection<Talent> talents = authUser.getTalents();

@@ -178,8 +178,10 @@ public class Experience implements Serializable {
     public IdentityUser getClientByEmail(String email) throws IdentityException {
 
         for (ExperienceLine expl : experienceLines) {
-        if (expl.getExperience().getClientByEmail(email) != null) {
-                return expl.getClient();
+            for (IdentityUser client : expl.getExperience().getAllClients()) {
+                if (client.getEmail().equals(email)) {
+                    return client;
+                }
             }
         }
 
@@ -189,10 +191,19 @@ public class Experience implements Serializable {
 
     public boolean containsClient(String email) {
 
-        return experienceLines
-            .stream()
-            .filter(exl -> exl.getExperience().getClientByEmail(email) != null)
-                .findAny().isPresent();
+        try {
+            
+            for (ExperienceLine experienceLine : experienceLines) {
+                if (experienceLine.getExperience().getClientByEmail(email) != null) {
+                    return true;
+                }
+            }
+
+            return false;
+
+        } catch (Exception e) {
+            return false;
+        }
 
     }
 

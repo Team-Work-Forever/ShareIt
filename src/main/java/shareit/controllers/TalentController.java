@@ -151,7 +151,7 @@ public class TalentController extends ControllerBase {
                         waitForKeyEnter();
                         break;
                     case 9:
-                        seachTalents();
+                        seachTalentsOrder(Comparator.comparing(Talent::getName));
 
                         waitForKeyEnter();
                 }
@@ -457,28 +457,22 @@ public class TalentController extends ControllerBase {
             return;
         }
 
-        listAllTalents();
-
-        String talentNameTemp = textField("Chose one Talent by his ID");
-
-        if (talentNameTemp.isEmpty())
-            throw new TalentException("Please provide an id");
-
-        clear();
-
-        String talentName = textField("Talent Name (default : same)");
-        String pricePerHour = textField("Price Per Hour (default : same)");
-        String isPublic = textField("Public/Private (t|f)");
-
         try {
 
-            var talent = talentService.getTalentById(Integer.parseInt(talentId));
+            int talentId = Integer.parseInt(
+                textField("Chose one Talent by his ID")
+            );
 
-            if (talentId.isEmpty())
-                throw new TalentException("Please provide an id");
+            clear();
+
+            String talentName = textField("Talent Name (default : same)");
+            String pricePerHour = textField("Price Per Hour (default : same)");
+            String isPublic = textField("Public/Private (t|f)");
+
+            var talent = talentService.getTalentById(talentId);
 
             talentService.updateTalent(
-                Integer.parseInt(talentId),
+                talentId,
                 new CreateTalentRequest(
                     talentName.isEmpty() ? talent.getName() : talentName, 
                     pricePerHour.isEmpty() ? talent.getPricePerHour() : Float.parseFloat(pricePerHour), 
@@ -612,12 +606,12 @@ public class TalentController extends ControllerBase {
 
     }
 
-    public void seachTalents() throws Exception {
+    public void seachTalentsOrder(Comparator<Talent> comparator) throws Exception {
 
         Collection<Talent> reallyAllTalents = talentService.getAllTalentsPublic();
         Collection<Skill> selectedSkills = new ArrayList<>();
         List<Talent> selectedTalents = new ArrayList<>();
-        int i;
+        Collection<IdentityUser> users = memberService.getAllMembers();
 
         clear();
 
@@ -645,23 +639,10 @@ public class TalentController extends ControllerBase {
 
             clear();
  
-            for (Talent talent : reallyAllTalents) {
-                
-                i = 0;
-
-                for (Skill skill : selectedSkills) {
-                    if (talent.containsSkill(skill.getSkillId())) {
-                        i++;
-                    }
-                }
-
-                if (i == selectedSkills.size()) {
-                    selectedTalents.add(talent);
-                }
-
-            }
-
-            selectedTalents.sort(Comparator.comparing(Talent::getName));
+            selectedTalents = ((List<Talent>)talentService.getAllTalentsByOrder(
+                Comparator.comparing(Talent::getName), 
+                selectedSkills
+            ));
 
             if (selectedTalents.isEmpty()) {
                 printInfo("There is no talents with that skills!");
@@ -670,12 +651,18 @@ public class TalentController extends ControllerBase {
 
             selectedTalents.forEach(talent -> {
                 
-                try {
-                    printInfo(talent.toString());
-                } catch (Exception e) {
-                    System.out.println("--- Error ---");
+                for (IdentityUser user : users) {
+                    if (user.containsTalent(talent.getTalentId())) {
+                        try {
+                            printInfo(user.toString());
+                            System.out.println();
+                            printInfo(talent.toString());
+                        } catch (Exception e) {
+                            System.out.println("--- Error ---");
+                        }
+                    }
                 }
-                
+  
             });
 
         } catch (Exception e) {

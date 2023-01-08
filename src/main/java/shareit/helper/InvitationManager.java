@@ -1,8 +1,12 @@
 package shareit.helper;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import shareit.data.Experience;
 import shareit.data.JobOffer;
 import shareit.data.Privilege;
+import shareit.data.Skill;
 import shareit.data.auth.IdentityUser;
 import shareit.errors.InviteNotValidException;
 import shareit.errors.auth.IdentityException;
@@ -18,9 +22,24 @@ public class InvitationManager {
             return ((Experience)inviteType).containsClient(invited.getEmail());
 
         if ((inviteType instanceof JobOffer))
+        {
+            if(!compareSkills(inviteType, invited))
+                return true;
+
             return ((JobOffer)inviteType).containsClient(invited.getEmail());
+
+        } 
         
         return false;
+
+    }
+
+    private static boolean compareSkills(Object inviteType, IdentityUser invited) {
+
+        Collection<Skill> intersection = new ArrayList<>(((JobOffer)inviteType).getAllSkills());
+        intersection.retainAll(invited.getMySkills());
+
+        return intersection.isEmpty();
 
     }
 
