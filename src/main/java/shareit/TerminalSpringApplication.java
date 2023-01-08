@@ -59,24 +59,6 @@ public class TerminalSpringApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws IOException {
 
-        // // TODO: Fix the buffer not closing issue
-        // Runtime.getRuntime().addShutdownHook(new Thread() {
-
-        //     @Override
-        //     public void run() {
-        //         try {
-                    
-        //             ScreenUtils.closeBuffer();
-
-        //         } catch (Exception e) {
-                    
-        //             System.out.println("Error as occorred closing buffer");
-
-        //         }
-        //     }
-
-        // });
-
         try {
             
             if (authenticationService().isBeforeAuthenticated())
@@ -131,6 +113,21 @@ public class TerminalSpringApplication implements CommandLineRunner {
                 true, 
                 0, 
                 Role.USER
+            ));
+
+            authenticationService().signIn(new RegisterRequest(
+                "sergio@gmail.com", 
+                "password", 
+                "Serjão", 
+                adminEmail, 
+                new Date(), 
+                adminEmail, 
+                adminEmail, 
+                adminEmail, 
+                "Portugal", 
+                true, 
+                0, 
+                Role.USERMANAGER
             ));
             
             authenticationService().signIn(new RegisterRequest(

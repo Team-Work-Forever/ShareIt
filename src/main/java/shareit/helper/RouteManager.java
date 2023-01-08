@@ -3,6 +3,8 @@ package shareit.helper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import shareit.data.auth.Role;
+import shareit.controllers.AdminController;
+import shareit.controllers.ControllerBase;
 import shareit.controllers.DashBoardController;
 import shareit.controllers.LoginController;
 import shareit.services.AuthenticationService;
@@ -14,7 +16,7 @@ public class RouteManager {
 
     private Object args;
 
-    public Class<?> authRoute() {
+    public Class<? extends ControllerBase> authRoute() {
         
         if (!authenticationService.isAuthenticated())
             return LoginController.class;
@@ -25,14 +27,14 @@ public class RouteManager {
                 return DashBoardController.class;
             case Role.USERMANAGER:
             case Role.ADMIN:
-                return DashBoardController.class;
+                return AdminController.class;
             default:
                 return LoginController.class;
         }
 
     }
 
-    public Class<?> argumentRoute(Class<?> controller, Object args) {
+    public Class<? extends ControllerBase> argumentRoute(Class<? extends ControllerBase> controller, Object args) {
         this.args = args;
         return controller;
     }

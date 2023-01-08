@@ -147,7 +147,7 @@ public class ExperienceController extends ControllerBase {
 
         Collection<Experience> experiences = currentTalent.getExperiences();
 
-        if (experiences.size() <= 0) {
+        if (experiences.isEmpty()) {
             printInfo("There is no Experience yet!");
             return -1;
         }

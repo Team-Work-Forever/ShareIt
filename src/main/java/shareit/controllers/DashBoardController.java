@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import shareit.data.auth.IdentityUser;
+import shareit.data.auth.Role;
 import shareit.errors.InviteNotFoundException;
 import shareit.errors.InviteNotValidException;
 import shareit.helper.Invitation;
@@ -62,8 +63,6 @@ public class DashBoardController extends ControllerBase {
                     clear();
 
                     String[] options = {
-                        "Skill Menu",
-                        "ProfArea Menu",
                         "Talent Menu",
                         "Invites Available"
                     };
@@ -75,20 +74,14 @@ public class DashBoardController extends ControllerBase {
 
                 switch (index) {
                     case 0:
-                        logout();
+                        if (authUser.getRole().equals(Role.COMPANYINSTITUTION) || authUser.getRole().equals(Role.USER)) {
+                            logout();
+                        }
                         break;
                     case 1:
-                        authorize();
-                        skillMenu();
-                        break;
-                    case 2:
-                        authorize();
-                        profAreaMenu();
-                        break;
-                    case 3:
                         talentMenu();
                         break;
-                    case 4:
+                    case 2:
                         menuInvite();
                         waitForKeyEnter();
                         break;
@@ -153,17 +146,10 @@ public class DashBoardController extends ControllerBase {
         }
 
     }
-
-    private void skillMenu() throws IOException {
-        navigationHelper.navigateTo(SkillController.class);
-    }
     
     private void talentMenu() throws IOException {
         navigationHelper.navigateTo(TalentController.class);
     }
-    
-    private void profAreaMenu() throws IOException {
-        navigationHelper.navigateTo(ProfAreaController.class);
-    }
+
 
 }

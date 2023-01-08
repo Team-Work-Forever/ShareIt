@@ -36,9 +36,19 @@ public abstract class ControllerBase {
     }
 
     public void authorize() throws AuthenticationException {
+
         IdentityUser authuser = authenticationService.getAuthenticatedUser();
 
         if (authuser.getRole().equals(Role.USER) || authuser.getRole().equals(Role.COMPANYINSTITUTION))
+            throw new AuthenticationException("Unauthorized!");
+    
+    }
+
+    public void authorize(String role) throws AuthenticationException {
+
+        IdentityUser authuser = authenticationService.getAuthenticatedUser();
+
+        if (!authuser.getRole().equals(role))
             throw new AuthenticationException("Unauthorized!");
     
     }

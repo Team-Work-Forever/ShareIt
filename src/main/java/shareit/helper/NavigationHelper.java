@@ -14,19 +14,19 @@ public class NavigationHelper {
     @Autowired
     private ApplicationContext applicationContext;
 
-    private Deque<Class<?>> navigationStack;
+    private Deque<Class<? extends ControllerBase>> navigationStack;
 
-    private Class<?> currentController;
+    private Class<? extends ControllerBase> currentController;
 
     public NavigationHelper() {
         navigationStack = new LinkedList<>();
     }
 
-    public void setFirstEntry(Class<?> controller) throws IOException {
+    public void setFirstEntry(Class<? extends ControllerBase> controller) throws IOException {
         iniController(controller);
     }
 
-    public void navigateTo(Class<?> controller) throws IOException {
+    public void navigateTo(Class<? extends ControllerBase> controller) throws IOException {
 
         navigationStack.add(currentController);
 
@@ -44,7 +44,7 @@ public class NavigationHelper {
 
     }
 
-    private void iniController(Class<?> controller) throws IOException {
+    private void iniController(Class<? extends ControllerBase> controller) throws IOException {
         this.currentController = controller;
         ((ControllerBase)applicationContext.getBean(controller)).display();
     }

@@ -96,8 +96,7 @@ public class TalentController extends ControllerBase {
                         "List JobOffers Available",
                         "Enter Associated Experience",
                         "Enter Associated JobOffer",
-                        "Seach Talents",
-                        "Generate reports"
+                        "Seach Talents"
                     }, authUser.getName());
 
                 } while (index <= 0 && index >= 6);
@@ -155,10 +154,6 @@ public class TalentController extends ControllerBase {
                         seachTalentsOrder(Comparator.comparing(Talent::getName));
 
                         waitForKeyEnter();
-                    case 10:
-                        authorize();
-
-                        generateReport();
                         break;
                 }
 
@@ -170,10 +165,6 @@ public class TalentController extends ControllerBase {
         
         navigationHelper.navigateBack();
 
-    }
-
-    private void generateReport() throws IOException {
-        navigationHelper.navigateTo(ReportController.class);
     }
 
     private void enterInvitedJobOffer() throws IOException {
@@ -445,7 +436,7 @@ public class TalentController extends ControllerBase {
 
         Collection<Talent> talents = talentService.getAllTalents();
 
-        if (talents.size() <= 0) {
+        if (talents.isEmpty()) {
             printInfo("There is no talents yet!");
             return -1;
         }

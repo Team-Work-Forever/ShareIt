@@ -209,7 +209,7 @@ public class JobOfferController extends ControllerBase {
 
         Collection<Invitation> inviteInBox = memberService.getInviteInBox(authenticationService.getAuthenticatedUser().getEmail());;
 
-        if (inviteInBox.size() <= 0) {
+        if (inviteInBox.isEmpty()) {
             printInfo("There is no Applications!");
             return;
         }
@@ -428,7 +428,7 @@ public class JobOfferController extends ControllerBase {
 
         Collection<JobOffer> jobOffers = currentExperience.getJobOffers();
 
-        if (jobOffers.size() <= 0) {
+        if (jobOffers.isEmpty()) {
             printInfo("There is no JobOffer available");
             return -1;
         }
