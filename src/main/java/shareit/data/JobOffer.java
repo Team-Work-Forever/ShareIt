@@ -8,6 +8,7 @@ import java.util.Iterator;
 import shareit.data.auth.IdentityUser;
 import shareit.errors.SkillException;
 import shareit.errors.auth.IdentityException;
+import shareit.helper.AutoIncrement;
 
 public class JobOffer implements Serializable {
 
@@ -29,7 +30,7 @@ public class JobOffer implements Serializable {
 
         this.state = State.Available;
 
-        jobOfferId++;
+        jobOfferId = AutoIncrement.getIncrementJobOffer();
 
     }
 

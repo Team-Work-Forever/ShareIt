@@ -2,6 +2,7 @@ package shareit.data;
 
 import java.io.Serializable;
 
+import shareit.helper.AutoIncrement;
 import shareit.helper.CSVSerializable;
 
 public class ProfArea implements Serializable, CSVSerializable {
@@ -17,7 +18,7 @@ public class ProfArea implements Serializable, CSVSerializable {
         this.description = description;
         this.qtyProf = 0;
 
-        id++;
+        id = AutoIncrement.getIncrementProfArea();
     }
 
     public int getProfAreaId() {

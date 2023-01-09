@@ -7,7 +7,7 @@ import shareit.data.Privilege;
 
 public class Invitation implements Serializable {
     
-    private static int id;
+    private int id;
     private Object invitationType;
     private boolean accepted;
     private Date expire;
@@ -23,7 +23,7 @@ public class Invitation implements Serializable {
         this.emailFrom = emailFrom;
         this.emailTo = emailTo;
 
-        id++;
+        id = AutoIncrement.getIncrementInvitation();
     }
 
     public Invitation(Object invitationType, boolean accepted, Date expire, String emailFrom, String emailTo, Privilege privilege) {
@@ -33,7 +33,7 @@ public class Invitation implements Serializable {
         this.emailFrom = emailFrom;
         this.emailTo = emailTo;
         this.privilege = privilege;
-        id++;
+        id = AutoIncrement.getIncrementInvitation();
     }
 
     public Object getObject() {

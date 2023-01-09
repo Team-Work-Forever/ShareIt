@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import jakarta.annotation.PreDestroy;
 import shareit.data.auth.IdentityUser;
+import shareit.helper.AutoIncrement;
 import shareit.helper.Invitation;
 import shareit.helper.Pair;
 import shareit.data.Skill;
@@ -19,6 +20,7 @@ import static shareit.utils.SerializeUtils.serialize;
 
 public class GlobalRepository implements Serializable {
     
+    private AutoIncrement autoIncrement;
     private Pair<String, String> authToken;
     private Collection<IdentityUser> identityUsers;
     private Collection<Skill> skills;
@@ -34,6 +36,7 @@ public class GlobalRepository implements Serializable {
 
         if (StoreUtils.verifyFile(DATA_FILE))
         {
+            autoIncrement = extractRepository().getAutoIncrement();
             identityUsers = extractRepository().getIdentityUsers();
             skills = extractRepository().getSkills();
             profAreas = extractRepository().getProfAreas();
@@ -219,6 +222,10 @@ public class GlobalRepository implements Serializable {
 
     public boolean removeInvite(Invitation invitation) {
         return invites.remove(invitation);
+    }
+
+    public AutoIncrement getAutoIncrement() {
+        return autoIncrement;
     }
 
     @PreDestroy()

@@ -2,6 +2,7 @@ package shareit.data;
 
 import java.io.Serializable;
 
+import shareit.helper.AutoIncrement;
 import shareit.helper.CSVSerializable;
 
 public class Skill implements Serializable, CSVSerializable {
@@ -14,6 +15,8 @@ public class Skill implements Serializable, CSVSerializable {
     public Skill(String name, String desc) {
         this.name = name;
         this.desc = desc;
+
+        id = AutoIncrement.getIncrementSkill();
     }
 
     public int getSkillId() {

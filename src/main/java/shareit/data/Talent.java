@@ -9,10 +9,11 @@ import java.util.Optional;
 import shareit.errors.ExperienceException;
 import shareit.errors.ProfAreaException;
 import shareit.errors.SkillException;
+import shareit.helper.AutoIncrement;
 
 public class Talent implements Serializable {
 
-    private static int talentId;
+    private int talentId;
     private String name;
     private float pricePerHour;
     private boolean isPublic = true;
@@ -25,7 +26,7 @@ public class Talent implements Serializable {
         this.name = name;
         this.pricePerHour = pricePerHour;
 
-        talentId++;
+        talentId = AutoIncrement.getIncrementTalents();
     }
 
     public Talent(String name, float pricePerHour, boolean isPublic) {
@@ -34,7 +35,7 @@ public class Talent implements Serializable {
         this.pricePerHour = pricePerHour;
         this.isPublic = isPublic;
         
-        talentId++;
+        talentId = AutoIncrement.getIncrementTalents();
         
     }
 

@@ -12,6 +12,7 @@ import shareit.data.auth.IdentityUser;
 import shareit.errors.ExperienceException;
 import shareit.errors.JobOfferException;
 import shareit.errors.auth.IdentityException;
+import shareit.helper.AutoIncrement;
 import shareit.utils.DatePattern;
 
 public class Experience implements Serializable {
@@ -34,7 +35,7 @@ public class Experience implements Serializable {
         this.startDate = startDate;
         this.desc = desc;
 
-        id++;
+        id = AutoIncrement.getIncrementExperiences();
     }
 
     public Experience(String title, String name, LocalDate startDate, LocalDate finalDate, String desc) {
@@ -45,7 +46,7 @@ public class Experience implements Serializable {
         this.finalDate = finalDate;
         this.desc = desc;
 
-        id++;
+        id = AutoIncrement.getIncrementExperiences();
         
     }
 
