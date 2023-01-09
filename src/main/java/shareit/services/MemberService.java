@@ -84,7 +84,7 @@ public class MemberService {
                 if (invite.getExpire().isAfter(LocalDate.now())) {
                     selectedInvites.add(invite);
                 } else {
-                    it.remove(); // If this invitation get expired then is removed! O error esta aqui não se pode remover uma variael fltuante!
+                    it.remove(); // If this invitation get expired then is removed!
                 }
             }
 

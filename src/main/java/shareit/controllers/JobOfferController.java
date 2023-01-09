@@ -190,7 +190,7 @@ public class JobOfferController extends ControllerBase {
 
         clear();
 
-        Collection<Invitation> inviteInBox = memberService.getInviteInBox(authenticationService.getAuthenticatedUser().getEmail());;
+        Collection<Invitation> inviteInBox = memberService.getInviteInBox(authenticationService.getAuthenticatedUser().getEmail());
 
         if (inviteInBox.isEmpty()) {
             printInfo("There is no Applications!");
