@@ -577,24 +577,10 @@ public class TalentService {
             throw new ExperienceException("You cannot remove yourself!");
         }
 
-        // TODO: Acabar Este Metodo
-        // Removes Owner and Put the Evil Master Mind as Owner
-        if (experience.getPrivilegeOfClient(identityUser.getEmail()).equals(Privilege.OWNER)) {
-
-            var createExperience = CreateExperienceRequest.toCreateExperienceRequest(experience);
-
-            Talent talent = getTalentByExperienceId(experience.getExperienceId());
+        if (!experience.getPrivilegeOfClient(identityUser.getEmail()).equals(Privilege.OWNER)) {
             identityUser.removeExperienceById(experience.getExperienceId());
-
-            experience.ChangeClientPrivilege(authUser.getEmail(), Privilege.OWNER);
-            
-            var newTalent = createTalent(new CreateTalentRequest(talent.getName(), talent.getPricePerHour(), talent.getIsPublic()));
-            createExperience.setTalent(newTalent);
-
-            createExperience(createExperience);
-
         } else {
-            identityUser.removeExperienceById(experience.getExperienceId());
+            throw new ExperienceException("You cannot remove the Owner from the experience!");
         }
 
         if (experience.removeClient(identityUser.getEmail())) {
