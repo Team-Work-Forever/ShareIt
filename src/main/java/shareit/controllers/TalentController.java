@@ -496,6 +496,8 @@ public class TalentController extends ControllerBase {
                 if (name.isEmpty())
                     continue;
 
+                clear();
+
                 String necYears = textField("Skill: " + name + "\tInsert years of experience required");
 
                 selectedSkills.put(

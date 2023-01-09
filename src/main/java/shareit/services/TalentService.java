@@ -125,8 +125,10 @@ public class TalentService {
             i = 0;
 
             for (Skill skill : selectedSkills.keySet()) {
-                if (talent.containsSkill(skill.getSkillId()) && getHoursOfExp(talent, skill.getSkillId()) >= selectedSkills.get(skill)) {
-                    i++;
+                if (talent.containsSkill(skill.getSkillId())) {
+                    if(getHoursOfExp(talent, skill.getSkillId()) >= selectedSkills.get(skill)) {
+                        i++;
+                    }
                 }
             }
 
@@ -245,6 +247,12 @@ public class TalentService {
         Talent updatedTalent = request.toTalent();
         
         authUser.removeTalent(currentTalent.getTalentId());
+        
+        createTalent(new CreateTalentRequest(
+            updatedTalent.getName(), 
+            updatedTalent.getPricePerHour(), 
+            updatedTalent.getIsPublic()
+        ));
 
         // Associate All Skills once more again!
         for (SkillLine skillLine : currentTalent.getSkills()) {
