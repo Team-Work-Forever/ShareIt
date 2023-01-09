@@ -11,7 +11,6 @@ import shareit.errors.auth.IdentityException;
 
 public class JobOffer implements Serializable {
 
-    private static int increment = 1;
     private int jobOfferId;
     private String name;
     private int qtyHours;
@@ -23,8 +22,6 @@ public class JobOffer implements Serializable {
 
     public JobOffer(String name, int qtyHours, String desc, ProfArea profArea) {
         
-        jobOfferId = increment;
-
         this.name = name;
         this.qtyHours = qtyHours;
         this.desc = desc;
@@ -32,7 +29,7 @@ public class JobOffer implements Serializable {
 
         this.state = State.Available;
 
-        increment++;
+        jobOfferId++;
 
     }
 

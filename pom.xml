@@ -9,8 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>shareit</groupId>
+	<packaging>jar</packaging>
 	<artifactId>shareit</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>shareit</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>

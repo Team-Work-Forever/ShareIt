@@ -90,7 +90,9 @@ public class JobOfferController extends ControllerBase {
             
             try {
                 
-                currentExperience = talentService.getExperienceById(((int)routeManager.getArgs()));
+                if (currentExperience == null) {
+                    currentExperience = talentService.getExperienceById(((int)routeManager.getArgs()));
+                }
 
                 IdentityUser authenticatedUser = authenticationService.getAuthenticatedUser();
 
@@ -105,7 +107,7 @@ public class JobOfferController extends ControllerBase {
                         "Update JobOffers",
                         "Remove JobOffers",
                         "Envite User",
-                        "List All Members",
+                        "Manage Clients",
                         "See Applications"
                     }, authenticatedUser.getName());
                     
@@ -154,9 +156,16 @@ public class JobOfferController extends ControllerBase {
                         waitForKeyEnter();
                         break;
                     case 7:
-                        listMembers();
 
-                        waitForKeyEnter();
+                        authorizeAction(authenticatedUser);
+
+                        navigationHelper
+                            .navigateTo(routeManager.argumentRoute(
+                                ManageClientsController.class, 
+                                currentExperience
+                            )
+                        );
+
                         break;
                     case 8:
 
@@ -178,31 +187,6 @@ public class JobOfferController extends ControllerBase {
 
     }
     
-    private int listMembers() throws IOException {
-
-        clear();
-
-        Collection<IdentityUser> allClients = currentExperience.getAllClients();
-
-        if (allClients.isEmpty()) {
-            printInfo("There is no Clients in this Experience!");
-            return -1;
-        }
-
-        allClients.forEach(client -> {
-            
-            try {
-                printInfo(client.toString());
-            } catch (IOException e) {
-                System.out.println("--- Error ---");
-            }
-
-        });
-
-        return 0;
-
-    }
-
     private void manageApplications() throws IOException {
 
         clear();

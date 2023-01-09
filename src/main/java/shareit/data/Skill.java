@@ -6,21 +6,14 @@ import shareit.helper.CSVSerializable;
 
 public class Skill implements Serializable, CSVSerializable {
 
-    private static int increment = 1;
-
     private int id;
     private String name;
     private String desc;
     private int qtyProf;
 
     public Skill(String name, String desc) {
-
-        this.id = increment;
-
         this.name = name;
         this.desc = desc;
-
-        increment++;
     }
 
     public int getSkillId() {
@@ -50,7 +43,6 @@ public class Skill implements Serializable, CSVSerializable {
     public void setQtyProf(int qtyProf) {
         this.qtyProf = qtyProf;
     }
-
 
     @Override
     public String toString() {

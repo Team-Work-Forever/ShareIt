@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import shareit.data.ProfArea;
 import shareit.data.auth.IdentityUser;
 import shareit.errors.ReportException;
+import shareit.helper.ExcelRunner;
 import shareit.helper.NavigationHelper;
 import shareit.services.Authentication;
 import shareit.services.ProfAreaService;
@@ -89,13 +90,22 @@ public class ReportController extends ControllerBase {
 
     private void generateReportBySkill() throws IOException {
 
-        reportService.generateReportBySkill();
+        String filePath = reportService.generateReportBySkill();
 
-        // Option open in Excel
         printSuccess("The Report was genereted!");
+
+        runnerExcel(filePath);
 
         waitForKeyEnter();
 
+    }
+
+    private void runnerExcel(String filePath) throws IOException {
+        if (ExcelRunner.hasExcel()) {
+            if (repeatAction("Do you want to open this file in excel?")) {
+                ExcelRunner.runExcelCommand(filePath);
+            }
+        }
     }
 
     private void generateReportByProfAreaAndCountry() throws IOException {
@@ -134,9 +144,11 @@ public class ReportController extends ControllerBase {
             printError(e.getMessage());
         }
 
-        reportService.generateReportByProfAreaAndCountry(selectedProfArea, countryName);
+        String filePath = reportService.generateReportByProfAreaAndCountry(selectedProfArea, countryName);
 
         printSuccess("The Report was genereted!");
+
+        runnerExcel(filePath);
 
         waitForKeyEnter();
 

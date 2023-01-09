@@ -1,8 +1,8 @@
 package shareit.controllers;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 
 import static shareit.utils.ScreenUtils.menu;
 import static shareit.utils.ScreenUtils.textField;
@@ -23,6 +23,7 @@ import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
 import shareit.services.AuthenticationService;
 import shareit.services.TalentService;
+import shareit.utils.DatePattern;
 
 @Controller
 public class ExperienceController extends ControllerBase {
@@ -50,7 +51,9 @@ public class ExperienceController extends ControllerBase {
             
             try {
 
-                syncTalent();
+                if (currentTalent == null) {
+                    syncTalent();
+                }
                 
                 do {
                     
@@ -64,7 +67,7 @@ public class ExperienceController extends ControllerBase {
                         "Remove Experience"
                     }, authenticationService.getAuthenticatedUser().getName());
                     
-                } while (index <= 0 && index >= 5);
+                } while (index <= 0 && index >= 6);
 
                 switch (index) {
 
@@ -174,17 +177,19 @@ public class ExperienceController extends ControllerBase {
 
             System.out.println("Experience Info:");
 
-            String title = textField("Title");
-            String name = textField("Name");
-            String description = textField("Description");
+            String title = textField("Title (default)");
+            String name = textField("Name (default)");
+            String description = textField("Description (default)");
+            String startDate = textField("Start Date (default/today:(dd-MM-yyyy))");
+            String finalDate = textField("Final Date (default/today:(dd-MM-yyyy))");
 
             talentService.createExperience(new CreateExperienceRequest(
                 currentTalent,
-                title,
-                name,
-                description,
-                new Date(),
-                new Date()
+                title.isEmpty() ? "" : title,
+                name.isEmpty() ? "" : name,
+                description.isEmpty() ? "" : description,
+                startDate.isEmpty() ? LocalDate.now() : DatePattern.insertDate(startDate),
+                finalDate.isEmpty() ? LocalDate.now() : DatePattern.insertDate(finalDate)
             ));
 
             syncTalent();
@@ -215,8 +220,8 @@ public class ExperienceController extends ControllerBase {
         String experienceTitle = textField("Experience Title (default : same)");
         String experienceName = textField("Experience Name (default : same)");
         String description = textField("Description (default : same)");
-        String startDate = textField("Start Date (default : same)");
-        String finalDate = textField("Finish Date (default : same)");
+        String startDate = textField("Start Date (default : same/(dd-MM-yyyy))");
+        String finalDate = textField("Finish Date (default : same/(dd-MM-yyyy))");
 
         try {
 
@@ -228,8 +233,8 @@ public class ExperienceController extends ControllerBase {
                     experienceTitle.isEmpty() ? experience.getTitle() : experienceTitle, 
                     experienceName.isEmpty() ? experience.getName() : experienceName, 
                     description.isEmpty() ? experience.getDesc() : description, 
-                    startDate.isEmpty() ? experience.getStartDate() : new Date(), 
-                    finalDate.isEmpty() ? experience.getFinalDate() : new Date()
+                    startDate.isEmpty() ? experience.getStartDate() : DatePattern.insertDate(startDate), 
+                    finalDate.isEmpty() ? experience.getFinalDate() : DatePattern.insertDate(finalDate)
                 ),
                 Integer.parseInt(experienceNameTemp)
             );

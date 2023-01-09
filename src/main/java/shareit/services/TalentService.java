@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,9 @@ import shareit.data.Experience;
 import shareit.data.JobOffer;
 import shareit.data.Privilege;
 import shareit.data.ProfArea;
+import shareit.data.ProfAreaLine;
 import shareit.data.Skill;
+import shareit.data.SkillLine;
 import shareit.data.Talent;
 import shareit.data.auth.IdentityUser;
 import shareit.errors.ExperienceException;
@@ -110,7 +114,7 @@ public class TalentService {
 
     }
 
-    public Collection<Talent> getAllTalentsByOrder(Comparator<Talent> comparator, Collection<Skill> selectedSkills) {
+    public Collection<Talent> getAllTalentsByOrder(Comparator<Talent> comparator, Map<Skill, Integer> selectedSkills) {
 
         int i;
         Collection<Talent> reallyAllTalents = getReallyAllTalents();
@@ -120,8 +124,8 @@ public class TalentService {
                 
             i = 0;
 
-            for (Skill skill : selectedSkills) {
-                if (talent.containsSkill(skill.getSkillId())) {
+            for (Skill skill : selectedSkills.keySet()) {
+                if (talent.containsSkill(skill.getSkillId()) && getHoursOfExp(talent, skill.getSkillId()) >= selectedSkills.get(skill)) {
                     i++;
                 }
             }
@@ -136,6 +140,17 @@ public class TalentService {
 
         return selectedTalents;
 
+    }
+
+    public int getHoursOfExp(Talent talent, int id) {
+
+        for (SkillLine skillLine : talent.getSkills()) {
+
+            if (skillLine.getSkill().getSkillId() == id)
+                return skillLine.getYearOfExp();
+        }
+
+        throw new TalentException("Skill not found in this talent!");
     }
 
     public Collection<Talent> getAllTalentsPublic() {
@@ -215,6 +230,9 @@ public class TalentService {
 
     public boolean updateTalent(int id, @Validated CreateTalentRequest request) throws Exception {
 
+        Map<Skill, Integer> selectedSkills = new HashMap<>();
+        Map<ProfArea, Integer> selectedProfAreas = new HashMap<>();
+
         var authUser = authenticationService.getAuthenticatedUser();
         Talent currentTalent = authUser.getTalentById(id);
 
@@ -223,12 +241,30 @@ public class TalentService {
         if (!erros.isEmpty()) {
             throw new TalentException(erros.iterator().next().getMessage());
         }
-
+        
         Talent updatedTalent = request.toTalent();
-
-        // TODO: OS UPDATES ELIMINAM TUDO!
-
+        
         authUser.removeTalent(currentTalent.getTalentId());
+
+        // Associate All Skills once more again!
+        for (SkillLine skillLine : currentTalent.getSkills()) {
+            selectedSkills.put(skillLine.getSkill(), skillLine.getYearOfExp());
+        }
+
+        associateSkills(new TalentAssociationSkill(
+            updatedTalent, 
+            selectedSkills
+        ));
+        
+        for (ProfAreaLine profAreaLine : currentTalent.getProfAreas()) {
+            selectedProfAreas.put(profAreaLine.getProfArea(), profAreaLine.getYearOfExp());
+        }
+
+        associateProfAreas(new TalentAssociationProfArea(
+            updatedTalent,
+            selectedProfAreas
+        ));
+
         authUser.addTalent(updatedTalent);
 
         globalRepository.commit();
@@ -268,9 +304,9 @@ public class TalentService {
 
     }
 
-    public void disassociateSkills(@Validated TalentDisassociateSkill request) throws Exception {
+    public void disassociateSkills(@Validated TalentDisassociateSkill talentDisassociateSkill) throws Exception {
 
-        var errors = validatorDisassociateSkill.validate(request);
+        var errors = validatorDisassociateSkill.validate(talentDisassociateSkill);
 
         if (!errors.isEmpty()) {
             throw new TalentException(errors.iterator().next().getMessage());
@@ -278,9 +314,9 @@ public class TalentService {
 
         var authUser = authenticationService.getAuthenticatedUser();
 
-        Talent talent = authUser.getTalentById(request.getTalent().getTalentId());
+        Talent talent = authUser.getTalentById(talentDisassociateSkill.getTalent().getTalentId());
         
-        var skill = request.getSkill();
+        var skill = talentDisassociateSkill.getSkill();
         
         talent.removeSkillById(skill.getSkillId());
             
@@ -510,5 +546,67 @@ public class TalentService {
         return result;
 
     }
+
+    public Talent getTalentByExperienceId(int id) {
+
+        for (Talent talent : getReallyAllTalents()) {
+            for (Experience experience : talent.getExperiences()) {
+                if (experience.getExperienceId() == id) {
+                    return talent;
+                }
+            }
+        }
+
+        throw new TalentException("There is no talent with that experience");
+
+    }
+
+    public boolean removeClientFromExperience(IdentityUser identityUser, Experience experience) throws Exception {
+
+        IdentityUser authUser = authenticationService.getAuthenticatedUser();
+
+        if (authUser.getEmail().equals(identityUser.getEmail())) {
+            throw new ExperienceException("You cannot remove yourself!");
+        }
+
+        // TODO: Acabar Este Metodo
+        // Removes Owner and Put the Evil Master Mind as Owner
+        if (experience.getPrivilegeOfClient(identityUser.getEmail()).equals(Privilege.OWNER)) {
+
+            var createExperience = CreateExperienceRequest.toCreateExperienceRequest(experience);
+
+            Talent talent = getTalentByExperienceId(experience.getExperienceId());
+            identityUser.removeExperienceById(experience.getExperienceId());
+
+            experience.ChangeClientPrivilege(authUser.getEmail(), Privilege.OWNER);
+            
+            var newTalent = createTalent(new CreateTalentRequest(talent.getName(), talent.getPricePerHour(), talent.getIsPublic()));
+            createExperience.setTalent(newTalent);
+
+            createExperience(createExperience);
+
+        } else {
+            identityUser.removeExperienceById(experience.getExperienceId());
+        }
+
+        if (experience.removeClient(identityUser.getEmail())) {
+            return true;
+        }
+        else
+            throw new ExperienceException("Error Removing user");
+
+    }
+
+    public void experienceAlterPrivilege(Experience experience, Privilege privilege, IdentityUser user) {
+
+        IdentityUser authUser = authenticationService.getAuthenticatedUser();
+
+        if (authUser.getEmail().equals(user.getEmail())) {
+            throw new ExperienceException("You cannot alter your Privilege!");
+        }
+
+        experience.ChangeClientPrivilege(user.getEmail(), privilege);
+
+    } 
 
 }

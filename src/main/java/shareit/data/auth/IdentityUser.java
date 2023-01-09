@@ -1,9 +1,9 @@
 package shareit.data.auth;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -14,6 +14,7 @@ import shareit.data.Privilege;
 import shareit.data.Skill;
 import shareit.data.Talent;
 import shareit.errors.TalentException;
+import shareit.errors.auth.IdentityException;
 
 public class IdentityUser implements Serializable {
     
@@ -21,12 +22,11 @@ public class IdentityUser implements Serializable {
     private String password;
     private String name;
     private String lastName;
-    private Date bornDate;
+    private LocalDate bornDate;
     private String street;
     private String postCode;
     private String locality;
     private String country;
-    private float moneyPerHour;
     private boolean isPublic;
     private String role;
 
@@ -35,8 +35,8 @@ public class IdentityUser implements Serializable {
     private Collection<ExperienceLine> invitedExperiences = new ArrayList<>();
     private Collection<JobOffer> invitedJobOffers = new ArrayList<>();
 
-    public IdentityUser(String email, String password, String name, String lastName, Date bornDate, String street, String postCode, String locality,
-        String country, float moneyPerHour, boolean isPublic, String role) {
+    public IdentityUser(String email, String password, String name, String lastName, LocalDate bornDate, String street, String postCode, String locality,
+        String country, boolean isPublic, String role) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -46,7 +46,6 @@ public class IdentityUser implements Serializable {
         this.postCode = postCode;
         this.locality = locality;
         this.country = country;
-        this.moneyPerHour = moneyPerHour;
         this.isPublic = isPublic;
         this.role = role;
     }
@@ -95,14 +94,6 @@ public class IdentityUser implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    public float getMoneyPerHour() {
-        return moneyPerHour;
-    }
-
-    public void setMoneyPerHour(float moneyPerHour) {
-        this.moneyPerHour = moneyPerHour;
-    }  
       
     public String getRole() {
         return role;
@@ -120,11 +111,11 @@ public class IdentityUser implements Serializable {
         this.lastName = lastName;
     }
 
-    public Date getBornDate() {
+    public LocalDate getBornDate() {
         return bornDate;
     }
 
-    public void setBornDate(Date bornDate) {
+    public void setBornDate(LocalDate bornDate) {
         this.bornDate = bornDate;
     }
 
@@ -186,7 +177,19 @@ public class IdentityUser implements Serializable {
             }
         }
 
-        throw new TalentException("Talento com nome " + id + " não existe!");
+        throw new TalentException("Talent with the id " + id + " not found!");
+
+    }
+
+    public boolean removeInviteExperienceById(int id) {
+
+        for (ExperienceLine experienceLine : invitedExperiences) {
+            if (experienceLine.getExperience().getExperienceId() == id) {
+                return experienceLine.getExperience().removeClient(this.getEmail());
+            }
+        }
+
+        throw new IdentityException("Error removing client from invited experience!");
 
     }
 
@@ -195,6 +198,20 @@ public class IdentityUser implements Serializable {
         Talent talent = getTalentById(id);
 
         talents.remove(talent);
+
+    }
+
+    public boolean removeExperienceById(int id) {
+
+        for (Talent talent : getTalents()) {
+            for (Experience experience : talent.getExperiences()) {
+                if (experience.getExperienceId() == id) {
+                    return talent.removeExperienceById(id);
+                }
+            }
+        }
+
+        throw new IdentityException("Experience not found!");
 
     }
 

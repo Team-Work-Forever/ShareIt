@@ -196,7 +196,7 @@ public class MemberController extends ControllerBase {
     private void addMember() throws IOException {
 
         Collection<Talent> reallyAllTalents = talentService.getAllTalentsPublic();
-        Collection<Skill> selectedSkills = new ArrayList<>();
+        Map<Skill, Integer> selectedSkills = new HashMap<>();
         Map<Talent, IdentityUser> selectedUsers = new HashMap<>();
         List<Talent> selectedTalents = new ArrayList<>();
         Collection<IdentityUser> users = memberService.getAllMembers();
@@ -220,9 +220,14 @@ public class MemberController extends ControllerBase {
                 
                 if (name.isEmpty())
                     continue;
+                
+                clear();
 
-                selectedSkills.add(
-                    skillService.getSkillById(Integer.parseInt(name))
+                String necYears = textField("Skill: " + name + "\tInsert years of experience required");
+
+                selectedSkills.put(
+                    skillService.getSkillById(Integer.parseInt(name)),
+                    necYears.isEmpty() ? 0 : Integer.parseInt(necYears)
                 );
 
             }

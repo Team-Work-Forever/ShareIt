@@ -1,6 +1,6 @@
 package shareit.contracts.experience;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.validation.constraints.NotEmpty;
 import shareit.data.Experience;
@@ -23,12 +23,12 @@ public class CreateExperienceRequest {
     @NotEmpty(message = "Please provide an description")
     private String desc;
 
-    private Date startDate;
+    private LocalDate startDate;
     
-    private Date finalDate;
+    private LocalDate finalDate;
     
     public CreateExperienceRequest(Talent talent, String title, String name,
-        String desc, Date startDate, Date finalDate) {
+        String desc, LocalDate startDate, LocalDate finalDate) {
         this.talent = talent;
         this.title = title;
         this.name = name;
@@ -77,19 +77,19 @@ public class CreateExperienceRequest {
         this.desc = desc;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getFinalDate() {
+    public LocalDate getFinalDate() {
         return finalDate;
     }
 
-    public void setFinalDate(Date finalDate) {
+    public void setFinalDate(LocalDate finalDate) {
         this.finalDate = finalDate;
     }
 
@@ -99,6 +99,19 @@ public class CreateExperienceRequest {
 
     public void setTalent(Talent talent) {
         this.talent = talent;
+    }
+
+    public static CreateExperienceRequest toCreateExperienceRequest(Experience experience) {
+
+        return new CreateExperienceRequest(
+            null, 
+            experience.getTitle(), 
+            experience.getName(), 
+            experience.getDesc(), 
+            experience.getStartDate(), 
+            experience.getFinalDate()
+        );
+
     }
 
     public Experience toExperience() {

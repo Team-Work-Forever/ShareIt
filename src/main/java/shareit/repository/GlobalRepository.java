@@ -1,10 +1,12 @@
 package shareit.repository;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
+import jakarta.annotation.PreDestroy;
 import shareit.data.auth.IdentityUser;
 import shareit.helper.Invitation;
 import shareit.helper.Pair;
@@ -32,15 +34,19 @@ public class GlobalRepository implements Serializable {
 
         if (StoreUtils.verifyFile(DATA_FILE))
         {
-            identityUsers = ((GlobalRepository)deserialize(DATA_FILE)).getIdentityUsers();
-            skills = ((GlobalRepository)deserialize(DATA_FILE)).getSkills();
-            profAreas = ((GlobalRepository)deserialize(DATA_FILE)).getProfAreas();
-            authToken = ((GlobalRepository)deserialize(DATA_FILE)).getAuthToken();
-            invites = ((GlobalRepository)deserialize(DATA_FILE)).getInvites();
+            identityUsers = extractRepository().getIdentityUsers();
+            skills = extractRepository().getSkills();
+            profAreas = extractRepository().getProfAreas();
+            authToken = extractRepository().getAuthToken();
+            invites = extractRepository().getInvites();
         }
         else
             commit();
             
+    }
+
+    private GlobalRepository extractRepository() throws IOException, ClassNotFoundException {
+        return (GlobalRepository)deserialize(DATA_FILE);
     }
 
     // Crud Authentication
@@ -213,6 +219,11 @@ public class GlobalRepository implements Serializable {
 
     public boolean removeInvite(Invitation invitation) {
         return invites.remove(invitation);
+    }
+
+    @PreDestroy()
+    public void close() throws Exception {
+        commit();
     }
 
 }

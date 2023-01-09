@@ -12,9 +12,7 @@ import shareit.errors.SkillException;
 
 public class Talent implements Serializable {
 
-    private static int increment = 1;
-
-    private int talentId;
+    private static int talentId;
     private String name;
     private float pricePerHour;
     private boolean isPublic = true;
@@ -24,23 +22,19 @@ public class Talent implements Serializable {
 
     public Talent(String name, float pricePerHour) {
 
-        talentId = increment;
-
         this.name = name;
         this.pricePerHour = pricePerHour;
 
-        increment++;
+        talentId++;
     }
 
     public Talent(String name, float pricePerHour, boolean isPublic) {
-        
-        talentId = increment;
         
         this.name = name;
         this.pricePerHour = pricePerHour;
         this.isPublic = isPublic;
         
-        increment++;
+        talentId++;
         
     }
 
@@ -169,7 +163,7 @@ public class Talent implements Serializable {
         }
 
         if (found)
-            throw new SkillException("This Skill already exists in the Job Offer!");
+            throw new SkillException("This Skill already exists in the Talent!");
         
         skills.add(
             new SkillLine(skill, this, qtyYearExp)

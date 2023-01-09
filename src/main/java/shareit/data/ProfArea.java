@@ -6,8 +6,6 @@ import shareit.helper.CSVSerializable;
 
 public class ProfArea implements Serializable, CSVSerializable {
 
-    private static int increment = 1;
-
     private int id;
     private String name;
     private String description;
@@ -15,13 +13,11 @@ public class ProfArea implements Serializable, CSVSerializable {
 
     public ProfArea(String name, String description) {
 
-        this.id = increment;
-
         this.name = name;
         this.description = description;
         this.qtyProf = 0;
 
-        increment++;
+        id++;
     }
 
     public int getProfAreaId() {

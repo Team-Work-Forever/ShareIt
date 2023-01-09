@@ -1,9 +1,9 @@
 package shareit.data;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
@@ -12,10 +12,9 @@ import shareit.data.auth.IdentityUser;
 import shareit.errors.ExperienceException;
 import shareit.errors.JobOfferException;
 import shareit.errors.auth.IdentityException;
+import shareit.utils.DatePattern;
 
 public class Experience implements Serializable {
-
-    private static int increment = 1;
 
     private int id;
     private String title;
@@ -23,34 +22,30 @@ public class Experience implements Serializable {
     private int qtyWorkers;
     private int qtyManegers;
     private String desc;
-    private Date startDate;
-    private Date finalDate;
+    private LocalDate startDate;
+    private LocalDate finalDate;
     private final Collection<ExperienceLine> experienceLines = new ArrayList<>();
     private final Collection<JobOffer> jobOffers = new ArrayList<>();
     
-    public Experience(String title, String name, Date startDate, String desc) {
+    public Experience(String title, String name, LocalDate startDate, String desc) {
         
-        this.id = increment;
-
         this.title = title;
         this.name = name;
         this.startDate = startDate;
         this.desc = desc;
 
-        increment++;
+        id++;
     }
 
-    public Experience(String title, String name, Date startDate, Date finalDate, String desc) {
+    public Experience(String title, String name, LocalDate startDate, LocalDate finalDate, String desc) {
         
-        this.id = increment;
-
         this.title = title;
         this.name = name;
         this.startDate = startDate;
         this.finalDate = finalDate;
         this.desc = desc;
 
-        increment++;
+        id++;
         
     }
 
@@ -74,19 +69,19 @@ public class Experience implements Serializable {
         this.name = name;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getFinalDate() {
+    public LocalDate getFinalDate() {
         return finalDate;
     }
 
-    public void setFinalDate(Date finalDate) {
+    public void setFinalDate(LocalDate finalDate) {
         this.finalDate = finalDate;
     }
 
@@ -172,6 +167,18 @@ public class Experience implements Serializable {
         }
 
         return false;
+
+    }
+
+    public Privilege getPrivilegeOfClient(String email) {
+
+        for (ExperienceLine expl : experienceLines) {
+            if (expl.getClient().getEmail().equals(email)) {
+                return expl.getPrivilege();
+            }
+        }
+
+        throw new IdentityException("Was not found any user with the email: " + email);
 
     }
 
@@ -350,14 +357,14 @@ public class Experience implements Serializable {
 
     @Override
     public String toString() {
-        return "Experience (" + this.id + "): \n" + 
+        return "Experience (" + id + "): \n" + 
             "Title: " + this.title + "\t" + 
             "Name: " + this.name + "\t" + 
             "Description: " + desc + "\n" +
             "Qty Works: " + Integer.toString(qtyWorkers) + "\t" +
             "Qty Managers: " + Integer.toString(qtyManegers) + "\n" +
-            "Start Date: " + startDate.toString() + "\t" +
-            "Final Date: " + finalDate.toString();
+            "Start Date: " + DatePattern.convertDate(startDate) + "\t" +
+            "Final Date: " + DatePattern.convertDate(finalDate);
     }
 
 }

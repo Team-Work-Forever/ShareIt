@@ -1,6 +1,6 @@
 package shareit.contracts.auth;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -23,7 +23,7 @@ public class RegisterRequest {
 
     private String lastName;
     
-    private Date bornDate;
+    private LocalDate bornDate;
 
     @NotEmpty
     private String street;
@@ -37,17 +37,15 @@ public class RegisterRequest {
     @NotEmpty
     private String country;
 
-    private float moneyPer;
-
     private boolean isPublic;
 
     @Pattern(regexp = "Admin|UserManager|User", message = "Please use one of the roles available")
     private String role;
 
     public RegisterRequest(String email, String password, 
-        String name, String lastName, Date bornDate, String street,
+        String name, String lastName, LocalDate bornDate, String street,
         String postCode, String locality, 
-        String country, boolean isPublic, float moneyPer, String role) {
+        String country, boolean isPublic, String role) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -58,7 +56,6 @@ public class RegisterRequest {
         this.locality = locality;
         this.country = country;
         this.isPublic = isPublic;
-        this.moneyPer = moneyPer;
         this.role = role;
     }
 
@@ -101,14 +98,6 @@ public class RegisterRequest {
     public void setPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
-
-    public float getMoneyPer() {
-        return moneyPer;
-    }
-
-    public void setMoneyPer(float moneyPer) {
-        this.moneyPer = moneyPer;
-    }
     
     public String getRole() {
         return role;
@@ -126,11 +115,11 @@ public class RegisterRequest {
         this.lastName = lastName;
     }
 
-    public Date getBornDate() {
+    public LocalDate getBornDate() {
         return bornDate;
     }
 
-    public void setBornDate(Date bornDate) {
+    public void setBornDate(LocalDate bornDate) {
         this.bornDate = bornDate;
     }
 
@@ -169,8 +158,7 @@ public class RegisterRequest {
             street, 
             postCode, 
             locality, 
-            country, 
-            moneyPer, 
+            country,
             isPublic, 
             role
         );

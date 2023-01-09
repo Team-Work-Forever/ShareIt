@@ -9,6 +9,7 @@ import shareit.contracts.auth.AuthenticationRequest;
 import shareit.contracts.auth.RegisterRequest;
 import shareit.data.auth.Role;
 import shareit.services.AuthenticationService;
+import shareit.utils.DatePattern;
 import shareit.utils.ScreenUtils;
 import shareit.errors.auth.AuthenticationException;
 import shareit.helper.NavigationHelper;
@@ -20,7 +21,6 @@ import static shareit.utils.ScreenUtils.printError;
 import static shareit.utils.ScreenUtils.menu;
 
 import java.io.IOException;
-import java.util.Date;
 
 @Controller
 public class LoginController extends ControllerBase {
@@ -107,7 +107,7 @@ public class LoginController extends ControllerBase {
 
         String email, password, confirm_password, 
         name, lastName, bornDate, street, postCode, 
-        locality, country, isPublic, moneyPerHour;
+        locality, country, isPublic;
         
         clear();
 
@@ -124,7 +124,14 @@ public class LoginController extends ControllerBase {
 
             name = textField("First Name");
             lastName = textField("Last Name");
-            bornDate = textField("Born Date");
+
+
+            bornDate = textField("Born Date (dd-MM-yyyy)");
+
+            if (bornDate.isEmpty()) {
+                throw new IllegalArgumentException("Please provide an valid date with the format dd-MM-yyyy");
+            }
+
             street = textField("Street");
             
             do {
@@ -136,21 +143,18 @@ public class LoginController extends ControllerBase {
             locality = textField("Locality");
             country = textField("Country");
             isPublic = textField("Visibility Perfil (t/f)");
-            moneyPerHour = textField("Money Per Hour (default : 0)");
-
 
             authenticationService.signIn(new RegisterRequest(
                 email, 
                 password, 
                 name, 
                 lastName, 
-                bornDate.isEmpty() ? new Date() : new Date(), 
+                DatePattern.insertDate(bornDate), 
                 street, 
                 postCode, 
                 locality, 
                 country, 
-                isPublic == "t" ? true : false, 
-                moneyPerHour.isEmpty() ? 0 : Float.parseFloat(moneyPerHour), 
+                isPublic == "t" ? true : false,
                 Role.USER
             ));
 

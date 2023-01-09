@@ -33,7 +33,7 @@ public class ReportService {
     @Autowired
     private MemberService memberService;
 
-    public void generateReportBySkill() throws IOException {
+    public String generateReportBySkill() throws IOException {
 
         Collection<Talent> talents = talentService.getReallyAllTalents();
         Collection<Skill> skills = skillService.getAll();
@@ -56,13 +56,17 @@ public class ReportService {
 
         }
 
+        String file = generateRandomFile();
+
         reportRepository.writeToFile(values, new String[] {
             "Nome", "Total" 
-        }, generateRandomFile());
+        }, file);
+
+        return file;
 
     }
 
-    public void generateReportByProfAreaAndCountry(Collection<ProfArea> selectedProfArea, String countryName) throws IOException {
+    public String generateReportByProfAreaAndCountry(Collection<ProfArea> selectedProfArea, String countryName) throws IOException {
 
         Collection<IdentityUser> users = memberService.getAllMembers();
         Collection<IdentityUser> selectedUsers = new ArrayList<>();
@@ -112,9 +116,13 @@ public class ReportService {
             values.add(new Pair<ProfArea,Float>(profArea, totalTalent));
         }
         
+        String file = generateRandomFile();
+
         reportRepository.writeToFile(values, new String[] {
             "Nome", "Total" 
-        }, generateRandomFile());
+        }, file);
+
+        return file;
 
     }
 }

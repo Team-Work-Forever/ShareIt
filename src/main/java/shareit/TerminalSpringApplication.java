@@ -1,7 +1,6 @@
 package shareit;
 
 import java.io.IOException;
-import java.util.Date;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.CommandLineRunner;
@@ -19,6 +18,7 @@ import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
 import shareit.repository.GlobalRepository;
 import shareit.services.AuthenticationService;
+import shareit.utils.DatePattern;
 import shareit.utils.ScreenUtils;
 
 
@@ -90,13 +90,12 @@ public class TerminalSpringApplication implements CommandLineRunner {
                 "password", 
                 "admin", 
                 adminEmail, 
-                new Date(), 
+                DatePattern.insertDate("29-07-2003"), 
                 adminEmail, 
                 adminEmail, 
                 adminEmail, 
                 "Portugal", 
-                true, 
-                0, 
+                true,
                 Role.ADMIN
             ));
 
@@ -105,13 +104,12 @@ public class TerminalSpringApplication implements CommandLineRunner {
                 "password", 
                 "C.A.V.A.S", 
                 adminEmail, 
-                new Date(), 
+                DatePattern.insertDate("29-07-2002"), 
                 adminEmail, 
                 adminEmail, 
                 adminEmail, 
                 "Espanha", 
                 true, 
-                0, 
                 Role.USER
             ));
 
@@ -120,13 +118,12 @@ public class TerminalSpringApplication implements CommandLineRunner {
                 "password", 
                 "Serjão", 
                 adminEmail, 
-                new Date(), 
+                DatePattern.insertDate("29-07-2001"), 
                 adminEmail, 
                 adminEmail, 
                 adminEmail, 
                 "Portugal", 
                 true, 
-                0, 
                 Role.USERMANAGER
             ));
             
@@ -135,13 +132,12 @@ public class TerminalSpringApplication implements CommandLineRunner {
                 "password", 
                 "ReiNaldo", 
                 adminEmail, 
-                new Date(), 
+                DatePattern.insertDate("29-07-2000"), 
                 adminEmail, 
                 adminEmail, 
                 adminEmail, 
                 "Republica das Bananas", 
-                true, 
-                0, 
+                true,
                 Role.USER
             ));
 

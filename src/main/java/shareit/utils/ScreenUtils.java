@@ -68,6 +68,12 @@ public class ScreenUtils {
         resetColors();
     }
 
+    public static void alternativePrint(String value) throws IOException {
+        System.out.print(ScreenUtils.PURPLE);
+        System.out.println(value);
+        resetColors();
+    }
+
     public static void printSuccess(String value) throws IOException {
         System.out.print(ScreenUtils.GREEN);
         System.out.println(value);
