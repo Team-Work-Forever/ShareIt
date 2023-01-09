@@ -21,7 +21,6 @@ public class InviteMemberRequest {
 
     public InviteMemberRequest(Object invitationType, String emailTo) {
 
-        // TODO: Altera-me!
         expiredDate = LocalDate.now().plusDays(30); // More 30 Days
 
         this.invitationType = invitationType;

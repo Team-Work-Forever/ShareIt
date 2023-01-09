@@ -1,8 +1,6 @@
 package shareit.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Controller;
 
 import shareit.contracts.auth.AuthenticationRequest;
@@ -33,9 +31,6 @@ public class LoginController extends ControllerBase {
 
     @Autowired
     private AuthenticationService authenticationService;
-
-    @Autowired
-    private ApplicationContext applicationContext;
 
     @Override
     public void display() throws IOException {
@@ -71,7 +66,7 @@ public class LoginController extends ControllerBase {
     
         } while (index != 0);
 
-        ((ConfigurableApplicationContext)applicationContext).close();
+        System.exit(0);
 
     }
 

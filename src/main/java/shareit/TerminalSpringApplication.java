@@ -68,13 +68,15 @@ public class TerminalSpringApplication implements CommandLineRunner {
 
             navigationHelper().setFirstEntry(routeManager().authRoute());
 
-            ScreenUtils.closeBuffer();
-
         } catch (Exception e) {
 
-            ScreenUtils.closeBuffer();
-
             ScreenUtils.printError(e.getMessage());
+
+        } finally {
+
+            ScreenUtils.closeBuffer();
+            StartPoint.getApplicationContext().close();
+            
         }
 
     }

@@ -451,7 +451,6 @@ public class TalentController extends ControllerBase {
                 if (!jobOfferFound.isPresent())
                     throw new JobOfferException("No JobOffer was found!");
 
-                // TODO: Compute date to the invites
                 var result = memberService.inviteMember(
                     new InviteMemberRequest(
                         new ReverseInvite(jobOfferFound.get(), authUser), 

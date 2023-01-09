@@ -156,7 +156,7 @@ public class IdentityUser implements Serializable {
         boolean found = false;
 
         for (Talent tal : talents) {
-            if (tal.getName().equals(talento.getName())) {
+            if (tal.getTalentId() == talento.getTalentId()) {
                 found = true;
             }
         }

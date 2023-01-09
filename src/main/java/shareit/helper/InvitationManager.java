@@ -64,7 +64,7 @@ public class InvitationManager {
 
             for (Skill skill : invited.getMySkills()) {
                 if (skillOffer.getSkillId() == skill.getSkillId()) {
-                        i++;
+                    i++;
                 }
             }
 
