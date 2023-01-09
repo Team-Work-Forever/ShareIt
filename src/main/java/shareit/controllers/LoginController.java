@@ -71,8 +71,6 @@ public class LoginController extends ControllerBase {
     
         } while (index != 0);
 
-        ScreenUtils.closeBuffer();
-
         ((ConfigurableApplicationContext)applicationContext).close();
 
     }

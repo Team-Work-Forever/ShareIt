@@ -601,6 +601,20 @@ public class TalentService {
 
         experience.ChangeClientPrivilege(user.getEmail(), privilege);
 
+    }
+
+    public void moveClientFromExperienceToJobOffer(Experience currentExperience, JobOffer currentJobOffer, IdentityUser client) throws Exception {
+
+        if (currentExperience.containsClient(client.getEmail())) {
+            throw new ExperienceException("This Member already is associated to this experience!");
+        }
+        
+        currentExperience.addClient(client, Privilege.WORKER);
+        client.associateExperience(currentExperience, Privilege.WORKER);
+        currentJobOffer.removeClient(client);
+
+        globalRepository.commit();
+
     } 
 
 }

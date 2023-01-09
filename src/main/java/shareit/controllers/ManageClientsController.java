@@ -2,6 +2,7 @@ package shareit.controllers;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Optional;
 
 import static shareit.utils.ScreenUtils.menu;
 import static shareit.utils.ScreenUtils.clear;
@@ -10,14 +11,18 @@ import static shareit.utils.ScreenUtils.printError;
 import static shareit.utils.ScreenUtils.printSuccess;
 import static shareit.utils.ScreenUtils.waitForKeyEnter;
 import static shareit.utils.ScreenUtils.textField;
+import static shareit.utils.ScreenUtils.comboBox;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import shareit.data.Experience;
+import shareit.data.JobOffer;
 import shareit.data.Privilege;
 import shareit.data.auth.IdentityUser;
 import shareit.errors.ExperienceException;
+import shareit.errors.JobOfferException;
+import shareit.errors.auth.IdentityException;
 import shareit.helper.RouteManager;
 import shareit.helper.NavigationHelper;
 import shareit.services.Authentication;
@@ -65,6 +70,7 @@ public class ManageClientsController extends ControllerBase {
                         "List All Members",
                         "Alter Privilege",
                         "Remove Member",
+                        "Add Client From JobOffer"
                     }, authUser.getName());
                     
                 } while (index <= 0 && index >= 8);
@@ -85,6 +91,12 @@ public class ManageClientsController extends ControllerBase {
 
                         waitForKeyEnter();
                         break;
+                    case 4:
+
+                        joinMemberFromJobOffer();
+
+                        waitForKeyEnter();
+                        break;
                 }
 
             } catch (Exception e) {
@@ -94,6 +106,108 @@ public class ManageClientsController extends ControllerBase {
         } while (index != 0);
         
         navigationHelper.navigateBack();
+
+    }
+
+    private void joinMemberFromJobOffer() throws IOException {
+
+        clear();
+
+        if (listAllJobOffers() == -1) {
+            return;
+        }
+
+        try {
+            
+            String jobOfferID = textField("Chose one JobOffer by his ID");
+
+            if (jobOfferID.isEmpty()) {
+                throw new JobOfferException("Please provide an JobOfferID");
+            }
+    
+            Optional<JobOffer> jobOfferFound = currentExperience.getJobOfferById(Integer.parseInt(jobOfferID));
+
+            if (!jobOfferFound.isPresent()) {
+                throw new JobOfferException("There is no JobOffer with that id!");
+            }
+
+            clear();
+
+            jobOfferFound.get().getClients().forEach(client -> {
+
+                try {
+                    printInfo(client.toString());
+                } catch (Exception e) {
+                    System.out.println("-- Error --");
+                }
+
+            });
+
+            String[] emails = comboBox("Please provide the emails from users you want to add!");
+
+            for (String email : emails) {
+                
+                if (email.isEmpty()) {
+                    throw new IdentityException("Please provide an email");
+                }
+
+                try {
+                    talentService.moveClientFromExperienceToJobOffer(
+                        currentExperience,
+                        jobOfferFound.get(), 
+                        memberService.getMemberByEmail(email)
+                    );
+                } catch (ExperienceException e) {
+                    printError(e.getMessage());
+                    waitForKeyEnter();
+                }
+
+            }
+
+            printSuccess("Member(s) added!");
+
+        } catch (NumberFormatException e) {
+           
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                joinMemberFromJobOffer();
+            }
+
+        } catch (Exception e) {
+           
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                joinMemberFromJobOffer();
+            }
+
+        }
+
+    }
+
+    private int listAllJobOffers() throws IOException {
+        
+        clear();
+
+        Collection<JobOffer> jobOffers = currentExperience.getJobOffers();
+
+        if (jobOffers.isEmpty()) {
+            printInfo("There is no JobOffer yet!");
+            return -1;
+        }
+
+        try {
+            
+            for (JobOffer jobOffer : jobOffers) {
+                printInfo(jobOffer.toString());
+            }
+
+        } catch (Exception e) {
+            printError(e.getMessage());
+        }
+
+        return 0;
 
     }
 
