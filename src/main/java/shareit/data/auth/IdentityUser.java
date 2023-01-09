@@ -12,6 +12,7 @@ import shareit.data.ExperienceLine;
 import shareit.data.JobOffer;
 import shareit.data.Privilege;
 import shareit.data.Skill;
+import shareit.data.SkillLine;
 import shareit.data.Talent;
 import shareit.errors.TalentException;
 import shareit.errors.auth.IdentityException;
@@ -326,8 +327,10 @@ public class IdentityUser implements Serializable {
         Collection<Skill> skills = new ArrayList<>();
 
         for (Talent talent : getTalents()) {
-            for (Skill skill : talent.getSkillSet()) {
-                skills.add(skill);
+            for (SkillLine skillLine : talent.getSkills()) {
+                    if (!skills.contains(skillLine.getSkill())) {
+                        skills.add(skillLine.getSkill());
+                    }
             }
         }
 

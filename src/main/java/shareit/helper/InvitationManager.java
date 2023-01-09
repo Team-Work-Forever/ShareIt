@@ -39,6 +39,9 @@ public class InvitationManager {
         }
 
         if (inviteType instanceof ReverseInvite) {
+
+            if(!compareSkills(((ReverseInvite)inviteType).getApplication(), ((ReverseInvite)inviteType).getCadidateUser()))
+                throw new InviteNotValidException("You don't have the skills necessary!");
             
             if (!((JobOffer)((ReverseInvite)inviteType).getApplication()).containsClient(invited.getEmail())) {
                 throw new InviteNotValidException("There is no jobOffer available!");
@@ -52,12 +55,12 @@ public class InvitationManager {
 
     private static boolean compareSkills(Object inviteType, IdentityUser invited) {
 
+        int i;
         Collection<Skill> intersection = new ArrayList<>(((JobOffer)inviteType).getAllSkills());
-        // intersection.retainAll(invited.getMySkills());
 
         for (Skill skillOffer : intersection) {
                 
-            int i = 0;
+            i = 0;
 
             for (Skill skill : invited.getMySkills()) {
                 if (skillOffer.getSkillId() == skill.getSkillId()) {
