@@ -63,7 +63,7 @@ public class ExperienceController extends ControllerBase {
                         "Select Experience",
                         "Create Experience",
                         "List Experiences",
-                        "Update Experience -- Not Implemented",
+                        "Update Experience",
                         "Remove Experience"
                     }, authenticationService.getAuthenticatedUser().getName());
                     
@@ -183,6 +183,10 @@ public class ExperienceController extends ControllerBase {
             String startDate = textField("Start Date (default/today:(dd-MM-yyyy))");
             String finalDate = textField("Final Date (default/today:(dd-MM-yyyy))");
 
+            if (DatePattern.insertDate(startDate).isAfter(DatePattern.insertDate(finalDate))) {
+                throw new ExperienceException("Please provide a valid timestamp!");
+            }
+
             talentService.createExperience(new CreateExperienceRequest(
                 currentTalent,
                 title.isEmpty() ? "" : title,
@@ -195,8 +199,14 @@ public class ExperienceController extends ControllerBase {
             syncTalent();
             
         } catch (ExperienceException e) {
+            
             printError(e.getMessage());
-        }
+
+            if (repeatAction("Do you wanna repeat?")) {
+                createExperience();
+            }
+
+        } 
 
     }
     
@@ -224,6 +234,10 @@ public class ExperienceController extends ControllerBase {
         String finalDate = textField("Finish Date (default : same/(dd-MM-yyyy))");
 
         try {
+
+            if (DatePattern.insertDate(startDate).isAfter(DatePattern.insertDate(finalDate))) {
+                throw new ExperienceException("Please provide a valid timestamp!");
+            }
 
             var experience = talentService.getExperienceById(Integer.parseInt(experienceNameTemp));
 

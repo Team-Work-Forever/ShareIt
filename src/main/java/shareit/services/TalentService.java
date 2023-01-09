@@ -20,6 +20,7 @@ import shareit.contracts.talent.TalentDisassociateProf;
 import shareit.contracts.talent.TalentDisassociateSkill;
 import shareit.contracts.talent.CreateTalentRequest;
 import shareit.data.Experience;
+import shareit.data.ExperienceLine;
 import shareit.data.JobOffer;
 import shareit.data.Privilege;
 import shareit.data.ProfArea;
@@ -452,6 +453,7 @@ public class TalentService {
 
     }
 
+    //TODO: apaga todo o que esta na experiencia
     public void updateExperience(CreateExperienceRequest request, int id) {
 
         var errors = validatorCreateExperience.validate(request);
@@ -462,16 +464,30 @@ public class TalentService {
 
         try {
 
-            //TODO: apaga todo o que esta na experiencia
+            var currentExperience = getExperienceById(id);
 
             removeExperienceById(id);
-            createExperience(request);
+            var experience = createExperience(request);
+
+            // Associate again all jobOffers
+            for (JobOffer jobOffer : currentExperience.getJobOffers()) {
+                experience.addJobOffer(jobOffer);
+            }
+
+            // Associate again all clientes
+            for (ExperienceLine expl:  currentExperience.getExperienceLines()) {
+                if (!expl.getClient().getEmail().equals(authenticationService.getAuthenticatedUser().getEmail())) {
+                    experience.addClient(expl.getClient(), expl.getPrivilege());
+                }
+            }
 
             globalRepository.commit();
 
         } catch (Exception e) {
             throw new JobOfferException(e.getMessage());
         }
+
+        // Line that Sperares everything!! Vodafone
 
     }
 
