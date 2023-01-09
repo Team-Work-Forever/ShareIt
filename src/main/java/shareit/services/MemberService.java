@@ -1,7 +1,9 @@
 package shareit.services;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
@@ -15,6 +17,7 @@ import shareit.contracts.member.InviteMemberRequest;
 import shareit.data.Talent;
 import shareit.data.auth.IdentityUser;
 import shareit.errors.ExperienceException;
+import shareit.errors.InviteNotValidException;
 import shareit.errors.MemberFailedInvitation;
 import shareit.errors.auth.IdentityException;
 import shareit.helper.Invitation;
@@ -68,20 +71,31 @@ public class MemberService {
 
     public Collection<Invitation> getInviteInBox(String email) {
 
-        Collection<Invitation> invites = new ArrayList<>();
+        Collection<Invitation> invites = globalRepository.getInvites();
+        Collection<Invitation> selectedInvites = new ArrayList<>();
 
-        for (Invitation invitation : globalRepository.getInvites()) {
-            if (invitation.getEmailTo().equals(email)) {
-                invites.add(invitation);
+        Iterator<Invitation> it = invites.iterator();
+
+        while( it.hasNext() ) {
+
+            Invitation invite = it.next();
+
+            if (invite.getEmailTo().equals(email)) {
+                if (invite.getExpire().isAfter(LocalDate.now())) {
+                    selectedInvites.add(invite);
+                } else {
+                    it.remove(); // If this invitation get expired then is removed! O error esta aqui não se pode remover uma variael fltuante!
+                }
             }
+
         }
 
-        return invites;
+        return selectedInvites;
 
     }
 
     public boolean containsInvites(String email) {
-        return getInviteInBox(email).size() > 0;
+        return !getInviteInBox(email).isEmpty();
     }
 
     public boolean inviteMember(@Validated InviteMemberRequest inviteMemberRequest) throws Exception {
@@ -112,15 +126,18 @@ public class MemberService {
 
         Invitation invite = inviteMemberRequest.toInvitation();
 
-        
-        boolean occorredError = InvitationManager
-        .checkInvite(
-            invite.getInvitationType(), 
-            invitedUser.get()
-        );
+       try {
+             
+            InvitationManager
+            .checkInvite(
+                invite.getInvitationType(), 
+                invitedUser.get(),
+                invite.getExpire()
+            );
 
-        if (occorredError)
-        throw new ExperienceException("You cannot invite the same user again! / Ou Não tens skills");
+        } catch (InviteNotValidException e) {
+            throw new ExperienceException(e.getMessage());
+        }
 
         globalRepository.createInvite(inviteMemberRequest.toInvitation());
         globalRepository.commit();
@@ -153,7 +170,7 @@ public class MemberService {
                 invite.getObject(),
                 getMemberByEmail(invite.getEmailTo()),
                 invite.getPrivilege()
-            );
+        );
 
         // Removes invite from the system
         removeInvite(invite);

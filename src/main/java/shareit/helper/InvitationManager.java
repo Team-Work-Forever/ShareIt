@@ -1,5 +1,6 @@
 package shareit.helper;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -13,22 +14,37 @@ import shareit.errors.auth.IdentityException;
 
 public class InvitationManager {
 
-    public static boolean checkInvite(Object inviteType, IdentityUser invited) {
+    public static boolean checkInvite(Object inviteType, IdentityUser invited, LocalDate expiredDate) {
+
+        if (expiredDate.isBefore(LocalDate.now())) {
+            throw new InviteNotValidException();
+        }
 
         if (inviteType == null || invited == null)
             throw new InviteNotValidException();
 
         if ((inviteType instanceof Experience))
-            return ((Experience)inviteType).containsClient(invited.getEmail());
+            if (((Experience)inviteType).containsClient(invited.getEmail()))
+                throw new InviteNotValidException("This user already is registered in the experience!");
 
         if ((inviteType instanceof JobOffer))
         {
             if(!compareSkills(inviteType, invited))
-                return true;
+                throw new InviteNotValidException("You don't have the skills necessary!");
 
-            return ((JobOffer)inviteType).containsClient(invited.getEmail());
+            if (((JobOffer)inviteType).containsClient(invited.getEmail())) {
+                throw new InviteNotValidException("This user already is registered in the jobOffer!");
+            }
 
-        } 
+        }
+
+        if (inviteType instanceof ReverseInvite) {
+            
+            if (!((JobOffer)((ReverseInvite)inviteType).getApplication()).containsClient(invited.getEmail())) {
+                throw new InviteNotValidException("There is no jobOffer available!");
+            }
+
+        }
         
         return false;
 
@@ -37,9 +53,25 @@ public class InvitationManager {
     private static boolean compareSkills(Object inviteType, IdentityUser invited) {
 
         Collection<Skill> intersection = new ArrayList<>(((JobOffer)inviteType).getAllSkills());
-        intersection.retainAll(invited.getMySkills());
+        // intersection.retainAll(invited.getMySkills());
 
-        return intersection.isEmpty();
+        for (Skill skillOffer : intersection) {
+                
+            int i = 0;
+
+            for (Skill skill : invited.getMySkills()) {
+                if (skillOffer.getSkillId() == skill.getSkillId()) {
+                        i++;
+                }
+            }
+
+            if (i == intersection.size()) {
+                return true;
+            }
+
+        }
+
+        return false;
 
     }
 
@@ -53,8 +85,20 @@ public class InvitationManager {
 
         if ((inviteType instanceof JobOffer))
             inviteToJobOffer((JobOffer)inviteType, invited);
+        
+        if ((inviteType instanceof ReverseInvite))
+            inviteReverse((ReverseInvite)inviteType);
 
         return inviteType;
+
+    }
+
+    private static void inviteReverse(ReverseInvite inviteType) {
+    
+        JobOffer application = (JobOffer)inviteType.getApplication();
+
+        application.addClient(inviteType.getCadidateUser());
+        inviteType.getCadidateUser().associateJobOffer(application);
 
     }
 

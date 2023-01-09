@@ -113,7 +113,7 @@ public class DashBoardController extends ControllerBase {
             try {
                 printInfo(invite.toString());
             } catch (IOException e) {
-                System.out.println("--- Error ---");
+                System.out.println(e.getMessage());
             }
 
         });
@@ -137,7 +137,10 @@ public class DashBoardController extends ControllerBase {
                 );
 
                 if (result)
+                {
+                    clear();
                     printSuccess("Invite Accept!");
+                }
                     
             }
 

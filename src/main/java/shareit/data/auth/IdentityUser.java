@@ -31,7 +31,6 @@ public class IdentityUser implements Serializable {
     private String role;
 
     private Collection<Talent> talents = new ArrayList<>();
-    private Collection<Skill> mySkills = new ArrayList<>();
     private Collection<ExperienceLine> invitedExperiences = new ArrayList<>();
     private Collection<JobOffer> invitedJobOffers = new ArrayList<>();
 
@@ -323,11 +322,17 @@ public class IdentityUser implements Serializable {
     // Skills
 
     public Collection<Skill> getMySkills() {
-        return mySkills;
-    }
+        
+        Collection<Skill> skills = new ArrayList<>();
 
-    public void setMySkills(Collection<Skill> mySkills) {
-        this.mySkills = mySkills;
+        for (Talent talent : getTalents()) {
+            for (Skill skill : talent.getSkillSet()) {
+                skills.add(skill);
+            }
+        }
+
+        return skills;
+
     }
 
     public Collection<Skill> getAllSkillsByTalentId(int id) {

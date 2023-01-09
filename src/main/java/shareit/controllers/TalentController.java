@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +36,7 @@ import shareit.errors.ExperienceException;
 import shareit.errors.JobOfferException;
 import shareit.errors.TalentException;
 import shareit.helper.NavigationHelper;
+import shareit.helper.ReverseInvite;
 import shareit.helper.RouteManager;
 import shareit.services.AuthenticationService;
 import shareit.services.MemberService;
@@ -454,8 +454,7 @@ public class TalentController extends ControllerBase {
                 // TODO: Compute date to the invites
                 var result = memberService.inviteMember(
                     new InviteMemberRequest(
-                        jobOfferFound.get(), 
-                        new Date(),
+                        new ReverseInvite(jobOfferFound.get(), authUser), 
                         talentService.getCreatorJobOffer(Integer.parseInt(jobOffers[i])).getEmail()
                     )
                 );

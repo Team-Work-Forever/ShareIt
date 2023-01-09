@@ -1,24 +1,23 @@
 package shareit.helper;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 import shareit.data.Privilege;
+import shareit.utils.DatePattern;
 
 public class Invitation implements Serializable {
     
     private int id;
     private Object invitationType;
-    private boolean accepted;
-    private Date expire;
+    private LocalDate expire;
     private String emailFrom;
     private String emailTo;
     private Privilege privilege;
 
-    public Invitation(Object invitationType, boolean accepted, Date expire, String emailFrom, String emailTo) {
+    public Invitation(Object invitationType, LocalDate expire, String emailFrom, String emailTo) {
 
         this.invitationType = invitationType;
-        this.accepted = accepted;
         this.expire = expire;
         this.emailFrom = emailFrom;
         this.emailTo = emailTo;
@@ -26,9 +25,8 @@ public class Invitation implements Serializable {
         id = AutoIncrement.getIncrementInvitation();
     }
 
-    public Invitation(Object invitationType, boolean accepted, Date expire, String emailFrom, String emailTo, Privilege privilege) {
+    public Invitation(Object invitationType, LocalDate expire, String emailFrom, String emailTo, Privilege privilege) {
         this.invitationType = invitationType;
-        this.accepted = accepted;
         this.expire = expire;
         this.emailFrom = emailFrom;
         this.emailTo = emailTo;
@@ -44,10 +42,6 @@ public class Invitation implements Serializable {
         this.invitationType = invitationType;
     }
 
-    public boolean isAccepted() {
-        return accepted;
-    }
-
     public Privilege getPrivilege() {
         return privilege;
     }
@@ -56,15 +50,11 @@ public class Invitation implements Serializable {
         this.privilege = privilege;
     }
 
-    public void setAccepted(boolean accepted) {
-        this.accepted = accepted;
-    }
-
-    public Date getExpire() {
+    public LocalDate getExpire() {
         return expire;
     }
 
-    public void setExpire(Date expire) {
+    public void setExpire(LocalDate expire) {
         this.expire = expire;
     }
 
@@ -100,10 +90,9 @@ public class Invitation implements Serializable {
     public String toString() {
         return "Invitation: " + 
             "\nID: " + id + 
-            "\nStatus: " + accepted +
             "\nEmail From: " + emailFrom +
             "\nEmail To: " + emailTo +
-            "\nExpire Time: "+ expire;
+            "\nExpire Time: "+ DatePattern.convertDate(expire);
     }
 
 

@@ -2,7 +2,6 @@ package shareit.controllers;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -269,7 +268,6 @@ public class JobOfferController extends ControllerBase {
 
                 memberService.inviteMember(new InviteMemberRequest(
                     currentExperience, 
-                    new Date(), // Expire Date
                     email,
                     Privilege.WORKER
                 ));
@@ -552,7 +550,7 @@ public class JobOfferController extends ControllerBase {
         }
     }
     
-    private void authorizeAction(IdentityUser client) {
+    private void authorizeAction(IdentityUser client) throws ExperienceNotAllowed {
         
         if (currentExperience.isWorker(client.getEmail())) {
             throw new ExperienceNotAllowed();

@@ -181,6 +181,16 @@ public class JobOffer implements Serializable {
 
     }
 
+    public boolean containsSkill(int id) {
+
+        try {
+            return getSkillbyId(id) != null;
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
     public Skill getSkillbyId(int id) throws SkillException {
         
         for (SkillOfferLine skill : skillOfferLines) {

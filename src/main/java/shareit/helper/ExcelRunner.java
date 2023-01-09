@@ -10,7 +10,7 @@ public class ExcelRunner {
         try {
             Runtime.getRuntime().exec("cmd /c start excel.exe " + ".\\" + path);
         } catch (IOException e) {
-            throw new RuntimeException("Error Running command!");
+            throw new RuntimeException("You don't have Excel!");
         }
 
     }
@@ -19,11 +19,14 @@ public class ExcelRunner {
         
         try {
             
-            if (Runtime.getRuntime().exec("where excel.exe").exitValue() == 0) {
+        Process command = Runtime.getRuntime().exec("where excel.exe");
+        command.waitFor();
+
+            if (command.exitValue() == 1) {
                 return true;
             }
 
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             return false;
         }
 

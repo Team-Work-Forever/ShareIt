@@ -95,9 +95,6 @@ public class ReportController extends ControllerBase {
         printSuccess("The Report was genereted!");
 
         runnerExcel(filePath);
-
-        waitForKeyEnter();
-
     }
 
     private void runnerExcel(String filePath) throws IOException {
@@ -149,9 +146,6 @@ public class ReportController extends ControllerBase {
         printSuccess("The Report was genereted!");
 
         runnerExcel(filePath);
-
-        waitForKeyEnter();
-
     }
 
     private void listAllProfAreas() throws IOException {

@@ -1,6 +1,6 @@
 package shareit.contracts.member;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.validation.constraints.Email;
 import shareit.data.Privilege;
@@ -9,7 +9,8 @@ import shareit.helper.Invitation;
 public class InviteMemberRequest {
 
     private Object invitationType;
-    private Date expire;
+
+    private LocalDate expiredDate;
 
     @Email(message = "Please provide a valid email")
     private String emailTo;
@@ -18,23 +19,18 @@ public class InviteMemberRequest {
 
     private Privilege privilege;
 
-    public InviteMemberRequest(Object invitationType, Date expire, String emailTo) {
+    public InviteMemberRequest(Object invitationType, String emailTo) {
 
-        if (expire == null)
-            expire = new Date();
-        else 
-            this.expire = expire;
+        // TODO: Altera-me!
+        expiredDate = LocalDate.now().plusDays(30); // More 30 Days
 
         this.invitationType = invitationType;
         this.emailTo = emailTo;
     }
 
-    public InviteMemberRequest(Object invitationType, Date expire, String emailTo, Privilege privilege) {
+    public InviteMemberRequest(Object invitationType, String emailTo, Privilege privilege) {
 
-        if (expire == null)
-            expire = new Date();
-        else 
-            this.expire = expire;
+        expiredDate = LocalDate.now().plusDays(30); // More 30 Days
 
         this.invitationType = invitationType;
         this.emailTo = emailTo;
@@ -65,12 +61,12 @@ public class InviteMemberRequest {
         this.privilege = privilege;
     }
 
-    public Date getExpire() {
-        return expire;
+    public LocalDate getExpiredDate() {
+        return expiredDate;
     }
 
-    public void setExpire(Date expire) {
-        this.expire = expire;
+    public void setExpiredDate(LocalDate expiredDate) {
+        this.expiredDate = expiredDate;
     }
 
     public String getEmailTo() {
@@ -85,13 +81,11 @@ public class InviteMemberRequest {
 
         return new Invitation(
             invitationType, 
-            false, 
-            expire, 
-            emailFrom,
-            emailTo,
+            expiredDate, 
+            emailFrom, 
+            emailTo, 
             privilege
         );
-
     }
 
 }
