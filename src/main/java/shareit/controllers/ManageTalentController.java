@@ -113,6 +113,8 @@ public class ManageTalentController extends ControllerBase {
 
         } while (index != 0);
         
+        currentTalent = null;
+
         navigationHelper.navigateBack();
 
     }

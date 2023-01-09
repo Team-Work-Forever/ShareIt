@@ -39,6 +39,10 @@ public class Talent implements Serializable {
         
     }
 
+    public void setTalentId(int talentId) {
+        this.talentId = talentId;
+    }
+
     public int getTalentId() {
         return talentId;
     }

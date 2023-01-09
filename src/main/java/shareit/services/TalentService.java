@@ -245,10 +245,11 @@ public class TalentService {
         }
         
         Talent updatedTalent = request.toTalent();
-        
+        updatedTalent.setTalentId(currentTalent.getTalentId());
+
         authUser.removeTalent(currentTalent.getTalentId());
         
-        createTalent(new CreateTalentRequest(
+        updatedTalent = createTalent(new CreateTalentRequest(
             updatedTalent.getName(), 
             updatedTalent.getPricePerHour(), 
             updatedTalent.getIsPublic()
@@ -272,8 +273,6 @@ public class TalentService {
             updatedTalent,
             selectedProfAreas
         ));
-
-        authUser.addTalent(updatedTalent);
 
         globalRepository.commit();
 
