@@ -226,7 +226,7 @@ public class ManageClientsController extends ControllerBase {
             
             try {
                 printInfo(client.toString());
-                System.out.println("\t Privilege" + currentExperience.getPrivilegeOfClient(client.getEmail()));
+                System.out.println("\t Privilege: " + currentExperience.getPrivilegeOfClient(client.getEmail()));
             } catch (IOException e) {
                 System.out.println("--- Error ---");
             }

@@ -81,7 +81,7 @@ public class ReportService {
                 selectedUsers.add(user);
         }
         
-        // Busca todos os talentos que conteem as profAreas
+        // Get All Talents that contains All JobOffers required
         for (IdentityUser user : selectedUsers) {
             for (Talent talent : user.getTalents()) {
                           

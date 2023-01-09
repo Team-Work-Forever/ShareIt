@@ -79,7 +79,6 @@ public class JobOfferController extends ControllerBase {
 
     private Experience currentExperience;
 
-    // TODO: Remove Experience Service
     @Override
     public void display() throws IOException {
         
@@ -190,7 +189,6 @@ public class JobOfferController extends ControllerBase {
 
         clear();
 
-        // Collection<Invitation> inviteInBox = memberService.getInviteInBox(authenticationService.getAuthenticatedUser().getEmail());
         Collection<Invitation> inviteInBox = inviteService.getInboxReverseInvite();
 
         if (inviteInBox.isEmpty()) {
