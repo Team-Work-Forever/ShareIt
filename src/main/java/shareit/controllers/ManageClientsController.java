@@ -70,7 +70,7 @@ public class ManageClientsController extends ControllerBase {
                         "List All Members",
                         "Alter Privilege",
                         "Remove Member",
-                        "Add Client From JobOffer"
+                        "Add Client From Job Offer"
                     }, authUser.getName());
                     
                 } while (index <= 0 && index >= 8);
@@ -119,16 +119,16 @@ public class ManageClientsController extends ControllerBase {
 
         try {
             
-            String jobOfferID = textField("Chose one JobOffer by his ID");
+            String jobOfferID = textField("Chose one Job Offer by his ID");
 
             if (jobOfferID.isEmpty()) {
-                throw new JobOfferException("Please provide an JobOfferID");
+                throw new JobOfferException("Please provide an Job OfferID");
             }
     
             Optional<JobOffer> jobOfferFound = currentExperience.getJobOfferById(Integer.parseInt(jobOfferID));
 
             if (!jobOfferFound.isPresent()) {
-                throw new JobOfferException("There is no JobOffer with that id!");
+                throw new JobOfferException("There is no Job Offer with that id!");
             }
 
             clear();
@@ -193,7 +193,7 @@ public class ManageClientsController extends ControllerBase {
         Collection<JobOffer> jobOffers = currentExperience.getJobOffers();
 
         if (jobOffers.isEmpty()) {
-            printInfo("There is no JobOffer yet!");
+            printInfo("There is no Job Offer yet!");
             return -1;
         }
 

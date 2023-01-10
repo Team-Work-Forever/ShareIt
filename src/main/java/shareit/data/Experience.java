@@ -238,7 +238,7 @@ public class Experience implements Serializable {
                 it.remove();
                 
                 if (expLine.getPrivilege().equals(Privilege.WORKER))
-                            qtyWorkers--;
+                    qtyWorkers--;
                 else qtyManegers--;
 
                 return true;

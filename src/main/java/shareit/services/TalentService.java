@@ -187,7 +187,10 @@ public class TalentService {
 
         talent = getTalentById(id);
         skills = talent.getSkillSet();
-        profAreas = talent.getProfAreaSet();       
+        profAreas = talent.getProfAreaSet(); 
+        
+        if (!talent.getExperiences().isEmpty())
+            throw new TalentException("You can't remove this talent, because there are experiences associated!");
         
         for (ProfArea profArea : profAreas) {
             
@@ -453,7 +456,6 @@ public class TalentService {
 
     }
 
-    //TODO: apaga todo o que esta na experiencia
     public void updateExperience(CreateExperienceRequest request, int id) {
 
         var errors = validatorCreateExperience.validate(request);
@@ -499,7 +501,16 @@ public class TalentService {
         try {
             
             for (Talent talent : talents) {
-                talent.removeExperienceById(getExperienceById(id).getExperienceId());
+                if (talent.containsExperience(id)) {
+                    
+                    if ((talent.getExperienceById(id).get().getAllClients().size() > 1))
+                        throw new ExperienceException("You can't remove this experience, because there are clients associated!");
+                    
+                    if (!talent.getExperienceById(id).get().getJobOffers().isEmpty())
+                        throw new  ExperienceException("You can't remove this experience, because there are job offers associated!");
+    
+                    talent.removeExperienceById(getExperienceById(id).getExperienceId());
+                }
             }
 
         } catch (Exception e) {
@@ -593,16 +604,18 @@ public class TalentService {
         }
 
         if (!experience.getPrivilegeOfClient(identityUser.getEmail()).equals(Privilege.OWNER)) {
+           
+            if (!experience.removeClient(identityUser.getEmail())) {
+                throw new ExperienceException("Error Removing user");
+            }
+
             identityUser.removeExperienceById(experience.getExperienceId());
+            
+            return true;
+
         } else {
             throw new ExperienceException("You cannot remove the Owner from the experience!");
         }
-
-        if (experience.removeClient(identityUser.getEmail())) {
-            return true;
-        }
-        else
-            throw new ExperienceException("Error Removing user");
 
     }
 
@@ -627,6 +640,7 @@ public class TalentService {
         currentExperience.addClient(client, Privilege.WORKER);
         client.associateExperience(currentExperience, Privilege.WORKER);
         currentJobOffer.removeClient(client);
+        client.disassociateJobOffer(currentJobOffer);
 
         globalRepository.commit();
 

@@ -101,6 +101,8 @@ public class ExperienceController extends ControllerBase {
             }
 
         } while (index != 0);
+
+        currentTalent = null;
         
         navigationHelper.navigateBack();
 
@@ -181,10 +183,12 @@ public class ExperienceController extends ControllerBase {
             String name = textField("Name (default)");
             String description = textField("Description (default)");
             String startDate = textField("Start Date (default/today:(dd-MM-yyyy))");
-            String finalDate = textField("Final Date (default/today:(dd-MM-yyyy))");
+            String finalDate = textField("Final Date (default: Start Date Plus 2 Years / Optional:(dd-MM-yyyy))");
 
-            if (DatePattern.insertDate(startDate).isAfter(DatePattern.insertDate(finalDate))) {
-                throw new ExperienceException("Please provide a valid timestamp!");
+            if (!finalDate.isEmpty()) {
+                if (DatePattern.insertDate(startDate).isAfter(DatePattern.insertDate(finalDate))) {
+                    throw new ExperienceException("Please provide a valid timestamp!");
+                }
             }
 
             talentService.createExperience(new CreateExperienceRequest(
@@ -193,7 +197,7 @@ public class ExperienceController extends ControllerBase {
                 name.isEmpty() ? "" : name,
                 description.isEmpty() ? "" : description,
                 startDate.isEmpty() ? LocalDate.now() : DatePattern.insertDate(startDate),
-                finalDate.isEmpty() ? LocalDate.now() : DatePattern.insertDate(finalDate)
+                finalDate.isEmpty() ? DatePattern.insertDate(startDate).plusYears(2) : DatePattern.insertDate(finalDate)
             ));
 
             syncTalent();
@@ -288,6 +292,8 @@ public class ExperienceController extends ControllerBase {
         
             talentService.removeExperienceById(Integer.parseInt(experienceId));
             
+            printSuccess("Experience was removed!");
+            
         } catch (Exception e) {
             
             printError(e.getMessage());
@@ -297,8 +303,6 @@ public class ExperienceController extends ControllerBase {
             }
 
         }
-
-        printSuccess("Experience was removed!");
 
     }
 

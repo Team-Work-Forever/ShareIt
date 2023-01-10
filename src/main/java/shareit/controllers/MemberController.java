@@ -76,7 +76,7 @@ public class MemberController extends ControllerBase {
                 Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(((Integer)routeManager.getArgs()));;
             
                 if (!jobOfferFound.isPresent())
-                    throw new JobOfferException("That JobOffer does not exists!");
+                    throw new JobOfferException("That Job Offer does not exists!");
                     
                 currentJobOffer = jobOfferFound.get();
                 
@@ -84,7 +84,7 @@ public class MemberController extends ControllerBase {
                     
                     clear();
 
-                    index = menu("***************** JobOffer Menu *****************", new String[] {
+                    index = menu("***************** Job Offer Menu *****************", new String[] {
                         "Select Member",
                         "Add Member",
                         "List Members",

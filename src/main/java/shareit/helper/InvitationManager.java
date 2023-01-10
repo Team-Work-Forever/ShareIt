@@ -33,7 +33,7 @@ public class InvitationManager {
                 throw new InviteNotValidException("You don't have the skills necessary!");
 
             if (((JobOffer)inviteType).containsClient(invited.getEmail())) {
-                throw new InviteNotValidException("This user already is registered in the jobOffer!");
+                throw new InviteNotValidException("This user already is registered in the Job Offer!");
             }
 
         }
@@ -44,7 +44,7 @@ public class InvitationManager {
                 throw new InviteNotValidException("You don't have the skills necessary!");
             
             if (!((JobOffer)((ReverseInvite)inviteType).getApplication()).containsClient(invited.getEmail())) {
-                throw new InviteNotValidException("There is no jobOffer available!");
+                throw new InviteNotValidException("There is no Job Offer available!");
             }
 
         }
@@ -55,23 +55,20 @@ public class InvitationManager {
 
     private static boolean compareSkills(Object inviteType, IdentityUser invited) {
 
-        int i;
+        int i = 0;
         Collection<Skill> intersection = new ArrayList<>(((JobOffer)inviteType).getAllSkills());
 
         for (Skill skillOffer : intersection) {
                 
-            i = 0;
-
             for (Skill skill : invited.getMySkills()) {
                 if (skillOffer.getSkillId() == skill.getSkillId()) {
                     i++;
                 }
             }
+        }
 
-            if (i == intersection.size()) {
-                return true;
-            }
-
+        if (i == intersection.size()) {
+            return true;
         }
 
         return false;

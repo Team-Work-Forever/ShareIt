@@ -92,9 +92,9 @@ public class TalentController extends ControllerBase {
                         "Create Talent",
                         "List Talents",
                         "Remove Talent",
-                        "List JobOffers Available",
+                        "List Job Offers Available",
                         "Enter Associated Experience",
-                        "Enter Associated JobOffer",
+                        "Enter Associated Job Offer",
                         "Seach Talents",
                         "Manage Talents"
                     }, authUser.getName());
@@ -174,7 +174,7 @@ public class TalentController extends ControllerBase {
         Collection<JobOffer> associatedJobOffers = authUser.getJobOffers();
 
         if (associatedJobOffers.isEmpty()) {
-            printInfo("There is no Associated JobOffers yet!");
+            printInfo("There is no Associated Job Offers yet!");
             return;
         }
 
@@ -188,7 +188,7 @@ public class TalentController extends ControllerBase {
 
         });
 
-        String jobOfferId = textField("Chose an JobOffer by id");
+        String jobOfferId = textField("Chose an Job Offer by id");
 
         try {
 
@@ -435,21 +435,21 @@ public class TalentController extends ControllerBase {
 
         listAllJobOffers();
 
-        String[] jobOffers = comboBox("Chose JobOffer with commas(,)");
+        String[] jobOffers = comboBox("Chose Job Offer with commas(,)");
 
         try {
             
             for (int i = 0; i < jobOffers.length; i++) {
         
                 if (jobOffers[i].isEmpty() || !jobOffers[i].chars().allMatch(Character::isDigit))
-                        throw new JobOfferException("JobOffer not valid!");
+                        throw new JobOfferException("Job Offer not valid!");
                         
                 var id = jobOffers[i];
                 
                 Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(Integer.parseInt(id));
 
                 if (!jobOfferFound.isPresent())
-                    throw new JobOfferException("No JobOffer was found!");
+                    throw new JobOfferException("No Job Offer was found!");
 
                 var result = memberService.inviteMember(
                     new InviteMemberRequest(
@@ -459,7 +459,7 @@ public class TalentController extends ControllerBase {
                 );
 
                 if (result)
-                    printSuccess("You have applied to the jobOffer");
+                    printSuccess("You have applied to the Job Offer");
             
             }
 

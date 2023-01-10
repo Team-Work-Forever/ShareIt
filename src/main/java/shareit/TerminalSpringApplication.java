@@ -96,11 +96,11 @@ public class TerminalSpringApplication implements CommandLineRunner {
                 adminEmail, 
                 "password", 
                 "admin", 
-                adminEmail, 
+                "Admin", 
                 DatePattern.insertDate("29-07-2003"), 
-                adminEmail, 
-                adminEmail, 
-                adminEmail, 
+                "Boss Street", 
+                "1233-892", 
+                "Porto", 
                 "Portugal", 
                 true,
                 Role.ADMIN
@@ -109,12 +109,12 @@ public class TerminalSpringApplication implements CommandLineRunner {
             authenticationService().signIn(new RegisterRequest(
                 userEmail, 
                 "password", 
-                "C.A.V.A.S", 
-                adminEmail, 
+                "Diogo", 
+                "Assuncao", 
                 DatePattern.insertDate("29-07-2002"), 
-                adminEmail, 
-                adminEmail, 
-                adminEmail, 
+                "Rua do Rebeldes", 
+                "5646-364", 
+                "Madrid", 
                 "Espanha", 
                 true, 
                 Role.USER
@@ -123,12 +123,12 @@ public class TerminalSpringApplication implements CommandLineRunner {
             authenticationService().signIn(new RegisterRequest(
                 "sergio@gmail.com", 
                 "password", 
-                "Serjão", 
-                adminEmail, 
+                "Sergio", 
+                "Montenegro", 
                 DatePattern.insertDate("29-07-2001"), 
-                adminEmail, 
-                adminEmail, 
-                adminEmail, 
+                "Rua da Boa Esperança", 
+                "6546-646", 
+                "Lisboa", 
                 "Portugal", 
                 true, 
                 Role.USERMANAGER
@@ -137,13 +137,13 @@ public class TerminalSpringApplication implements CommandLineRunner {
             authenticationService().signIn(new RegisterRequest(
                 "david@gmail.com", 
                 "password", 
-                "ReiNaldo", 
-                adminEmail, 
-                DatePattern.insertDate("29-07-2000"), 
-                adminEmail, 
-                adminEmail, 
-                adminEmail, 
-                "Republica das Bananas", 
+                "David", 
+                "Braga", 
+                DatePattern.insertDate("05-02-2003"), 
+                "Rua Reinaldo", 
+                "6546-099", 
+                "Toronto", 
+                "Canada", 
                 true,
                 Role.USER
             ));
@@ -151,15 +151,25 @@ public class TerminalSpringApplication implements CommandLineRunner {
             // Generate Skills
 
             globalRepository().createSkill(new Skill(
-                "skill", 
-                "description"
+                "React", 
+                "WebFrameWork"
+            ));
+
+            globalRepository().createSkill(new Skill(
+                "TeamWork", 
+                "Able to work in a team enviroment"
             ));
             
             // Generate Professional Areas
 
             globalRepository().createProfArea(new ProfArea(
-                "profarea", 
-                "description"
+                "Web Dev", 
+                "Develop in the web"
+            ));
+
+            globalRepository().createProfArea(new ProfArea(
+                "Frontend Dev", 
+                "Uses tecnhologies from the frontend"
             ));
 
             ScreenUtils.clear();

@@ -99,11 +99,11 @@ public class JobOfferController extends ControllerBase {
                     clear();
 
                     index = menu("***************** Experience Menu *****************", new String[] {
-                        "Select JobOffers",
-                        "Create JobOffers",
-                        "List JobOffers",
-                        "Update JobOffers",
-                        "Remove JobOffers",
+                        "Select Job Offers",
+                        "Create Job Offers",
+                        "List Job Offers",
+                        "Update Job Offers",
+                        "Remove Job Offers",
                         "Envite User",
                         "Manage Clients",
                         "See Applications"
@@ -292,7 +292,7 @@ public class JobOfferController extends ControllerBase {
 
         try {
 
-            String jobOfferId = textField("Chose one JobOffer by his id");
+            String jobOfferId = textField("Chose one Job Offer by his id");
 
             if (jobOfferId.isEmpty())
                 return;
@@ -374,7 +374,7 @@ public class JobOfferController extends ControllerBase {
 
             clear();
 
-            System.out.println("JobOffer Info:");
+            System.out.println("Job Offer Info:");
 
             String name = textField("Name");
             String qtyHours = textField("QtyHours (default : 0)");
@@ -410,7 +410,7 @@ public class JobOfferController extends ControllerBase {
         Collection<JobOffer> jobOffers = currentExperience.getJobOffers();
 
         if (jobOffers.isEmpty()) {
-            printInfo("There is no JobOffer available");
+            printInfo("There is no Job Offer available");
             return -1;
         }
 
@@ -448,14 +448,14 @@ public class JobOfferController extends ControllerBase {
                 Optional<JobOffer> oldJobOffer = talentService.getJobOfferById(jobOfferId);
 
                 if (!oldJobOffer.isPresent()) {
-                    throw new JobOfferException("JobOffer not valid!");
+                    throw new JobOfferException("Job Offer not valid!");
                 }
 
                 clear();
 
                 System.out.println("Update Data: ");
 
-                String name = textField("JobOffer Name (default : same)");
+                String name = textField("Job Offer Name (default : same)");
 
                 int qtyHours = Integer.parseInt(
                     textField("Quatity Of Hours (default : same)")

@@ -82,7 +82,7 @@ public class JobOfferService {
         Optional<JobOffer> validateJobOffer = talentService.getJobOfferById(id);
 
         if (!validateJobOffer.isPresent()) {
-            throw new JobOfferException("JobOffer not found by the id: " + id);
+            throw new JobOfferException("Job Offer not found by the id: " + id);
         }
 
         try {
@@ -116,7 +116,7 @@ public class JobOfferService {
         Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(jobOfferId);
 
         if (!jobOfferFound.isPresent()) {
-            throw new JobOfferException("No JobOffer was found!");
+            throw new JobOfferException("No Job Offer was found!");
         }
         
         return jobOfferFound.get().getClients();
@@ -128,7 +128,7 @@ public class JobOfferService {
         Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(jobOfferId);
         
         if (!jobOfferFound.isPresent()) {
-            throw new JobOfferException("No JobOffer was Found!");
+            throw new JobOfferException("No Job Offer was Found!");
         }
 
         return jobOfferFound.get().getAllSkills();
@@ -140,7 +140,7 @@ public class JobOfferService {
         Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(jobOfferId);;
 
         if (!jobOfferFound.isPresent()) {
-            throw new JobOfferException("No JobOffer was Found!");
+            throw new JobOfferException("No Job Offer was Found!");
         }
 
         jobOfferFound.get().addClient(client);
@@ -159,7 +159,7 @@ public class JobOfferService {
         Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(request.getJobOfferId());;
 
         if (!jobOfferFound.isPresent()) {
-            throw new JobOfferException("No JobOffer was found!");
+            throw new JobOfferException("No Job Offer was found!");
         }
 
         for (Skill skill : request.getSkills().keySet()) {

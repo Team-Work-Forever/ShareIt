@@ -203,7 +203,16 @@ public class IdentityUser implements Serializable {
 
     public boolean removeExperienceById(int id) {
 
-        for (Talent talent : getTalents()) {
+       Collection<Talent> talents = getTalents();
+
+        for (ExperienceLine experience : invitedExperiences) {
+            if (experience.getExperience().getExperienceId() == id) {
+                disassociateExperience(experience.getExperience());
+                return true;
+            }
+        }
+
+        for (Talent talent : talents) {
             for (Experience experience : talent.getExperiences()) {
                 if (experience.getExperienceId() == id) {
                     return talent.removeExperienceById(id);
