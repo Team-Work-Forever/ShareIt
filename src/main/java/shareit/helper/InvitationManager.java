@@ -14,6 +14,13 @@ import shareit.errors.auth.IdentityException;
 
 public class InvitationManager {
 
+    /**
+     * Checks invitation clauses
+     * @param inviteType Given Type (JobOffer, Experience, ReverseInvite)
+     * @param invited Given User to be Invited
+     * @param expiredDate Given Expired Date
+     * @return
+     */
     public static boolean checkInvite(Object inviteType, IdentityUser invited, LocalDate expiredDate) {
 
         if (expiredDate.isBefore(LocalDate.now())) {
@@ -53,6 +60,12 @@ public class InvitationManager {
 
     }
 
+    /**
+     * Compare Skills
+     * @param inviteType Given Invite (JobOffer, Experience, ReverseInvite)
+     * @param invited Given User to be invited
+     * @return true if has all skills
+     */
     private static boolean compareSkills(Object inviteType, IdentityUser invited) {
 
         int i = 0;
@@ -75,6 +88,13 @@ public class InvitationManager {
 
     }
 
+    /**
+     * Accepts Invite
+     * @param inviteType Given Type (JobOffer, Experience, ReverseInvite)
+     * @param invited Given User to be Invited
+     * @param privilege Given Expired Date
+     * @return
+     */
     public static Object completeInvite(Object inviteType, IdentityUser invited, Privilege privilege) {
 
         if (inviteType == null || inviteType == null)

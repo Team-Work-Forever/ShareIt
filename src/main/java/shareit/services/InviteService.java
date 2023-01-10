@@ -20,10 +20,19 @@ public class InviteService {
     @Autowired
     private GlobalRepository globalRepository;
 
+    /**
+     * Get All Invites
+     * @return Collection
+     */
     public Collection<Invitation> getAllInvites() {
         return globalRepository.getInvites();
     }
 
+    /**
+     * Get Invite
+     * @param id Given Invite Id
+     * @return Optional
+     */
     public Optional<Invitation> getInviteById(int id) {
 
         return getAllInvites()
@@ -33,6 +42,10 @@ public class InviteService {
 
     }
 
+    /**
+     * Get Inbox Reverse Direction Invite
+     * @return Collection
+     */
     public Collection<Invitation> getInboxReverseInvite() {
 
         Collection<Invitation> invites = globalRepository.getInvites();

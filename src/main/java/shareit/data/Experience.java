@@ -110,6 +110,12 @@ public class Experience implements Serializable {
         return jobOffers;
     }
 
+    /**
+     * Add an client to experience
+     * @param client Given Client
+     * @param privilege Given Privilege (Worker/Manager)
+     * @throws IdentityException
+     */
     public void addClient(IdentityUser client, Privilege privilege) throws IdentityException {
 
         boolean found = false;
@@ -134,6 +140,12 @@ public class Experience implements Serializable {
         
     }
 
+    /**
+     * Change Privilege from client of an experience
+     * @param email Given Email from Client
+     * @param privilege Given Privilege (worker/Manager)
+     * @return true if client's privilege is changed successfully
+     */
     public boolean ChangeClientPrivilege(String email, Privilege privilege) {
 
         Iterator<ExperienceLine> it = experienceLines.iterator();
@@ -171,6 +183,11 @@ public class Experience implements Serializable {
 
     }
 
+    /**
+     * Get Privilege of an Given Client
+     * @param email Given Email from Client
+     * @return Privilege
+     */
     public Privilege getPrivilegeOfClient(String email) {
 
         for (ExperienceLine expl : experienceLines) {
@@ -183,6 +200,12 @@ public class Experience implements Serializable {
 
     }
 
+    /**
+     * Gets Client by Given Email
+     * @param email Given Client by Email
+     * @return IdentityUser
+     * @throws IdentityException
+     */
     public IdentityUser getClientByEmail(String email) throws IdentityException {
 
         for (ExperienceLine expl : experienceLines) {
@@ -197,6 +220,11 @@ public class Experience implements Serializable {
 
     }
 
+    /**
+     * Verify if Experience contains Client
+     * @param email Given Client Email
+     * @return true if exists
+     */
     public boolean containsClient(String email) {
 
         try {
@@ -215,6 +243,11 @@ public class Experience implements Serializable {
 
     }
 
+    /**
+     * Verify if Experience contains Job Offer
+     * @param id Given Job Offer id
+     * @return true if Job Offer exists
+     */
     public boolean containsJobOffer(int id) {
 
         return jobOffers
@@ -224,6 +257,11 @@ public class Experience implements Serializable {
 
     }
 
+    /**
+     * Remove Client from experience
+     * @param email Given Client Email
+     * @return true if Client is removed successfully
+     */
     public boolean removeClient(String email) {
 
         Iterator<ExperienceLine> it = experienceLines.iterator();
@@ -250,6 +288,10 @@ public class Experience implements Serializable {
 
     }
 
+    /**
+     * Gets All Clients from experience
+     * @return Collection
+     */
     public Collection<IdentityUser> getAllClients() {
 
         Collection<IdentityUser> clients = new HashSet<>();
@@ -262,6 +304,11 @@ public class Experience implements Serializable {
 
     }
 
+
+    /**
+     * Get The Owner from the experience
+     * @return IdentityUser
+     */
     public IdentityUser getOwner() {
 
         Optional<IdentityUser> client = experienceLines
@@ -277,6 +324,10 @@ public class Experience implements Serializable {
 
     }
 
+    /**
+     * Get all clients Managers
+     * @return Collection
+     */
     public Collection<IdentityUser> getClientManagers() {
         
         Collection<IdentityUser> clients = new HashSet<>();
@@ -291,6 +342,11 @@ public class Experience implements Serializable {
 
     }
 
+    /**
+     * Verify if Belonging Client is Manager
+     * @param email Given Client Email
+     * @return true if CLient is Manager
+     */
     public boolean isManager(String email) {
 
         return getClientManagers()
@@ -300,6 +356,11 @@ public class Experience implements Serializable {
 
     }
 
+    /**
+     * Verify if Belonging Client is Worker
+     * @param email Given Client Email
+     * @return true if CLient is Worker
+     */
     public boolean isWorker(String email) {
 
         return getClientWorkers()
@@ -309,6 +370,10 @@ public class Experience implements Serializable {
 
     }
 
+    /**
+     * Get All workers
+     * @return Collection
+     */
     public Collection<IdentityUser> getClientWorkers() {
         
         Collection<IdentityUser> clients = new HashSet<>();
@@ -323,10 +388,21 @@ public class Experience implements Serializable {
 
     }
 
+
+    /**
+     * Add Job Offer to experience
+     * @param jobOffer
+     */
     public void addJobOffer(JobOffer jobOffer) {
         jobOffers.add(jobOffer);
     }
 
+    /**
+     * Get Belonging JobOffer by id
+     * @param id Given JobOffer Id
+     * @return Optional
+     * @throws JobOfferException
+     */
     public Optional<JobOffer> getJobOfferById(int id) throws JobOfferException {
 
         return jobOffers
@@ -336,6 +412,11 @@ public class Experience implements Serializable {
 
     }
 
+    /**
+     * Removes Job Offer by it's id
+     * @param id Given Job Offer Id
+     * @return true if Job Offer is removed successfully
+     */
     public boolean removeJobOfferById(int id) {
 
         Iterator<JobOffer> it = jobOffers.iterator();

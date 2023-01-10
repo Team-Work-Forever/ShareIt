@@ -86,6 +86,11 @@ public class JobOffer implements Serializable {
         return skillOfferLines;
     }
 
+    /**
+     * Add Client to Job Offer
+     * @param client Given Client
+     * @throws IdentityException
+     */
     public void addClient(IdentityUser client) throws IdentityException {
 
          boolean found = false;
@@ -104,6 +109,11 @@ public class JobOffer implements Serializable {
 
     }
 
+    /**
+     * Verify if Job Offer contains Client
+     * @param email Given Client Email
+     * @return true if Job Offer contains Client
+     */
     public boolean containsClient(String email) {
 
         return clients
@@ -113,10 +123,21 @@ public class JobOffer implements Serializable {
 
     }
 
+    /**
+     * Remove CLient from Job Offer
+     * @param client Given Client
+     * @return true if Client is removed successfully
+     */
     public boolean removeClient(IdentityUser client) {
         return clients.remove(client);
     }
 
+    /**
+     * Get Client from Job Offer
+     * @param email Given Client Email
+     * @return IdentityUser
+     * @throws IdentityException
+     */
     public IdentityUser getClientByEmail(String email) throws IdentityException {
         
         for (IdentityUser client : clients) {
@@ -129,6 +150,12 @@ public class JobOffer implements Serializable {
 
     }
 
+    /**
+     * Add Skill to JobOffer
+     * @param skill Given Skill
+     * @param qtyYearNec Given Quantity Years
+     * @throws SkillException
+     */
     public void addSkill(Skill skill, int qtyYearNec) throws SkillException {
 
         boolean found = false;
@@ -149,6 +176,11 @@ public class JobOffer implements Serializable {
 
     }
 
+    /**
+     * Remove Skill
+     * @param id Given Skill Id
+     * @return
+     */
     public boolean removeSkillById(int id) {
 
         Iterator<SkillOfferLine> it = skillOfferLines.iterator();
@@ -169,6 +201,10 @@ public class JobOffer implements Serializable {
 
     }
 
+    /**
+     * Get All Skills
+     * @return Collection
+     */
     public Collection<Skill> getAllSkills() {
 
         Collection<Skill> skills = new ArrayList<>();
@@ -181,6 +217,11 @@ public class JobOffer implements Serializable {
 
     }
 
+    /**
+     * Verify if Job Offer contains SKill
+     * @param id Given Skill Id
+     * @return true if Job Offer contains skill
+     */
     public boolean containsSkill(int id) {
 
         try {
@@ -191,6 +232,12 @@ public class JobOffer implements Serializable {
 
     }
 
+    /**
+     * Get Belonging Skill 
+     * @param id Given Skill Id
+     * @return Skill
+     * @throws SkillException
+     */
     public Skill getSkillbyId(int id) throws SkillException {
         
         for (SkillOfferLine skill : skillOfferLines) {

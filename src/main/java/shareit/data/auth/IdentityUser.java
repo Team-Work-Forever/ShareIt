@@ -151,12 +151,16 @@ public class IdentityUser implements Serializable {
         this.talents = talents;
     }
 
-    public void addTalent(Talent talento) {
+    /**
+     * Add talent to user
+     * @param talent
+     */
+    public void addTalent(Talent talent) {
 
         boolean found = false;
 
         for (Talent tal : talents) {
-            if (tal.getTalentId() == talento.getTalentId()) {
+            if (tal.getTalentId() == talent.getTalentId()) {
                 found = true;
             }
         }
@@ -164,16 +168,21 @@ public class IdentityUser implements Serializable {
         if (found)
             throw new TalentException("You already associated this talent!");
 
-        talents.add(talento);
+        talents.add(talent);
 
     }
 
+    /**
+     * Get Talent by id
+     * @param id
+     * @return Talent
+     */
     public Talent getTalentById(int id) {
 
-        for (Talent talento : talents) {
-            if(talento.getTalentId() == id)
+        for (Talent talent : talents) {
+            if(talent.getTalentId() == id)
             {
-                return talento;
+                return talent;
             }
         }
 
@@ -181,6 +190,11 @@ public class IdentityUser implements Serializable {
 
     }
 
+    /**
+     * Removes an experience invite by id
+     * @param id
+     * @return if was removed
+     */
     public boolean removeInviteExperienceById(int id) {
 
         for (ExperienceLine experienceLine : invitedExperiences) {
@@ -193,6 +207,11 @@ public class IdentityUser implements Serializable {
 
     }
 
+    /**
+     * Removes talent by id
+     * @param id
+     * @throws TalentException
+     */
     public void removeTalent(int id) throws TalentException {
 
         Talent talent = getTalentById(id);
@@ -201,6 +220,11 @@ public class IdentityUser implements Serializable {
 
     }
 
+    /**
+     * Remove experience by id
+     * @param id
+     * @return if experience was removed
+     */
     public boolean removeExperienceById(int id) {
 
        Collection<Talent> talents = getTalents();
@@ -224,6 +248,11 @@ public class IdentityUser implements Serializable {
 
     }
 
+    /**
+     * Verify if user contains talent
+     * @param id
+     * @return boolean
+     */
     public boolean containsTalent(int id) {
 
         try {
@@ -257,6 +286,11 @@ public class IdentityUser implements Serializable {
                 
     }
 
+    /**
+     * Get the invite experience by name
+     * @param name
+     * @return Optional<Experience>
+     */
     public Optional<Experience> getInviteExperience(String name) {
 
         return invitedExperiences
@@ -268,6 +302,12 @@ public class IdentityUser implements Serializable {
 
     }
 
+    /**
+     * Associate an experience to an user
+     * @param experience Given Experience
+     * @param privilege Privilege Worker/Manager
+     * @return true if experience was associated successfully
+     */
     public boolean associateExperience(Experience experience, Privilege privilege) {
 
         return invitedExperiences.add(new ExperienceLine(
@@ -278,6 +318,11 @@ public class IdentityUser implements Serializable {
 
     }
 
+    /**
+     * Dissociate an experience to an user
+     * @param experience Given Experience
+     * @return true if experience is dissociated successfully
+     */
     public boolean disassociateExperience(Experience experience) {
 
         if (!getInviteExperience(experience.getName()).isPresent()) {
@@ -306,6 +351,11 @@ public class IdentityUser implements Serializable {
         return invitedJobOffers;
     }
 
+    /**
+     * Get invite Job Offer
+     * @param id Given JobOffer Id
+     * @return Optional<JobOffer>
+     */
     public Optional<JobOffer> getInviteJobOffer(int id) {
 
         return invitedJobOffers
@@ -315,10 +365,20 @@ public class IdentityUser implements Serializable {
 
     }
 
+    /**
+     * Associate Job Offer to user
+     * @param jobOffer Given Job Offer
+     * @return true if Job Offer is associated successfully
+     */
     public boolean associateJobOffer(JobOffer jobOffer) {
         return invitedJobOffers.add(jobOffer);
     }
 
+    /**
+     * Dissociate Job Offer to user
+     * @param jobOffer Given Job Offer
+     * @return true if Job Offer is disassociate successfully
+     */
     public boolean disassociateJobOffer(JobOffer jobOffer) {
 
         if (!getInviteJobOffer(jobOffer.getJobOfferId()).isPresent()) {
@@ -331,6 +391,10 @@ public class IdentityUser implements Serializable {
 
     // Skills
 
+    /**
+     * Gets all skills from user
+     * @return Collection<Skill>
+     */
     public Collection<Skill> getMySkills() {
         
         Collection<Skill> skills = new ArrayList<>();
@@ -347,6 +411,11 @@ public class IdentityUser implements Serializable {
 
     }
 
+    /**
+     * Gets all skills from talent
+     * @param id Given Talent id
+     * @return Collection<Skill>
+     */
     public Collection<Skill> getAllSkillsByTalentId(int id) {
 
         Collection<Skill> skills = new ArrayList<>();

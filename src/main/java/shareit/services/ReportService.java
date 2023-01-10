@@ -33,6 +33,11 @@ public class ReportService {
     @Autowired
     private MemberService memberService;
 
+    /**
+     * Generate Report about Total of Price in a month(176h) of selected Skills 
+     * @return report file
+     * @throws IOException
+     */
     public String generateReportBySkill() throws IOException {
 
         Collection<Talent> talents = talentService.getReallyAllTalents();
@@ -66,6 +71,11 @@ public class ReportService {
 
     }
 
+    /**
+     * Generate Report about Total of Price in a month(176h) of selected ProfAreas in one Country
+     * @return report file
+     * @throws IOException
+     */
     public String generateReportByProfAreaAndCountry(Collection<ProfArea> selectedProfArea, String countryName) throws IOException {
 
         Collection<IdentityUser> users = memberService.getAllMembers();

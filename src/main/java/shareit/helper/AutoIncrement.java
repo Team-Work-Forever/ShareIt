@@ -46,6 +46,14 @@ public class AutoIncrement {
         return incrementJobOffer++;
     }
 
+
+    /**
+     * Get data when application starts
+     * @param profAreas Given ProfAreas
+     * @param skills Given Skills
+     * @param invitations Given Invitations
+     * @param identityUsers Given IdentityUsers
+     */
     public static void getData(Collection<ProfArea> profAreas,
                         Collection<Skill> skills,
                         Collection<Invitation> invitations,
@@ -62,6 +70,11 @@ public class AutoIncrement {
 
     }
 
+    /**
+     * Sum Experiences
+     * @param identityUsers Given IdentityUsers
+     * @return quantity of experiences 
+     */
     private static int sumExperiences(Collection<IdentityUser> identityUsers) {
         
         int total = 0;
@@ -75,6 +88,11 @@ public class AutoIncrement {
         return total;
     }
 
+    /**
+     * Sum JobOffers
+     * @param identityUsers Given IdentityUsers
+     * @return total of jobOffers
+     */
     private static int sumJobOffer(Collection<IdentityUser> identityUsers) {
         
         int total = 0;
@@ -90,6 +108,11 @@ public class AutoIncrement {
         return total;
     }
 
+    /**
+     * Sum Talents
+     * @param identityUsers Given IdentityUsers
+     * @return total of talents
+     */
     private static int sumTalents(Collection<IdentityUser> identityUsers) {
         
         int total = 0;

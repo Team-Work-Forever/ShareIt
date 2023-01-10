@@ -21,6 +21,11 @@ public class ProfAreaService {
 
     private final BeanValidator<CreateProfAreaRequest> validatorProfArea = new BeanValidator<>();
 
+    /**
+     * Create ProfArea, validating it's attributes
+     * @param request CreateProfAreaRequest
+     * @throws Exception
+     */
     public void createProfArea(@Validated CreateProfAreaRequest request) throws Exception {
 
         var errors = validatorProfArea.validate(request);
@@ -41,10 +46,19 @@ public class ProfAreaService {
 
     }
 
+    /**
+     * Get All ProfAreas
+     * @return Collection
+     */
     public Collection<ProfArea> getAll() {
         return globalRepository.getProfAreas();
     }
 
+    /**
+     * Get ProfArea
+     * @param id Given ProfArea Id
+     * @return ProfArea
+     */
     public ProfArea getProfAreaById(int id) {
 
         Optional<ProfArea> validateProfArea = globalRepository.getProfAreaById(id);
@@ -72,6 +86,12 @@ public class ProfAreaService {
 
     }
 
+    /**
+     * Remove ProfArea
+     * @param id Given ProfArea Id
+     * @return true if ProfArea is removed successfully
+     * @throws Exception
+     */
     public boolean removeProfArea(int id) throws Exception {
 
         Optional<ProfArea> validateProfArea = globalRepository.getProfAreaById(id);

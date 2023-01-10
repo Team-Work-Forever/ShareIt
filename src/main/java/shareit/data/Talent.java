@@ -75,6 +75,10 @@ public class Talent implements Serializable {
         return skills;
     }
 
+    /**
+     * Get Collection of Skills belonging to Talent
+     * @return Collection
+     */
     public Collection<Skill> getSkillSet() {
 
         Collection<Skill> skills = new ArrayList<>();
@@ -87,6 +91,10 @@ public class Talent implements Serializable {
 
     }
 
+    /**
+     * Get Collection of ProfArea belonging to Talent
+     * @return
+     */
     public Collection<ProfArea> getProfAreaSet() {
 
         Collection<ProfArea> profAreas = new ArrayList<>();
@@ -107,6 +115,10 @@ public class Talent implements Serializable {
         return experiences;
     }
 
+    /**
+     * Add Experience to Talent
+     * @param experience Given Experience
+     */
     public void addExperience(Experience experience) {
 
         boolean found = false;
@@ -124,10 +136,21 @@ public class Talent implements Serializable {
 
     }
 
+    /**
+     * Verify if Talent contains Experience
+     * @param id Given Experience Id
+     * @return true if Talent contains Experience
+     */
     public boolean containsExperience(int id) {
         return getExperienceById(id).isPresent();
     }
 
+    /**
+     * Get Experience from Talent
+     * @param id Given Experience Id
+     * @return Optional
+     * @throws ExperienceException
+     */
     public Optional<Experience> getExperienceById(int id) throws ExperienceException {
 
         return experiences
@@ -137,6 +160,11 @@ public class Talent implements Serializable {
 
     }
 
+    /**
+     * Remove Experience from talent
+     * @param id Given Experience Id
+     * @return true if experience is removed successfully
+     */
     public boolean removeExperienceById(int id) {
 
         Iterator<Experience> it = experiences.iterator();
@@ -156,6 +184,12 @@ public class Talent implements Serializable {
 
     }
 
+    /**
+     * Add Skill to Talent
+     * @param skill Given Skill
+     * @param qtyYearExp Given Quantity Years Of Experience
+     * @throws SkillException
+     */
     public void addSkill(Skill skill, int qtyYearExp) throws SkillException {
 
         boolean found = false;
@@ -176,6 +210,12 @@ public class Talent implements Serializable {
 
     }
 
+    /**
+     * Get Skill from talent
+     * @param id Given Skill Id
+     * @return Skill
+     * @throws SkillException
+     */
     public Skill getSkillById(int id) throws SkillException {
 
         for (SkillLine skl : skills) {
@@ -189,6 +229,11 @@ public class Talent implements Serializable {
 
     }
 
+    /**
+     * Verify if Talent contains Skill
+     * @param id Given Skill id
+     * @return true if Talent contains Skill
+     */
     public boolean containsSkill(int id) {
 
         return skills
@@ -198,6 +243,11 @@ public class Talent implements Serializable {
 
     }
 
+    /**
+     * Remove Skill from talent
+     * @param id Given Skill Id
+     * @return true if Skill is removed from Talent successfully
+     */
     public boolean removeSkillById(int id) {
 
         Iterator<SkillLine> it = skills.iterator();
@@ -218,6 +268,11 @@ public class Talent implements Serializable {
 
     }
 
+    /**
+     * Add ProfArea to Talent
+     * @param profArea Given ProfArea
+     * @param qtyYearExp Given Quantity Year Of Experience
+     */
     public void addProfArea(ProfArea profArea, int qtyYearExp) {
 
         boolean found = false;
@@ -238,6 +293,11 @@ public class Talent implements Serializable {
 
     }
 
+    /**
+     * Get ProfArea from talent
+     * @param id Given ProfArea Id
+     * @return ProfArea
+     */
     public ProfArea getProfAreaById(int id) {
 
         for (ProfAreaLine pf : profAreas) {
@@ -251,6 +311,11 @@ public class Talent implements Serializable {
 
     }
 
+    /**
+     * Verify if Talent contains ProfArea
+     * @param id Given ProfArea Id
+     * @return true if Talent contains ProfArea
+     */
     public boolean containsProfAreaById(int id) {
         return profAreas
             .stream()
@@ -258,6 +323,11 @@ public class Talent implements Serializable {
                 .findAny().isPresent();
     }
 
+    /**
+     * Remove ProfArea from Talent
+     * @param id Given ProfArea Id
+     * @return true if ProfArea is removed successfully
+     */
     public boolean removeProfAreaById(int id) {
 
         Iterator<ProfAreaLine> it = profAreas.iterator();

@@ -40,6 +40,12 @@ public class JobOfferService {
 
     private final BeanValidator<CreateJobOfferRequest> validatorCreateJobOffer = new BeanValidator<>();
 
+    /**
+     * Create JobOffer, validating all it's attributes
+     * @param request Given CreateJobOfferRequest
+     * @return
+     * @throws Exception
+     */
     public JobOffer createJobOffer(@Validated CreateJobOfferRequest request) throws Exception {
 
         JobOffer jobOffer;
@@ -73,10 +79,22 @@ public class JobOfferService {
 
     }
 
+    /**
+     * Remove JobOffer
+     * @param jobOffer Given JobOffer
+     * @return true if JobOffer is removed successfully
+     */
     public boolean removeJobOffer(JobOffer jobOffer) {
         return talentService.removeJobOffer(jobOffer);
     }
 
+    /**
+     * Update JobOffer, validating all it's attributes
+     * @param newJobOffer Given new JobOffer
+     * @param id Given Original JobOffer Id
+     * @return true if original JobOffer is updated
+     * @throws IOException
+     */
     public boolean updateJobOffer(JobOffer newJobOffer, int id) throws IOException {
 
         Optional<JobOffer> validateJobOffer = talentService.getJobOfferById(id);
@@ -111,6 +129,12 @@ public class JobOfferService {
 
     }
 
+    /**
+     * Get All Clients from JobOffer
+     * @param jobOfferId Given JobOffer Id
+     * @return Collection
+     * @throws IOException
+     */
     public Collection<IdentityUser> getAllClients(int jobOfferId) throws IOException {
 
         Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(jobOfferId);
@@ -123,6 +147,12 @@ public class JobOfferService {
 
     }
 
+    /**
+     * Get All Skills from JobOffer
+     * @param jobOfferId JobOffer Id
+     * @return Collection
+     * @throws IOException
+     */
     public Collection<Skill> getAllSkills(int jobOfferId) throws IOException {
 
         Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(jobOfferId);
@@ -135,6 +165,12 @@ public class JobOfferService {
 
     }
 
+    /**
+     * Associate Client to JobOffer
+     * @param client Given Client
+     * @param jobOfferId Given JobOffer Id
+     * @throws Exception
+     */
     public void associateClient(IdentityUser client, int jobOfferId) throws Exception {
 
         Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(jobOfferId);;
@@ -148,6 +184,12 @@ public class JobOfferService {
 
     }
 
+    /**
+     * Associate Skill to JobOffer
+     * @param request Given AssociateSkillRequest
+     * @return true if Skill is associated to JobOffer successfully
+     * @throws Exception
+     */
     public boolean associateSkill(@Validated AssociateSkillRequest request) throws Exception {
 
         var errors = validatorSkill.validate(request);
@@ -177,11 +219,21 @@ public class JobOfferService {
 
     }
 
+    /**
+     * Disassociate Client from Job Offer 
+     * @param jobOffer Given JobOffer
+     * @param client Given CLient
+     * @return true if client is disassociated from JobOffer
+     */
     public boolean disassociateJobOffer(JobOffer jobOffer, IdentityUser client) {
         client.disassociateJobOffer(jobOffer);
         return jobOffer.removeClient(client);
     }
 
+    /**
+     * Get All JobOffers 
+     * @return Collection
+     */
     public Collection<JobOffer> getAllJobOffers() {
 
         Collection<IdentityUser> allMembers = memberService.getAllMembers();

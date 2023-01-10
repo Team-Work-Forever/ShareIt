@@ -71,7 +71,7 @@ public class AdminController extends ControllerBase {
                         "List All Job Offers",
                         "List All Users",
                         "Skill Menu",
-                        "Professinal Area Menu",
+                        "Professional Area Menu",
                         "Generate Report",
                         "Alter Privilege"
                     }, authUser.getName());

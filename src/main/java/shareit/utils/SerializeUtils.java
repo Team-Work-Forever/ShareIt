@@ -8,6 +8,13 @@ import java.io.ObjectOutputStream;
 
 public class SerializeUtils {
     
+    /**
+     * Serialize Object into a file
+     * @param object Any object to serialize that implements the interface Serializable
+     * @param filename required to write the object
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public static void serialize(Object object, String filename) throws IOException, ClassNotFoundException {
 
         FileOutputStream fileOutputStream = new FileOutputStream(filename);
@@ -18,6 +25,13 @@ public class SerializeUtils {
 
     }
 
+    /**
+     * Deserializes the file into a object
+     * @param filename required to write the object
+     * @return Object deserialized from the file
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public static Object deserialize(String filename) throws IOException, ClassNotFoundException {
 
         Object object = null;

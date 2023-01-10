@@ -64,6 +64,12 @@ public class TalentService {
 
     // Talent
 
+    /**
+     * Create Talent, validating it's attributes
+     * @param request CreateTalentRequest
+     * @return Talent
+     * @throws Exception
+     */
     public Talent createTalent(@Validated CreateTalentRequest request) throws Exception {
 
         Talent talent;
@@ -90,6 +96,11 @@ public class TalentService {
 
     }
 
+    /**
+     * Get Talent by Id
+     * @param id Given Talent Id
+     * @return Talent
+     */
     public Talent getTalentById(int id) {
 
         var authUser = authenticationService.getAuthenticatedUser();
@@ -100,6 +111,10 @@ public class TalentService {
 
     }
 
+    /**
+     * Get All Talents from the system
+     * @return Collection
+     */
     public Collection<Talent> getReallyAllTalents() {
 
         Collection<IdentityUser> members = memberService.getAllMembers();
@@ -115,6 +130,12 @@ public class TalentService {
 
     }
 
+    /**
+     * Get All talents with an defined order
+     * @param comparator Given Comparator
+     * @param selectedSkills Given Skills/Integer
+     * @return Collection
+     */
     public Collection<Talent> getAllTalentsByOrder(Comparator<Talent> comparator, Map<Skill, Integer> selectedSkills) {
 
         int i;
@@ -145,6 +166,12 @@ public class TalentService {
 
     }
 
+    /**
+     * Get hours of experience in each talent
+     * @param talent Given Talent
+     * @param id Given Skill Id
+     * @return total of hours
+     */
     public int getHoursOfExp(Talent talent, int id) {
 
         for (SkillLine skillLine : talent.getSkills()) {
@@ -156,6 +183,10 @@ public class TalentService {
         throw new TalentException("Skill not found in this talent!");
     }
 
+    /**
+     * Get All Talents that are Public
+     * @return Collection
+     */
     public Collection<Talent> getAllTalentsPublic() {
 
         Collection<IdentityUser> members = memberService.getAllMembers();
@@ -171,12 +202,22 @@ public class TalentService {
 
     }
 
+    /**
+     * Get All Talents from user
+     * @return Collection
+     */
     public Collection<Talent> getAllTalents() {
         var authUser = authenticationService.getAuthenticatedUser();
 
         return authUser.getTalents();
     }
 
+    /**
+     * Remove Talent
+     * @param id Given Talent Id
+     * @return true if Talent is removed
+     * @throws TalentException
+     */
     public boolean removeTalent(int id) throws TalentException {
         
         Talent talent;
@@ -234,6 +275,13 @@ public class TalentService {
 
     }
 
+    /**
+     * Update Talent
+     * @param id Given Talent
+     * @param request CreateTalentRequest
+     * @return true if Talent is updated
+     * @throws Exception
+     */
     public boolean updateTalent(int id, @Validated CreateTalentRequest request) throws Exception {
 
         Map<Skill, Integer> selectedSkills = new HashMap<>();
@@ -284,6 +332,11 @@ public class TalentService {
 
     }
 
+    /**
+     * Associate Skill to Talent
+     * @param request Given TalentAssociationSkill
+     * @throws Exception
+     */
     public void associateSkills(@Validated TalentAssociationSkill request) throws Exception {
 
         var errors = validatorSkill.validate(request);
@@ -315,6 +368,11 @@ public class TalentService {
 
     }
 
+    /**
+     * Disassociate Skill
+     * @param talentDisassociateSkill TalentDisassociate
+     * @throws Exception
+     */
     public void disassociateSkills(@Validated TalentDisassociateSkill talentDisassociateSkill) throws Exception {
 
         var errors = validatorDisassociateSkill.validate(talentDisassociateSkill);
@@ -344,6 +402,11 @@ public class TalentService {
 
     }
 
+    /**
+     * Associate ProfAreas
+     * @param request Given TalentAssociationProfArea
+     * @throws Exception
+     */
     public void associateProfAreas(@Validated TalentAssociationProfArea request) throws Exception {
 
         var errors = validatorProfArea.validate(request);
@@ -375,6 +438,11 @@ public class TalentService {
 
     }
 
+    /**
+     * Disassociate ProfArea
+     * @param request TalentDisassociateProf
+     * @throws Exception
+     */
     public void disassociateProfAreas(@Validated TalentDisassociateProf request) throws Exception {
 
         var errors = validatorDisassociateProf.validate(request);
@@ -404,6 +472,12 @@ public class TalentService {
 
     //Experience
 
+    /**
+     * Create Experience, validating it's attributes
+     * @param request CreateExperienceRequest
+     * @return Experience
+     * @throws Exception
+     */
     public Experience createExperience(@Validated CreateExperienceRequest request) throws Exception {
 
         Experience experience;
@@ -430,6 +504,11 @@ public class TalentService {
 
     }
 
+    /**
+     * Get Experience By JobOffer
+     * @param id Given JobOffer Id
+     * @return Experience
+     */
     public Experience getExperienceByJobOfferId(int id) {
 
         for (Talent talent : getReallyAllTalents()) {
@@ -444,6 +523,11 @@ public class TalentService {
 
     }
 
+    /**
+     * Get Experience
+     * @param id Given Experience Id
+     * @return Experience
+     */
     public Experience getExperienceById(int id) {
 
         for (Talent talent : getReallyAllTalents()) {
@@ -456,6 +540,11 @@ public class TalentService {
 
     }
 
+    /**
+     * Update Experience
+     * @param request CreateExperienceRequest
+     * @param id Given Experience Id
+     */
     public void updateExperience(CreateExperienceRequest request, int id) {
 
         var errors = validatorCreateExperience.validate(request);
@@ -489,10 +578,12 @@ public class TalentService {
             throw new JobOfferException(e.getMessage());
         }
 
-        // Line that Sperares everything!! Vodafone
-
     }
 
+    /**
+     * Remove Experience
+     * @param id Given Experience Id
+     */
     public void removeExperienceById(int id) {
         
         var authUser = authenticationService.getAuthenticatedUser();
@@ -521,6 +612,12 @@ public class TalentService {
 
     // JobOffer
 
+    /**
+     * Get JobOffer
+     * @param id Given JobOffer Id
+     * @return Optional
+     * @throws IOException
+     */
     public Optional<JobOffer> getJobOfferById(int id) throws IOException {
 
         Collection<IdentityUser> allMembers = memberService.getAllMembers();;
@@ -545,6 +642,11 @@ public class TalentService {
 
     }
 
+    /**
+     * Get Creator JobOffer
+     * @param id Given JobOffer Id
+     * @return IdentityUser
+     */
     public IdentityUser getCreatorJobOffer(int id) {
 
         for (IdentityUser user : memberService.getAllMembers()) {
@@ -561,6 +663,11 @@ public class TalentService {
 
     }
 
+    /**
+     * Remove JobOffer
+     * @param jobOffer Given JobOffer
+     * @return
+     */
     public boolean removeJobOffer(JobOffer jobOffer) {
 
         boolean result = false;
@@ -581,6 +688,11 @@ public class TalentService {
 
     }
 
+    /**
+     * Get Talent by Experience
+     * @param id Given Experience Id 
+     * @return Talent
+     */
     public Talent getTalentByExperienceId(int id) {
 
         for (Talent talent : getReallyAllTalents()) {
@@ -595,6 +707,13 @@ public class TalentService {
 
     }
 
+    /**
+     * Remove Client from Experience
+     * @param identityUser Given Client
+     * @param experience Given Experience
+     * @return true if client is removed from Experience
+     * @throws Exception
+     */
     public boolean removeClientFromExperience(IdentityUser identityUser, Experience experience) throws Exception {
 
         IdentityUser authUser = authenticationService.getAuthenticatedUser();
@@ -619,6 +738,12 @@ public class TalentService {
 
     }
 
+    /**
+     * Alter Privilege from User in Experience
+     * @param experience Given Experience
+     * @param privilege Given Privilege
+     * @param user Given User
+     */
     public void experienceAlterPrivilege(Experience experience, Privilege privilege, IdentityUser user) {
 
         IdentityUser authUser = authenticationService.getAuthenticatedUser();
@@ -631,6 +756,13 @@ public class TalentService {
 
     }
 
+    /**
+     * Move Client from Experience to JobOffer
+     * @param currentExperience Given Experience
+     * @param currentJobOffer Given JobOffer
+     * @param client Given Client
+     * @throws Exception
+     */
     public void moveClientFromExperienceToJobOffer(Experience currentExperience, JobOffer currentJobOffer, IdentityUser client) throws Exception {
 
         if (currentExperience.containsClient(client.getEmail())) {

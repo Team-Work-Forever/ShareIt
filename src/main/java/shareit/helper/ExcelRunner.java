@@ -4,7 +4,10 @@ import java.io.IOException;
 
 public class ExcelRunner {
     
-
+    /**
+     * Run Cmd Command
+     * @param path Given Command
+     */
     public static void runExcelCommand(String path) {
 
         try {
@@ -15,6 +18,10 @@ public class ExcelRunner {
 
     }
     
+    /**
+     * Verify if Has Excel
+     * @return true if yes
+     */
     public static boolean hasExcel() {
         
         try {

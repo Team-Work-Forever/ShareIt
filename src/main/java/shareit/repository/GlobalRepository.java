@@ -48,12 +48,22 @@ public class GlobalRepository implements Serializable {
             
     }
 
+    /**
+     * Extract information from the global store file
+     * @return GlobalRepository
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     private GlobalRepository extractRepository() throws IOException, ClassNotFoundException {
         return (GlobalRepository)deserialize(DATA_FILE);
     }
 
     // Crud Authentication
 
+    /**
+     * Get The Authentication Token
+     * @return
+     */
     public Pair<String, String> getAuthToken() {
         return authToken;
     }
@@ -70,6 +80,11 @@ public class GlobalRepository implements Serializable {
         return identityUsers;
     }
 
+    /**
+     * Get User
+     * @param email Given IdentityUser Email
+     * @return Optional
+     */
     public Optional<IdentityUser> getIdentityUserByEmail(String email) {
         return identityUsers
             .stream()
@@ -77,14 +92,29 @@ public class GlobalRepository implements Serializable {
                 .findFirst();
     }
 
+    /**
+     * Verify If Repository contains User
+     * @param email Given User Email
+     * @return true if Repository contains user
+     */
     public boolean containsEmail(String email) {
         return getIdentityUserByEmail(email).isPresent();
     }
 
+
+    /**
+     * Create User
+     * @param identityUser user
+     */
     public void createIdentityUser(IdentityUser identityUser) {
         identityUsers.add(identityUser);
     }
 
+    /**
+     * Remove User
+     * @param email Given User Email
+     * @return
+     */
     public boolean removeIdentityUserByEmail(String email) {
         
         if (!containsEmail(email))
@@ -94,6 +124,12 @@ public class GlobalRepository implements Serializable {
 
     }
 
+    /**
+     * Update user 
+     * @param email Given User Email
+     * @param identityUser user
+     * @return true if user is updated successfully
+     */
     public boolean updateIdentityUserByEmail(String email, IdentityUser identityUser) {
 
         if (containsEmail(email))
@@ -112,6 +148,11 @@ public class GlobalRepository implements Serializable {
         return skills;
     }
 
+    /**
+     * Get Skill
+     * @param id Given Skill Id
+     * @return Optional
+     */
     public Optional<Skill> getSkillById(int id) {
 
         return skills
@@ -121,10 +162,20 @@ public class GlobalRepository implements Serializable {
 
     }
 
+    /**
+     * Verify if Repository contains Skill
+     * @param id Given Skill Id
+     * @return true if Repository contains Skill
+     */
     public boolean containsSkillById(int id) {
         return getSkillById(id).isPresent();
     }
 
+    /**
+     * Create Skill
+     * @param skill Given Skill
+     * @return true if skill is created successfully
+     */
     public boolean createSkill(Skill skill) {
 
         if (containsSkillById(skill.getSkillId()))
@@ -136,6 +187,11 @@ public class GlobalRepository implements Serializable {
 
     }
 
+    /**
+     * Remove Skill from Repository
+     * @param id Given Skill Id
+     * @return true if Skill is removed successfully
+     */
     public boolean removeSkillById(int id) {
 
         if (!containsSkillById(id))
@@ -153,6 +209,11 @@ public class GlobalRepository implements Serializable {
         return profAreas;
     }
     
+    /**
+     * Get ProfArea of Repository
+     * @param id Given ProfArea Id
+     * @return Optional
+     */
     public Optional<ProfArea> getProfAreaById(int id) {
 
         return profAreas
@@ -162,10 +223,20 @@ public class GlobalRepository implements Serializable {
 
     }
 
+    /**
+     * Verify if Repository contains ProfArea
+     * @param id Given ProfArea Id
+     * @return true if Repository contains ProfArea
+     */
     public boolean containsProfAreaById(int id) {
         return getProfAreaById(id).isPresent();
     }
 
+    /**
+     * Create ProfArea
+     * @param profArea Given ProfArea
+     * @return true if ProfArea is created successfully
+     */
     public boolean createProfArea(ProfArea profArea) {
 
         if (containsProfAreaById(profArea.getProfAreaId()))
@@ -177,6 +248,11 @@ public class GlobalRepository implements Serializable {
 
     }
 
+    /**
+     * Remove ProfArea from Repository
+     * @param id Given ProfArea If
+     * @return true if ProfArea is removed successfully
+     */
     public boolean removeProfAreaById(int id) {
 
         if (!containsProfAreaById(id))
@@ -188,6 +264,10 @@ public class GlobalRepository implements Serializable {
 
     }
 
+    /**
+     * Commit Changes to file
+     * @throws Exception
+     */
     public void commit() throws Exception {
         serialize(this, DATA_FILE);        
     }
@@ -198,6 +278,11 @@ public class GlobalRepository implements Serializable {
         return invites;
     }
 
+    /**
+     * Verify if Repository contains Invitation of Owner
+     * @param emailOwner Given Owner Email
+     * @return true if Repository contains Invitations
+     */
     public boolean containsInvitationWithOwner(String emailOwner) {
 
         return invites
@@ -207,6 +292,11 @@ public class GlobalRepository implements Serializable {
 
     }
 
+    /**
+     * Get Invitation From Repository
+     * @param emailOwner Given Owner Email
+     * @return Optional
+     */
     public Optional<Invitation> getInvitationByOwner(String emailOwner) {
 
         return invites
@@ -216,10 +306,20 @@ public class GlobalRepository implements Serializable {
 
     }
 
+    /**
+     * Create Invite
+     * @param invitation Given Invitation
+     * @return true if invite is created successfully
+     */
     public boolean createInvite(Invitation invitation) {
         return invites.add(invitation);
     }
 
+    /**
+     * Remove Invite
+     * @param invitation Given Invitation
+     * @return true if Invitation is removed successfully
+     */
     public boolean removeInvite(Invitation invitation) {
         return invites.remove(invitation);
     }

@@ -22,10 +22,20 @@ public class NavigationHelper {
         navigationStack = new LinkedList<>();
     }
 
+    /**
+     * Setup the flow of navigation
+     * @param controller Given First Controller
+     * @throws IOException
+     */
     public void setFirstEntry(Class<? extends ControllerBase> controller) throws IOException {
         iniController(controller);
     }
 
+    /**
+     * Navigate To Controller
+     * @param controller Given Controller
+     * @throws IOException
+     */
     public void navigateTo(Class<? extends ControllerBase> controller) throws IOException {
 
         navigationStack.add(currentController);
@@ -34,6 +44,10 @@ public class NavigationHelper {
 
     }
 
+    /**
+     * Navigate to Last Controller
+     * @throws IOException
+     */
     public void navigateBack() throws IOException {
 
         if (navigationStack.isEmpty()) return;
@@ -44,6 +58,11 @@ public class NavigationHelper {
 
     }
 
+    /**
+     * Call method display from Controller
+     * @param controller Given Controller
+     * @throws IOException
+     */
     private void iniController(Class<? extends ControllerBase> controller) throws IOException {
         this.currentController = controller;
         ((ControllerBase)applicationContext.getBean(controller)).display();

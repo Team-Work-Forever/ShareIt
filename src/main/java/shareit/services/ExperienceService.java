@@ -15,6 +15,10 @@ public class ExperienceService {
     @Autowired
     private AuthenticationService authenticationService;
 
+    /**
+     * Remove JobOffer from experience
+     * @param jobOfferId Given JobOffer Id
+     */
     public void removeJobOfferById(int jobOfferId) {
         
         var authUser = authenticationService.getAuthenticatedUser();

@@ -81,6 +81,10 @@ public class TerminalSpringApplication implements CommandLineRunner {
 
     }
 
+    /**
+     * Generates all data necessary before the application run
+     * @throws IOException
+     */
     private void seeder() throws IOException {
 
         String adminEmail = "admin@gmail.com";
@@ -157,7 +161,7 @@ public class TerminalSpringApplication implements CommandLineRunner {
 
             globalRepository().createSkill(new Skill(
                 "TeamWork", 
-                "Able to work in a team enviroment"
+                "Able to work in a team environment"
             ));
             
             // Generate Professional Areas
@@ -169,7 +173,7 @@ public class TerminalSpringApplication implements CommandLineRunner {
 
             globalRepository().createProfArea(new ProfArea(
                 "Frontend Dev", 
-                "Uses tecnhologies from the frontend"
+                "Uses technologies from the frontend"
             ));
 
             ScreenUtils.clear();
@@ -181,7 +185,7 @@ public class TerminalSpringApplication implements CommandLineRunner {
             ScreenUtils.waitForKeyEnter();
 
         } catch (Exception e) {
-            ScreenUtils.printError("An Error as occorred");
+            ScreenUtils.printError("An Error as occurred");
             Runtime.getRuntime().exit(0);
         }
 

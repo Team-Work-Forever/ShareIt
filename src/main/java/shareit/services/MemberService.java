@@ -34,6 +34,11 @@ public class MemberService {
     @Autowired
     private Authentication authenticationService;
 
+    /**
+     * Get Member
+     * @param email Given Member Id
+     * @return IdentityUser
+     */
     public IdentityUser getMemberByEmail(String email) {
 
         if (!globalRepository.containsEmail(email))
@@ -43,10 +48,18 @@ public class MemberService {
         
     }
 
+    /**
+     * Get All Members
+     * @return Collection
+     */
     public Collection<IdentityUser> getAllMembers() {
         return globalRepository.getIdentityUsers();
     }
 
+    /**
+     * Get Possible Members, meaning one collection with every member except the authenticated user
+     * @return Collection
+     */
     public Collection<IdentityUser> getPossibleMembers() {
 
         return getAllMembers()
@@ -57,6 +70,11 @@ public class MemberService {
 
     }
 
+    /**
+     * Get Possible Members to JobOffer, meaning returns an Map containing each Talent and it's respective User
+     * @param users Given Talents/Users
+     * @return Map<Talent, IdentityUser>
+     */
     public Map<Talent, IdentityUser> getPossibleMembersToJobOffer(Map<Talent, IdentityUser> users) {
 
         for (Talent talent : users.keySet()) {
@@ -69,6 +87,11 @@ public class MemberService {
 
     }
 
+    /**
+     * Get Invite InBox from User
+     * @param email Given User Email
+     * @return Collection
+     */
     public Collection<Invitation> getInviteInBox(String email) {
 
         Collection<Invitation> invites = globalRepository.getInvites();
@@ -94,10 +117,21 @@ public class MemberService {
 
     }
 
+    /**
+     * Verifies if User contains Invites
+     * @param email Given User Email
+     * @return true if yes
+     */
     public boolean containsInvites(String email) {
         return !getInviteInBox(email).isEmpty();
     }
 
+    /**
+     * Invite Member to any of (JobOffer, Experience) or create a ReverseInvite
+     * @param inviteMemberRequest Given InviteMemberRequest
+     * @return true if is sent an Invitation to User
+     * @throws Exception
+     */
     public boolean inviteMember(@Validated InviteMemberRequest inviteMemberRequest) throws Exception {
 
         String authEmail = authenticationService.getAuthenticatedUser().getEmail();
@@ -146,6 +180,12 @@ public class MemberService {
 
     }
 
+    /**
+     * Verifies If User Contains more then one Invitation for the same end
+     * @param emailFrom Given UserFrom Email
+     * @param emailTo Given UserTo Email
+     * @return true if invite is valid
+     */
     public boolean verifyMultiInvitation(String emailFrom, String emailTo) {
 
         return globalRepository.getInvites()
@@ -158,8 +198,9 @@ public class MemberService {
     }
 
     /**
-     * @param invite 
-     * @return boolean
+     * Accept Invite
+     * @param invite Given Invite
+     * @return true if Invite is valid and accepted
      * @throws Exception
      */
     public boolean acceptInvite(Invitation invite) throws Exception {
@@ -181,6 +222,11 @@ public class MemberService {
 
     }
 
+    /**
+     * Remove Invite
+     * @param invitation Given Invitation
+     * @return true if Invite is removed
+     */
     public boolean removeInvite(Invitation invitation) {
         return globalRepository.removeInvite(invitation);
     }

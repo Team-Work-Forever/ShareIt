@@ -21,6 +21,11 @@ public class SkillService {
     @Autowired
     private GlobalRepository globalRepository;
 
+    /**
+     * Create Skill, validating it's attributes
+     * @param request CreateSkillRequest
+     * @throws Exception
+     */
     public void createSkill(@Validated CreateSkillRequest request) throws Exception {
 
         Skill newSkill;
@@ -43,10 +48,19 @@ public class SkillService {
 
     }
 
+    /**
+     * Get All Skills
+     * @return Collection
+     */
     public Collection<Skill> getAll() {
         return globalRepository.getSkills();
     }
 
+    /**
+     * Get Skill by Id
+     * @param id Given Skill Id
+     * @return Skill
+     */
     public Skill getSkillById(int id) {
 
         Optional<Skill> validateSkill = globalRepository.getSkillById(id);
@@ -58,6 +72,13 @@ public class SkillService {
         return validateSkill.get();
     }
 
+    /**
+     * Update's Skill
+     * @param newSkill Given New Skill
+     * @param id Given Original Skill Id
+     * @return true if Original Skill is updated successfully
+     * @throws Exception
+     */
     public boolean updateSkill(Skill newSkill, int id) throws Exception {
 
         Optional<Skill> validateSkill = globalRepository.getSkillById(id);
@@ -74,6 +95,12 @@ public class SkillService {
 
     }
 
+    /**
+     * Remove Skill By Id
+     * @param id Given Skill Id
+     * @return true if Skill is removed
+     * @throws Exception
+     */
     public boolean removeSkill(int id) throws Exception {
 
         Optional<Skill> validateSkill = globalRepository.getSkillById(id);

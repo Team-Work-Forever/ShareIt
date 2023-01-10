@@ -23,6 +23,11 @@ public class ReportRepository {
 
     private CSVWriter csvWriter;
     
+    /**
+     * SetUp Writer
+     * @param path Given Path
+     * @return Writer
+     */
     private Writer writer(String path) {
 
         Writer fileWriter = null;
@@ -39,6 +44,14 @@ public class ReportRepository {
 
     }
 
+    /**
+     * Write to CSV File
+     * @param <T> Object that implements CSVSerializer
+     * @param collection Collection of Objects that implement CSVSerializer 
+     * @param headers String[] with titles for the values
+     * @param path Given Path to file creation
+     * @throws IOException
+     */
     public <T extends CSVSerializable> void writeToFile(Collection<T> collection, String[] headers, String path) throws IOException {
         
         writer = writer(path);

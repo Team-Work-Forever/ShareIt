@@ -16,6 +16,10 @@ public class RouteManager {
 
     private Object args;
 
+    /**
+     * Controllers Authentication Routes
+     * @return Controller
+     */
     public Class<? extends ControllerBase> authRoute() {
         
         if (!authenticationService.isAuthenticated())
@@ -34,6 +38,12 @@ public class RouteManager {
 
     }
 
+    /**
+     * Pass through arguments between routing
+     * @param controller Given Controller
+     * @param args Given Arguments of any type
+     * @return Controller
+     */
     public Class<? extends ControllerBase> argumentRoute(Class<? extends ControllerBase> controller, Object args) {
         this.args = args;
         return controller;
