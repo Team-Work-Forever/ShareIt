@@ -64,13 +64,6 @@ public class JobOfferService {
         experience = request.getExperience();
 
         experience.addJobOffer(jobOffer);
-        
-        for (Talent talent : authUser.getTalents()) {
-            if (talent.getExperienceById(experience.getExperienceId()) != null ) {
-                talent.removeExperienceById(experience.getExperienceId());
-                talent.addExperience(experience);
-            }
-        }
 
         globalRepository.updateIdentityUserByEmail(authUser.getEmail(), authUser);
         globalRepository.commit();
@@ -130,6 +123,40 @@ public class JobOfferService {
     }
 
     /**
+     * Disassociate Client from Job Offer 
+     * @param jobOffer Given JobOffer
+     * @param client Given CLient
+     * @return true if client is disassociated from JobOffer
+     */
+    public boolean disassociateJobOffer(JobOffer jobOffer, IdentityUser client) {
+        client.disassociateJobOffer(jobOffer);
+        return jobOffer.removeClient(client);
+    }
+
+    /**
+     * Get All JobOffers 
+     * @return Collection
+     */
+    public Collection<JobOffer> getAllJobOffers() {
+
+        Collection<IdentityUser> allMembers = memberService.getAllMembers();
+        Collection<JobOffer> jobOffers = new ArrayList<>();
+
+        for (IdentityUser user : allMembers) {
+            for (Talent talent : user.getTalents()) {
+                for (Experience experience : talent.getExperiences()) {
+                    for (JobOffer jobOffer : experience.getJobOffers()) {
+                        jobOffers.add(jobOffer);
+                    }
+                }
+            }
+        }
+
+        return jobOffers;
+
+    }
+
+    /**
      * Get All Clients from JobOffer
      * @param jobOfferId Given JobOffer Id
      * @return Collection
@@ -144,24 +171,6 @@ public class JobOfferService {
         }
         
         return jobOfferFound.get().getClients();
-
-    }
-
-    /**
-     * Get All Skills from JobOffer
-     * @param jobOfferId JobOffer Id
-     * @return Collection
-     * @throws IOException
-     */
-    public Collection<Skill> getAllSkills(int jobOfferId) throws IOException {
-
-        Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(jobOfferId);
-        
-        if (!jobOfferFound.isPresent()) {
-            throw new JobOfferException("No Job Offer was Found!");
-        }
-
-        return jobOfferFound.get().getAllSkills();
 
     }
 
@@ -181,6 +190,24 @@ public class JobOfferService {
 
         jobOfferFound.get().addClient(client);
         globalRepository.commit();
+
+    }
+
+    /**
+     * Get All Skills from JobOffer
+     * @param jobOfferId JobOffer Id
+     * @return Collection
+     * @throws IOException
+     */
+    public Collection<Skill> getAllSkills(int jobOfferId) throws IOException {
+
+        Optional<JobOffer> jobOfferFound = talentService.getJobOfferById(jobOfferId);
+        
+        if (!jobOfferFound.isPresent()) {
+            throw new JobOfferException("No Job Offer was Found!");
+        }
+
+        return jobOfferFound.get().getAllSkills();
 
     }
 
@@ -216,40 +243,6 @@ public class JobOfferService {
         globalRepository.commit();
 
         return true;
-
-    }
-
-    /**
-     * Disassociate Client from Job Offer 
-     * @param jobOffer Given JobOffer
-     * @param client Given CLient
-     * @return true if client is disassociated from JobOffer
-     */
-    public boolean disassociateJobOffer(JobOffer jobOffer, IdentityUser client) {
-        client.disassociateJobOffer(jobOffer);
-        return jobOffer.removeClient(client);
-    }
-
-    /**
-     * Get All JobOffers 
-     * @return Collection
-     */
-    public Collection<JobOffer> getAllJobOffers() {
-
-        Collection<IdentityUser> allMembers = memberService.getAllMembers();
-        Collection<JobOffer> jobOffers = new ArrayList<>();
-
-        for (IdentityUser user : allMembers) {
-            for (Talent talent : user.getTalents()) {
-                for (Experience experience : talent.getExperiences()) {
-                    for (JobOffer jobOffer : experience.getJobOffers()) {
-                        jobOffers.add(jobOffer);
-                    }
-                }
-            }
-        }
-
-        return jobOffers;
 
     }
 

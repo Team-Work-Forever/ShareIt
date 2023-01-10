@@ -134,6 +134,111 @@ public class AdminController extends ControllerBase {
 
     }
 
+    // Case 1
+    private void navigateToDashBoard() throws IOException {
+        navigationHelper.navigateTo(DashBoardController.class);
+    }
+
+
+    // Case 2
+    private int listAllTalents() throws IOException {
+
+        clear();
+
+        Collection<Talent> talents = talentService.getReallyAllTalents();
+
+        if (talents.isEmpty()) {
+            printInfo("There is no talents yet!");
+            return -1;
+        }
+
+        for (Talent talent : talents) {
+            System.out.println();
+            printInfo(talent.toString());
+        }
+
+        return 0;
+
+    }
+
+    // Case 3
+    private int listAllExperiences() throws IOException {
+
+        clear();
+
+        Collection<Talent> talents = talentService.getReallyAllTalents();
+        Collection<Experience> experiences = new ArrayList<>();
+
+        for (Talent talent : talents) {
+            for (Experience experience : talent.getExperiences())
+                experiences.add(experience);
+        }
+
+        if (experiences.isEmpty()) {
+            printInfo("There is no experiences yet!");
+            return -1;
+        }
+
+        for (Experience experience : experiences) {
+            System.out.println();
+            printInfo(experience.toString());
+        }
+
+        return 0;
+
+    }
+
+    // Case 4
+    private int listAllJobOffers() throws IOException {
+
+        clear();
+
+        Collection<JobOffer> jobOffers = jobOfferService.getAllJobOffers();
+
+        if (jobOffers.isEmpty()) {
+            printInfo("There is no job offer yet!");
+            return -1;
+        }
+
+        for (JobOffer jobOffer : jobOffers) {
+            printInfo(jobOffer.toString());
+        }
+
+        return 0;
+
+    }
+
+    // Case 5
+    private int listAllUsers() throws IOException {
+
+        clear();
+
+        Collection<IdentityUser> users = memberService.getAllMembers();
+
+        for (IdentityUser user : users) {
+            printInfo(user.toString());
+        }
+
+        return 0;
+
+    }
+
+    // Case 6
+    private void skillMenu() throws IOException {
+        navigationHelper.navigateTo(SkillController.class);
+    }
+
+    // Case 7
+    private void profAreaMenu() throws IOException {
+        navigationHelper.navigateTo(ProfAreaController.class);
+    }
+
+    // Case 8
+    private void generateReport() throws IOException {
+        navigationHelper.navigateTo(ReportController.class);
+    }
+
+    // Case 9
     private void alterPrivilege() throws IOException {
 
         clear();
@@ -188,6 +293,8 @@ public class AdminController extends ControllerBase {
 
     }
 
+
+
     private void exitError(String value) throws IOException {
 
         printError(value);
@@ -197,101 +304,5 @@ public class AdminController extends ControllerBase {
         }
 
     }
-
-    private int listAllTalents() throws IOException {
-
-        clear();
-
-        Collection<Talent> talents = talentService.getReallyAllTalents();
-
-        if (talents.isEmpty()) {
-            printInfo("There is no talents yet!");
-            return -1;
-        }
-
-        for (Talent talent : talents) {
-            System.out.println();
-            printInfo(talent.toString());
-        }
-
-        return 0;
-
-    }
-
-    private int listAllExperiences() throws IOException {
-
-        clear();
-
-        Collection<Talent> talents = talentService.getReallyAllTalents();
-        Collection<Experience> experiences = new ArrayList<>();
-
-        for (Talent talent : talents) {
-            for (Experience experience : talent.getExperiences())
-                experiences.add(experience);
-        }
-
-        if (experiences.isEmpty()) {
-            printInfo("There is no experiences yet!");
-            return -1;
-        }
-
-        for (Experience experience : experiences) {
-            System.out.println();
-            printInfo(experience.toString());
-        }
-
-        return 0;
-
-    }
-
-    private int listAllJobOffers() throws IOException {
-
-        clear();
-
-        Collection<JobOffer> jobOffers = jobOfferService.getAllJobOffers();
-
-        if (jobOffers.isEmpty()) {
-            printInfo("There is no job offer yet!");
-            return -1;
-        }
-
-        for (JobOffer jobOffer : jobOffers) {
-            printInfo(jobOffer.toString());
-        }
-
-        return 0;
-
-    }
-
-    private int listAllUsers() throws IOException {
-
-        clear();
-
-        Collection<IdentityUser> users = memberService.getAllMembers();
-
-        for (IdentityUser user : users) {
-            printInfo(user.toString());
-        }
-
-        return 0;
-
-    }
-    
-
-    private void navigateToDashBoard() throws IOException {
-        navigationHelper.navigateTo(DashBoardController.class);
-    }
-
-    private void skillMenu() throws IOException {
-        navigationHelper.navigateTo(SkillController.class);
-    }
-
-    private void profAreaMenu() throws IOException {
-        navigationHelper.navigateTo(ProfAreaController.class);
-    }
-
-    private void generateReport() throws IOException {
-        navigationHelper.navigateTo(ReportController.class);
-    }
-    
+ 
 }

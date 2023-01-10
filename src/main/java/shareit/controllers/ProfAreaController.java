@@ -84,6 +84,7 @@ public class ProfAreaController extends ControllerBase {
 
 }
 
+    // Case 1
     private void createProfArea() throws IOException {
 
         clear();
@@ -113,6 +114,7 @@ public class ProfAreaController extends ControllerBase {
 
     }
 
+    // Case 2
     private void listAllProfAreas() throws IOException {
 
         Collection<ProfArea> profAreas = profAreaService.getAll();
@@ -133,13 +135,14 @@ public class ProfAreaController extends ControllerBase {
 
     }
 
+    // Case 3
     private void updateProfArea() throws Exception {
 
         clear();
 
         listAllProfAreas();
 
-        String[] profAreas = comboBox("Chose the ID seperated by commas (,)");
+        String[] profAreas = comboBox("Chose the ID separated by commas (,)");
 
         for (String profAreaName : profAreas) {
 
@@ -173,13 +176,14 @@ public class ProfAreaController extends ControllerBase {
 
     }
 
+    // Case 4
     private void removeProfArea() throws Exception {
 
         clear();
 
         listAllProfAreas();
         
-        String[] skills = comboBox("Chose the ID seperated by commas");
+        String[] skills = comboBox("Chose the ID separated by commas");
 
         for (String id : skills) {
 

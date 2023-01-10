@@ -96,7 +96,13 @@ public class DashBoardController extends ControllerBase {
         navigationHelper.navigateTo(routeManager.authRoute());
 
     }
+
+    // Case 1
+    private void talentMenu() throws IOException {
+        navigationHelper.navigateTo(TalentController.class);
+    }
     
+    // Case 2
     private void menuInvite() throws IOException {
 
         clear();
@@ -120,7 +126,7 @@ public class DashBoardController extends ControllerBase {
 
         try {
 
-            String[] invites = comboBox("Chose Invite by id separeted by commas(,)");
+            String[] invites = comboBox("Chose Invite by id separated by commas(,)");
 
             for (int i = 0; i < invites.length; i++) {
                 
@@ -149,10 +155,5 @@ public class DashBoardController extends ControllerBase {
         }
 
     }
-    
-    private void talentMenu() throws IOException {
-        navigationHelper.navigateTo(TalentController.class);
-    }
-
 
 }

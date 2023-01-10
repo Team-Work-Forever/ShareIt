@@ -167,23 +167,6 @@ public class TalentService {
     }
 
     /**
-     * Get hours of experience in each talent
-     * @param talent Given Talent
-     * @param id Given Skill Id
-     * @return total of hours
-     */
-    public int getHoursOfExp(Talent talent, int id) {
-
-        for (SkillLine skillLine : talent.getSkills()) {
-
-            if (skillLine.getSkill().getSkillId() == id)
-                return skillLine.getYearOfExp();
-        }
-
-        throw new TalentException("Skill not found in this talent!");
-    }
-
-    /**
      * Get All Talents that are Public
      * @return Collection
      */
@@ -330,6 +313,23 @@ public class TalentService {
 
         return true;
 
+    }
+
+    /**
+     * Get hours of experience in each talent
+     * @param talent Given Talent
+     * @param id Given Skill Id
+     * @return total of hours
+     */
+    public int getHoursOfExp(Talent talent, int id) {
+
+        for (SkillLine skillLine : talent.getSkills()) {
+
+            if (skillLine.getSkill().getSkillId() == id)
+                return skillLine.getYearOfExp();
+        }
+
+        throw new TalentException("Skill not found in this talent!");
     }
 
     /**
@@ -565,7 +565,7 @@ public class TalentService {
                 experience.addJobOffer(jobOffer);
             }
 
-            // Associate again all clientes
+            // Associate again all clients
             for (ExperienceLine expl:  currentExperience.getExperienceLines()) {
                 if (!expl.getClient().getEmail().equals(authenticationService.getAuthenticatedUser().getEmail())) {
                     experience.addClient(expl.getClient(), expl.getPrivilege());
@@ -689,6 +689,28 @@ public class TalentService {
     }
 
     /**
+     * Move Client from JobOffer to Experience
+     * @param currentExperience Given Experience
+     * @param currentJobOffer Given JobOffer
+     * @param client Given Client
+     * @throws Exception
+     */
+    public void moveClientFromJobOfferToExperience(Experience currentExperience, JobOffer currentJobOffer, IdentityUser client) throws Exception {
+
+        if (currentExperience.containsClient(client.getEmail())) {
+            throw new ExperienceException("This Member already is associated to this experience!");
+        }
+        
+        currentExperience.addClient(client, Privilege.WORKER);
+        client.associateExperience(currentExperience, Privilege.WORKER);
+        currentJobOffer.removeClient(client);
+        client.disassociateJobOffer(currentJobOffer);
+
+        globalRepository.commit();
+
+    }
+
+    /**
      * Get Talent by Experience
      * @param id Given Experience Id 
      * @return Talent
@@ -755,27 +777,5 @@ public class TalentService {
         experience.ChangeClientPrivilege(user.getEmail(), privilege);
 
     }
-
-    /**
-     * Move Client from Experience to JobOffer
-     * @param currentExperience Given Experience
-     * @param currentJobOffer Given JobOffer
-     * @param client Given Client
-     * @throws Exception
-     */
-    public void moveClientFromExperienceToJobOffer(Experience currentExperience, JobOffer currentJobOffer, IdentityUser client) throws Exception {
-
-        if (currentExperience.containsClient(client.getEmail())) {
-            throw new ExperienceException("This Member already is associated to this experience!");
-        }
-        
-        currentExperience.addClient(client, Privilege.WORKER);
-        client.associateExperience(currentExperience, Privilege.WORKER);
-        currentJobOffer.removeClient(client);
-        client.disassociateJobOffer(currentJobOffer);
-
-        globalRepository.commit();
-
-    } 
 
 }

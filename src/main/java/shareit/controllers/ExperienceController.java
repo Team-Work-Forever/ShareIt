@@ -108,6 +108,7 @@ public class ExperienceController extends ControllerBase {
 
     }
 
+    // Case 1
     private void selectExperience() throws IOException {
 
         clear();
@@ -146,31 +147,7 @@ public class ExperienceController extends ControllerBase {
 
     }
 
-    private int listExperience() throws IOException {
-
-        clear();
-
-        Collection<Experience> experiences = currentTalent.getExperiences();
-
-        if (experiences.isEmpty()) {
-            printInfo("There is no Experience yet!");
-            return -1;
-        }
-
-        try {
-            
-            for (Experience experience : experiences) {
-                printInfo(experience.toString());
-            }
-
-        } catch (Exception e) {
-            printError(e.getMessage());
-        }
-
-        return 0;
-
-    }
-
+    // Case 2
     private void createExperience() throws Exception {
 
         clear();
@@ -213,7 +190,34 @@ public class ExperienceController extends ControllerBase {
         } 
 
     }
-    
+
+    // Case 3
+    private int listExperience() throws IOException {
+
+        clear();
+
+        Collection<Experience> experiences = currentTalent.getExperiences();
+
+        if (experiences.isEmpty()) {
+            printInfo("There is no Experience yet!");
+            return -1;
+        }
+
+        try {
+            
+            for (Experience experience : experiences) {
+                printInfo(experience.toString());
+            }
+
+        } catch (Exception e) {
+            printError(e.getMessage());
+        }
+
+        return 0;
+
+    }
+
+    // Case 4
     private void updateExperience() throws IOException {
 
         clear();
@@ -273,6 +277,7 @@ public class ExperienceController extends ControllerBase {
         }
     }
 
+    // Case 5
     private void removeExperience() throws IOException {
 
         clear();
@@ -305,6 +310,7 @@ public class ExperienceController extends ControllerBase {
         }
 
     }
+    
 
     private void syncTalent() throws IOException {
         

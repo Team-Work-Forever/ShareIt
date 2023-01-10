@@ -109,108 +109,7 @@ public class ManageClientsController extends ControllerBase {
 
     }
 
-    private void joinMemberFromJobOffer() throws IOException {
-
-        clear();
-
-        if (listAllJobOffers() == -1) {
-            return;
-        }
-
-        try {
-            
-            String jobOfferID = textField("Chose one Job Offer by his ID");
-
-            if (jobOfferID.isEmpty()) {
-                throw new JobOfferException("Please provide an Job OfferID");
-            }
-    
-            Optional<JobOffer> jobOfferFound = currentExperience.getJobOfferById(Integer.parseInt(jobOfferID));
-
-            if (!jobOfferFound.isPresent()) {
-                throw new JobOfferException("There is no Job Offer with that id!");
-            }
-
-            clear();
-
-            jobOfferFound.get().getClients().forEach(client -> {
-
-                try {
-                    printInfo(client.toString());
-                } catch (Exception e) {
-                    System.out.println("-- Error --");
-                }
-
-            });
-
-            String[] emails = comboBox("Please provide the emails from users you want to add!");
-
-            for (String email : emails) {
-                
-                if (email.isEmpty()) {
-                    throw new IdentityException("Please provide an email");
-                }
-
-                try {
-                    talentService.moveClientFromExperienceToJobOffer(
-                        currentExperience,
-                        jobOfferFound.get(), 
-                        memberService.getMemberByEmail(email)
-                    );
-                } catch (ExperienceException e) {
-                    printError(e.getMessage());
-                    waitForKeyEnter();
-                }
-
-            }
-
-            printSuccess("Member(s) added!");
-
-        } catch (NumberFormatException e) {
-           
-            printError(e.getMessage());
-
-            if (repeatAction("Do you wanna repeat?")) {
-                joinMemberFromJobOffer();
-            }
-
-        } catch (Exception e) {
-           
-            printError(e.getMessage());
-
-            if (repeatAction("Do you wanna repeat?")) {
-                joinMemberFromJobOffer();
-            }
-
-        }
-
-    }
-
-    private int listAllJobOffers() throws IOException {
-        
-        clear();
-
-        Collection<JobOffer> jobOffers = currentExperience.getJobOffers();
-
-        if (jobOffers.isEmpty()) {
-            printInfo("There is no Job Offer yet!");
-            return -1;
-        }
-
-        try {
-            
-            for (JobOffer jobOffer : jobOffers) {
-                printInfo(jobOffer.toString());
-            }
-
-        } catch (Exception e) {
-            printError(e.getMessage());
-        }
-
-        return 0;
-
-    }
-
+    // Case 1
     private int listMembers() throws IOException {
 
         clear();
@@ -237,74 +136,7 @@ public class ManageClientsController extends ControllerBase {
 
     }
 
-    private int listAllPossibleMembers() throws IOException {
-
-        clear();
-
-        Collection<IdentityUser> allClients = currentExperience.getAllClients()
-                .stream()
-                    .filter(member -> !member
-                    .getEmail().equals(authenticationService.getAuthenticatedUser().getEmail()))
-                    .toList();
-
-        if (allClients.isEmpty()) {
-            printInfo("There is no Clients in this Experience!");
-            return -1;
-        }
-
-        allClients.forEach(client -> {
-            
-            try {
-                printInfo(client.toString());
-            } catch (IOException e) {
-                System.out.println("--- Error ---");
-            }
-
-        });
-
-        return 0;
-
-
-    }
-
-	private void removeMember() throws IOException {
-        
-        String email;
-
-        clear();
-
-        if (listAllPossibleMembers() == -1)
-        {
-            return;
-        }
-
-        email = textField("Chose a Member by his email");
-
-        if (email.isEmpty()) {
-            printError("Please provide an email");
-            return;
-        }
-
-        IdentityUser client = memberService.getMemberByEmail(email);
-
-        try {
-
-            talentService.removeClientFromExperience(client, currentExperience);
-
-            printSuccess("Client was removed!");
-
-        } catch (Exception e) {
-            
-            printError(e.getMessage());
-
-            if (repeatAction("Do you wanna repeat?")) {
-                removeMember();
-            }
-
-        }
-
-    }
-
+    // Case 2
     private void alterPrivilege() throws IOException {
 
         Privilege privilege;
@@ -362,7 +194,179 @@ public class ManageClientsController extends ControllerBase {
         }
 
     }
-} 
-    
-    
 
+    // Case 3
+    private void removeMember() throws IOException {
+            
+        String email;
+
+        clear();
+
+        if (listAllPossibleMembers() == -1)
+        {
+            return;
+        }
+
+        email = textField("Chose a Member by his email");
+
+        if (email.isEmpty()) {
+            printError("Please provide an email");
+            return;
+        }
+
+        IdentityUser client = memberService.getMemberByEmail(email);
+
+        try {
+
+            talentService.removeClientFromExperience(client, currentExperience);
+
+            printSuccess("Client was removed!");
+
+        } catch (Exception e) {
+            
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                removeMember();
+            }
+
+        }
+
+    }
+
+    // Case 4
+    private void joinMemberFromJobOffer() throws IOException {
+
+        clear();
+
+        if (listAllJobOffers() == -1) {
+            return;
+        }
+
+        try {
+            
+            String jobOfferID = textField("Chose one Job Offer by his ID");
+
+            if (jobOfferID.isEmpty()) {
+                throw new JobOfferException("Please provide an Job OfferID");
+            }
+    
+            Optional<JobOffer> jobOfferFound = currentExperience.getJobOfferById(Integer.parseInt(jobOfferID));
+
+            if (!jobOfferFound.isPresent()) {
+                throw new JobOfferException("There is no Job Offer with that id!");
+            }
+
+            clear();
+
+            jobOfferFound.get().getClients().forEach(client -> {
+
+                try {
+                    printInfo(client.toString());
+                } catch (Exception e) {
+                    System.out.println("-- Error --");
+                }
+
+            });
+
+            String[] emails = comboBox("Please provide the emails from users you want to add!");
+
+            for (String email : emails) {
+                
+                if (email.isEmpty()) {
+                    throw new IdentityException("Please provide an email");
+                }
+
+                try {
+                    talentService.moveClientFromJobOfferToExperience(
+                        currentExperience,
+                        jobOfferFound.get(), 
+                        memberService.getMemberByEmail(email)
+                    );
+                } catch (ExperienceException e) {
+                    printError(e.getMessage());
+                    waitForKeyEnter();
+                }
+
+            }
+
+            printSuccess("Member(s) added!");
+
+        } catch (NumberFormatException e) {
+           
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                joinMemberFromJobOffer();
+            }
+
+        } catch (Exception e) {
+           
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                joinMemberFromJobOffer();
+            }
+
+        }
+
+    }
+    
+    private int listAllJobOffers() throws IOException {
+        
+        clear();
+
+        Collection<JobOffer> jobOffers = currentExperience.getJobOffers();
+
+        if (jobOffers.isEmpty()) {
+            printInfo("There is no Job Offer yet!");
+            return -1;
+        }
+
+        try {
+            
+            for (JobOffer jobOffer : jobOffers) {
+                printInfo(jobOffer.toString());
+            }
+
+        } catch (Exception e) {
+            printError(e.getMessage());
+        }
+
+        return 0;
+
+    }
+
+
+    
+    private int listAllPossibleMembers() throws IOException {
+
+        clear();
+
+        Collection<IdentityUser> allClients = currentExperience.getAllClients()
+                .stream()
+                    .filter(member -> !member
+                    .getEmail().equals(authenticationService.getAuthenticatedUser().getEmail()))
+                    .toList();
+
+        if (allClients.isEmpty()) {
+            printInfo("There is no Clients in this Experience!");
+            return -1;
+        }
+
+        allClients.forEach(client -> {
+            
+            try {
+                printInfo(client.toString());
+            } catch (IOException e) {
+                System.out.println("--- Error ---");
+            }
+
+        });
+
+        return 0;
+
+
+    }
+
+} 

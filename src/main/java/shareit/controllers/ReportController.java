@@ -88,23 +88,7 @@ public class ReportController extends ControllerBase {
 
     }
 
-    private void generateReportBySkill() throws IOException {
-
-        String filePath = reportService.generateReportBySkill();
-
-        printSuccess("The Report was genereted!");
-
-        runnerExcel(filePath);
-    }
-
-    private void runnerExcel(String filePath) throws IOException {
-        if (ExcelRunner.hasExcel()) {
-            if (repeatAction("Do you want to open this file in excel?")) {
-                ExcelRunner.runExcelCommand(filePath);
-            }
-        }
-    }
-
+    // Case 1
     private void generateReportByProfAreaAndCountry() throws IOException {
 
         Collection<ProfArea> selectedProfArea = new ArrayList<>();
@@ -120,7 +104,7 @@ public class ReportController extends ControllerBase {
 
         listAllProfAreas();
         
-        String[] profAreaName = comboBox("Chose Prof. Areas by ID separeted by commas(,)");
+        String[] profAreaName = comboBox("Chose Prof. Areas by ID separated by commas(,)");
 
         clear();
 
@@ -143,7 +127,7 @@ public class ReportController extends ControllerBase {
 
         String filePath = reportService.generateReportByProfAreaAndCountry(selectedProfArea, countryName);
 
-        printSuccess("The Report was genereted!");
+        printSuccess("The Report was generated!");
 
         runnerExcel(filePath);
     }
@@ -153,5 +137,25 @@ public class ReportController extends ControllerBase {
             printInfo(profArea.toString());
         }
     }
-    
+
+    // Case 2
+    private void generateReportBySkill() throws IOException {
+
+        String filePath = reportService.generateReportBySkill();
+
+        printSuccess("The Report was generated!");
+
+        runnerExcel(filePath);
+    }
+
+
+
+    private void runnerExcel(String filePath) throws IOException {
+        if (ExcelRunner.hasExcel()) {
+            if (repeatAction("Do you want to open this file in excel?")) {
+                ExcelRunner.runExcelCommand(filePath);
+            }
+        }
+    }
+
 }

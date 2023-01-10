@@ -127,50 +127,7 @@ public class MemberController extends ControllerBase {
 
     }
 
-    private void removeMember() throws IOException {
-
-        String email;
-        IdentityUser client;
-
-        clear();
-
-        if (listMembers() == -1)
-            return;
-
-        email = textField("Chose a Member by his email");
-
-        if (email.isEmpty()) {
-            printError("Please Provid an email");
-            return;
-        }
-
-        client = memberService.getMemberByEmail(email);
-
-        jobOfferService.disassociateJobOffer(currentJobOffer, client);
-
-        printSuccess("The user with email: " + email + " has been removed!");
-
-    }
-
-    private int listMembers() throws IOException {
-
-        clear();
-
-        Collection<IdentityUser> clients = currentJobOffer.getClients();
-
-        if (clients.isEmpty()) {
-            printInfo("There is no member associated yet!");
-            return -1;
-        }
-
-        for (IdentityUser client : clients) {
-            printInfo(client.toString());
-        }
-
-        return 0;
-
-    }
-
+    // Case 1
     private void selectMember() throws IOException {
 
         clear();
@@ -192,6 +149,7 @@ public class MemberController extends ControllerBase {
         printInfo(member.toString());
     }
 
+    // Case 2
     private void addMember() throws IOException {
 
         Collection<Talent> reallyAllTalents = talentService.getAllTalentsPublic();
@@ -213,7 +171,7 @@ public class MemberController extends ControllerBase {
                 return;
             }
 
-            String[] skillNames = comboBox("Chose Skills by ID separeted by commas(,)");
+            String[] skillNames = comboBox("Chose Skills by ID separated by commas(,)");
 
             for (String name : skillNames) {
                 
@@ -273,7 +231,7 @@ public class MemberController extends ControllerBase {
             return;
         }
 
-        String[] emails = comboBox("Chose Member separeted by commas(,) to invite members");
+        String[] emails = comboBox("Chose Member separated by commas(,) to invite members");
 
         try {
             
@@ -317,6 +275,52 @@ public class MemberController extends ControllerBase {
         }
 
         return 0;
+
+    }
+
+    // Case 3
+    private int listMembers() throws IOException {
+
+        clear();
+
+        Collection<IdentityUser> clients = currentJobOffer.getClients();
+
+        if (clients.isEmpty()) {
+            printInfo("There is no member associated yet!");
+            return -1;
+        }
+
+        for (IdentityUser client : clients) {
+            printInfo(client.toString());
+        }
+
+        return 0;
+
+    }
+
+    // Case 4
+    private void removeMember() throws IOException {
+
+        String email;
+        IdentityUser client;
+
+        clear();
+
+        if (listMembers() == -1)
+            return;
+
+        email = textField("Chose a Member by his email");
+
+        if (email.isEmpty()) {
+            printError("Please Provide an email");
+            return;
+        }
+
+        client = memberService.getMemberByEmail(email);
+
+        jobOfferService.disassociateJobOffer(currentJobOffer, client);
+
+        printSuccess("The user with email: " + email + " has been removed!");
 
     }
 

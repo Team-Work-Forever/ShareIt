@@ -84,6 +84,7 @@ public class SkillController extends ControllerBase {
 
 }
 
+    // Case 1
     private void createSkill() throws IOException {
 
         clear();
@@ -113,6 +114,7 @@ public class SkillController extends ControllerBase {
 
     }
 
+    // Case 2
     private void listAllSkills() throws IOException {
 
         Collection<Skill> skills = skillService.getAll();
@@ -132,13 +134,14 @@ public class SkillController extends ControllerBase {
 
     }
 
+    // Case 3
     private void updateSkill() throws Exception {
 
         clear();
 
         listAllSkills();
 
-        String[] skills = comboBox("Chose the ID seperated by commas");
+        String[] skills = comboBox("Chose the ID separated by commas");
 
         for (String skillName : skills) {
 
@@ -171,6 +174,7 @@ public class SkillController extends ControllerBase {
 
     }
 
+    // Case 4
     private void removeSkill() throws Exception {
 
         clear();
@@ -179,7 +183,7 @@ public class SkillController extends ControllerBase {
 
         System.out.println();
 
-        String[] skills = comboBox("Chose the ID seperated by commas (,)");
+        String[] skills = comboBox("Chose the ID separated by commas (,)");
 
         try {
             for (String id : skills) {

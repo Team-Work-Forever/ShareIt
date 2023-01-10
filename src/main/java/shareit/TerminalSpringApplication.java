@@ -180,7 +180,7 @@ public class TerminalSpringApplication implements CommandLineRunner {
 
             System.out.println("Generating an default admin...");
             System.out.println("Admin Generated!");
-            System.out.println("Email: " + adminEmail + "Password: " + "password");
+            System.out.println("Email: " + adminEmail + "\tPassword: " + "password");
 
             ScreenUtils.waitForKeyEnter();
 

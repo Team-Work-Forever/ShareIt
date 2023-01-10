@@ -8,7 +8,6 @@ import shareit.contracts.auth.RegisterRequest;
 import shareit.data.auth.Role;
 import shareit.services.AuthenticationService;
 import shareit.utils.DatePattern;
-import shareit.utils.ScreenUtils;
 import shareit.errors.auth.AuthenticationException;
 import shareit.helper.NavigationHelper;
 import shareit.helper.RouteManager;
@@ -45,8 +44,7 @@ public class LoginController extends ControllerBase {
 
                 index = menu("***************** Menu *****************", new String[] {
                     "Sign In",
-                    "Register",
-                    "Clean AppData"
+                    "Register"
                 }, "anonymous");
     
             } while (index <= 0 && index >= 2);
@@ -58,10 +56,6 @@ public class LoginController extends ControllerBase {
                 case 2:
                     signIn();
                     break;
-                case 3:
-                    ScreenUtils.printSuccess("It was removed!");
-                    ScreenUtils.waitForKeyEnter();
-                    break;
             }
     
         } while (index != 0);
@@ -70,6 +64,7 @@ public class LoginController extends ControllerBase {
 
     }
 
+    // Case 1
     private void authenticate() throws IOException {
 
         clear();
@@ -96,6 +91,7 @@ public class LoginController extends ControllerBase {
 
     }
 
+    // Case 2
     private void signIn() throws IOException {
 
         String email, password, confirm_password, 

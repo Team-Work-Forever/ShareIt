@@ -104,7 +104,7 @@ public class JobOfferController extends ControllerBase {
                         "List Job Offers",
                         "Update Job Offers",
                         "Remove Job Offers",
-                        "Envite User",
+                        "Invite User",
                         "Manage Clients",
                         "See Applications"
                     }, authenticatedUser.getName());
@@ -180,108 +180,14 @@ public class JobOfferController extends ControllerBase {
             }
 
         } while (index != 0);
+
+        currentExperience = null;
         
         navigationHelper.navigateBack();
 
     }
-    
-    private void manageApplications() throws IOException {
 
-        clear();
-
-        Collection<Invitation> inviteInBox = inviteService.getInboxReverseInvite();
-
-        if (inviteInBox.isEmpty()) {
-            printInfo("There is no Applications!");
-            return;
-        }
-
-        inviteInBox.forEach((invite) -> {
-                
-            try {
-                printInfo(invite.toString());
-            } catch (IOException e) {
-                System.out.println("--- Error ---");
-            }
-
-        });
-
-        try {
-
-            String[] invites = comboBox("Chose Invite by id separeted by commas(,)");
-
-            for (int i = 0; i < invites.length; i++) {
-                
-                if (invites[i].isEmpty() || !invites[i].chars().allMatch(Character::isDigit))
-                    throw new InviteNotValidException();
-
-                Optional<Invitation> invite = inviteService.getInviteById(Integer.parseInt(invites[i]));
-
-                if (!invite.isPresent())
-                    throw new InviteNotFoundException();
-
-                var result = memberService.acceptInvite(
-                    invite.get()
-                );
-
-                if (result)
-                    printSuccess("New Client Accepted!");
-                    
-            }
-
-        } catch (Exception e) {
-            printError(e.getMessage());
-        }
-
-
-    }
-
-    private void inviteUser() throws Exception {
-
-        clear();
-
-        Collection<IdentityUser> allMembers = memberService.getPossibleMembers();
-        
-        if (allMembers.isEmpty()) {
-            printInfo("There is no other member to invite!");
-            return;
-        }
-
-        allMembers.forEach(member -> {
-
-            try {
-                printInfo(member.toString());
-            } catch (IOException e) {
-                System.out.println("--- Error ---");
-            }
-
-        });
-
-        String[] emails = comboBox("Chose Member separeted by commas(,) to invite members");
-
-        try {
-            
-            for (String email : emails) {
-            
-                clear();
-
-                memberService.inviteMember(new InviteMemberRequest(
-                    currentExperience, 
-                    email,
-                    Privilege.WORKER
-                ));
-    
-                printSuccess("Invite send with success to user with email "+ email);
-    
-            }
-
-        } catch (Exception e) {
-            printError(e.getMessage());
-        }
-
-
-    }
-
+    // Case 1
     private void selectJobOffer() throws IOException {
 
         clear();
@@ -323,6 +229,7 @@ public class JobOfferController extends ControllerBase {
 
     }
 
+    // Case 2
     private void createJobOffer() throws IOException {
 
         Map<Skill,Integer> selectedSkills = new HashMap<>();
@@ -348,7 +255,7 @@ public class JobOfferController extends ControllerBase {
 
             listAllSkills();
         
-            String[] skillNames = comboBox("Chose Skills by ID separeted by commas(,)");
+            String[] skillNames = comboBox("Chose Skills by ID separated by commas(,)");
 
             clear();
 
@@ -403,6 +310,7 @@ public class JobOfferController extends ControllerBase {
 
     }
 
+    // Case 3
     private int listJobOffer() throws IOException {
 
         clear();
@@ -428,13 +336,14 @@ public class JobOfferController extends ControllerBase {
 
     }
 
+    // Case 4
     private void updateJobOffer() throws IOException {
 
         clear();
 
         listJobOffer();
 
-        String[] jobOffers = comboBox("Chose the Id seperated by commas (,)");
+        String[] jobOffers = comboBox("Chose the Id separated by commas (,)");
 
         for (String jobOfferName : jobOffers) {
 
@@ -458,7 +367,7 @@ public class JobOfferController extends ControllerBase {
                 String name = textField("Job Offer Name (default : same)");
 
                 int qtyHours = Integer.parseInt(
-                    textField("Quatity Of Hours (default : same)")
+                    textField("Quantity Of Hours (default : same)")
                 );
 
                 String desc = textField("Description (default : same)");
@@ -467,7 +376,7 @@ public class JobOfferController extends ControllerBase {
 
                 listAllProfAreas();
 
-                String profAreaName = textField("Please provide an id for a Profissional Area");
+                String profAreaName = textField("Please provide an id for a Professional Area");
 
                 var profArea = profAreaService.getProfAreaById(
                     Integer.parseInt(profAreaName)
@@ -490,20 +399,11 @@ public class JobOfferController extends ControllerBase {
 
         }
 
-      waitForKeyEnter();
+    waitForKeyEnter();
 
     }
 
-    private void errorDisplay(String msg) throws IOException {
-        
-        printError(msg);
-
-        if (repeatAction("Do you wanna repeat?")) {
-            updateJobOffer();
-        }
-
-    }
-
+    // Case 5
     private void removeJobOffer() throws IOException {
 
         clear();
@@ -537,6 +437,105 @@ public class JobOfferController extends ControllerBase {
 
     }
 
+    // Case 6
+    private void inviteUser() throws Exception {
+
+        clear();
+
+        Collection<IdentityUser> allMembers = memberService.getPossibleMembers();
+        
+        if (allMembers.isEmpty()) {
+            printInfo("There is no other member to invite!");
+            return;
+        }
+
+        allMembers.forEach(member -> {
+
+            try {
+                printInfo(member.toString());
+            } catch (IOException e) {
+                System.out.println("--- Error ---");
+            }
+
+        });
+
+        String[] emails = comboBox("Chose Member separated by commas(,) to invite members");
+
+        try {
+            
+            for (String email : emails) {
+            
+                clear();
+
+                memberService.inviteMember(new InviteMemberRequest(
+                    currentExperience, 
+                    email,
+                    Privilege.WORKER
+                ));
+
+                printSuccess("Invite send with success to user with email "+ email);
+
+            }
+
+        } catch (Exception e) {
+            printError(e.getMessage());
+        }
+
+    }
+
+    // Case 8
+    private void manageApplications() throws IOException {
+
+        clear();
+
+        Collection<Invitation> inviteInBox = inviteService.getInboxReverseInvite();
+
+        if (inviteInBox.isEmpty()) {
+            printInfo("There is no Applications!");
+            return;
+        }
+
+        inviteInBox.forEach((invite) -> {
+                
+            try {
+                printInfo(invite.toString());
+            } catch (IOException e) {
+                System.out.println("--- Error ---");
+            }
+
+        });
+
+        try {
+
+            String[] invites = comboBox("Chose Invite by id separated by commas(,)");
+
+            for (int i = 0; i < invites.length; i++) {
+                
+                if (invites[i].isEmpty() || !invites[i].chars().allMatch(Character::isDigit))
+                    throw new InviteNotValidException();
+
+                Optional<Invitation> invite = inviteService.getInviteById(Integer.parseInt(invites[i]));
+
+                if (!invite.isPresent())
+                    throw new InviteNotFoundException();
+
+                var result = memberService.acceptInvite(
+                    invite.get()
+                );
+
+                if (result)
+                    printSuccess("New Client Accepted!");
+                    
+            }
+
+        } catch (Exception e) {
+            printError(e.getMessage());
+        }
+
+
+    }
+
+
     private void listAllProfAreas() throws IOException {
         for (ProfArea profArea : profAreaService.getAll()) {
             printInfo(profArea.toString());
@@ -553,6 +552,16 @@ public class JobOfferController extends ControllerBase {
         
         if (currentExperience.isWorker(client.getEmail())) {
             throw new ExperienceNotAllowed();
+        }
+
+    }
+
+    private void errorDisplay(String msg) throws IOException {
+        
+        printError(msg);
+
+        if (repeatAction("Do you wanna repeat?")) {
+            updateJobOffer();
         }
 
     }

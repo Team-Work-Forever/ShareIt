@@ -81,8 +81,8 @@ public class ManageTalentController extends ControllerBase {
                         "Update Domain",
                         "Associate Skill",
                         "Associate Prof. Area",
-                        "Disasociate Skill",
-                        "Disasociate Prof. Area"
+                        "Disassociate Skill",
+                        "Disassociate Prof. Area"
                     }, authUser.getName());
 
                 } while (index <= 0 && index >= 6);
@@ -119,6 +119,7 @@ public class ManageTalentController extends ControllerBase {
 
     }
 
+    // Case 1
     public void alterDomain() throws IOException {
 
         try {
@@ -157,218 +158,7 @@ public class ManageTalentController extends ControllerBase {
         }
     }
 
-    private void disassociateSkillToTalent() throws IOException {
-
-        Collection<Skill> selectedSkills = new ArrayList<>();
-
-        try {
-
-            clear();
-
-            listAllSkills();
-
-            String[] skillNames = comboBox("Chose Skills by ID separeted by commas(,)");
-
-            clear();
-
-            for (String name : skillNames) {
-
-                if (name.isEmpty()) {
-                    printError("Id not valid: " + name);
-                    continue;   
-                }
-
-                selectedSkills.add(skillService.getSkillById(Integer.parseInt(name)));
-            
-            }
-            
-            for (Skill skill : selectedSkills) {
-
-                talentService.disassociateSkills(new TalentDisassociateSkill(
-                    currentTalent,
-                    skill
-                ));
-                
-            }
-
-            printSuccess("The Skill(s) was dissassociate!");
-
-        } catch (NumberFormatException e) {
-            
-            printError(e.getMessage());
-
-            if (repeatAction("Do you wanna repeat?")) {
-                alterDomain();
-            }
-
-        } catch (Exception e) {
-            
-            printError(e.getMessage());
-
-            if (repeatAction("Do you wanna repeat?")) {
-                alterDomain();
-            }
-
-        }
-
-    }
-
-    private void disassociateProfAreaToTalent() throws IOException {
-
-        Collection<ProfArea> selectedProfArea = new ArrayList<>();
-
-        try {
-
-            clear();
-
-            listAllProfAreas();
-
-            String[] profAreaNames = comboBox("Chose Prof. Areas by ID separeted by commas(,)");
-
-            clear();
-
-            for (String name : profAreaNames) {
-
-                if (name.isEmpty()) {
-                    printError("Id not valid: " + name);
-                    continue;   
-                }
-
-                selectedProfArea.add(profAreaService.getProfAreaById(Integer.parseInt(name)));
-            
-            }
-            
-            for (ProfArea profA : selectedProfArea) {
-
-                talentService.disassociateProfAreas(new TalentDisassociateProf(
-                    currentTalent,
-                    profA
-                ));
-                
-            }
-
-            printSuccess("The ProfArea(s) was dissassociate!");
-
-        } catch (NumberFormatException e) {
-            
-            printError(e.getMessage());
-
-            if (repeatAction("Do you wanna repeat?")) {
-                alterDomain();
-            }
-
-        } catch (Exception e) {
-            
-            printError(e.getMessage());
-
-            if (repeatAction("Do you wanna repeat?")) {
-                alterDomain();
-            }
-
-        }
-
-    }
-
-    private void associateProfAreaToTalent() throws IOException {
-
-        Map<ProfArea, Integer> selectedProfAreas = new HashMap<>();
-
-        clear();
-
-        try {
-
-            listAllProfAreas();
-            
-           associateProfArea(selectedProfAreas, currentTalent);
-
-           printSuccess("The ProfArea was Associated!");
-
-        } catch (NumberFormatException e) {
-            
-            printError(e.getMessage());
-            
-            if (repeatAction("Do you wanna repeat?")) {
-                associateSkillToTalent();
-            };
-
-        } catch (Exception e) {
-            
-            printError(e.getMessage());
-            
-            if (repeatAction("Do you wanna repeat?")) {
-                associateSkillToTalent();
-            };
-
-        }
-
-    }
-
-    private int listAllTalents() throws IOException {
-
-        Collection<Talent> talents = talentService.getAllTalents();
-
-        if (talents.isEmpty()) {
-            printInfo("There is no talents yet!");
-            return -1;
-        }
-
-        for (Talent talent : talents) {
-            System.out.println();
-            printInfo(talent.toString());
-        }
-
-        return 0;
-
-    }
-   
-    private void associateProfArea(Map<ProfArea, Integer> selectedProfArea, Talent talent) throws IOException, Exception {
-        
-        clear();
-
-        listAllProfAreas();
-
-        String[] profAreas = comboBox("Chose Professional Areas ID between commas(,): ");
-
-        clear();
-
-        try {
-
-            for (String profAreaName : profAreas) {
-
-                if (profAreaName.isEmpty())
-                    continue;
-
-                String expYears = textField("Prof. Area: " + profAreaName + "\tInsert years of experience");
-
-                selectedProfArea.put(
-                    profAreaService.getProfAreaById(Integer.parseInt(profAreaName)),
-                    expYears.isEmpty() ? 0 : Integer.parseInt(expYears));
-
-            }
-
-            talentService.associateProfAreas(new TalentAssociationProfArea(
-                talent,
-                selectedProfArea
-            ));
-
-        } catch (Exception e) {
-            
-            printError(e.getMessage());
-
-            if (repeatAction("Do You wanna repeat?")) {
-                associateProfArea(selectedProfArea, talent);
-            }
-
-        }
-
-    }
-
-    private void listAllProfAreas() throws IOException {
-        for (ProfArea profArea : profAreaService.getAll()) {
-            printInfo(profArea.toString());
-        }
-    }
-
+    // Case 2
     private void associateSkillToTalent() throws IOException {
 
         Collection<Skill> selectedSkill = new ArrayList<>();
@@ -403,6 +193,24 @@ public class ManageTalentController extends ControllerBase {
             };
 
         }
+    }
+
+    private int listAllTalents() throws IOException {
+
+        Collection<Talent> talents = talentService.getAllTalents();
+
+        if (talents.isEmpty()) {
+            printInfo("There is no talents yet!");
+            return -1;
+        }
+
+        for (Talent talent : talents) {
+            System.out.println();
+            printInfo(talent.toString());
+        }
+
+        return 0;
+
     }
 
     private void associateSkill(Collection<Skill> selectedSkill, Talent talent) throws IOException, Exception {
@@ -442,6 +250,205 @@ public class ManageTalentController extends ControllerBase {
             selectedSkills
         ));
     
+    }
+
+    // Case 3
+    private void associateProfAreaToTalent() throws IOException {
+
+        Map<ProfArea, Integer> selectedProfAreas = new HashMap<>();
+
+        clear();
+
+        try {
+
+            listAllProfAreas();
+            
+            associateProfArea(selectedProfAreas, currentTalent);
+
+        } catch (NumberFormatException e) {
+            
+            printError(e.getMessage());
+            
+            if (repeatAction("Do you wanna repeat?")) {
+                associateSkillToTalent();
+            };
+
+        } catch (Exception e) {
+            
+            printError(e.getMessage());
+            
+            if (repeatAction("Do you wanna repeat?")) {
+                associateSkillToTalent();
+            };
+
+        }
+
+    }
+
+    private void associateProfArea(Map<ProfArea, Integer> selectedProfArea, Talent talent) throws IOException, Exception {
+        
+        clear();
+
+        listAllProfAreas();
+
+        String[] profAreas = comboBox("Chose Professional Areas ID between commas(,): ");
+
+        clear();
+
+        try {
+
+            for (String profAreaName : profAreas) {
+
+                if (profAreaName.isEmpty())
+                    continue;
+
+                String expYears = textField("Prof. Area: " + profAreaName + "\tInsert years of experience");
+
+                selectedProfArea.put(
+                    profAreaService.getProfAreaById(Integer.parseInt(profAreaName)),
+                    expYears.isEmpty() ? 0 : Integer.parseInt(expYears));
+
+            }
+
+            talentService.associateProfAreas(new TalentAssociationProfArea(
+                talent,
+                selectedProfArea
+            ));
+
+            printSuccess("The ProfArea was Associated!");
+
+        } catch (Exception e) {
+            
+            printError(e.getMessage());
+
+            if (repeatAction("Do You wanna repeat?")) {
+                associateProfArea(selectedProfArea, talent);
+            }
+
+        }
+
+    }
+
+    // Case 4
+    private void disassociateSkillToTalent() throws IOException {
+
+        Collection<Skill> selectedSkills = new ArrayList<>();
+
+        try {
+
+            clear();
+
+            listAllSkills();
+
+            String[] skillNames = comboBox("Chose Skills by ID separated by commas(,)");
+
+            clear();
+
+            for (String name : skillNames) {
+
+                if (name.isEmpty()) {
+                    printError("Id not valid: " + name);
+                    continue;   
+                }
+
+                selectedSkills.add(skillService.getSkillById(Integer.parseInt(name)));
+            
+            }
+            
+            for (Skill skill : selectedSkills) {
+
+                talentService.disassociateSkills(new TalentDisassociateSkill(
+                    currentTalent,
+                    skill
+                ));
+                
+            }
+
+            printSuccess("The Skill(s) was disassociate!");
+
+        } catch (NumberFormatException e) {
+            
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                alterDomain();
+            }
+
+        } catch (Exception e) {
+            
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                alterDomain();
+            }
+
+        }
+
+    }
+
+    // Case 5
+    private void disassociateProfAreaToTalent() throws IOException {
+
+        Collection<ProfArea> selectedProfArea = new ArrayList<>();
+
+        try {
+
+            clear();
+
+            listAllProfAreas();
+
+            String[] profAreaNames = comboBox("Chose Prof. Areas by ID separated by commas(,)");
+
+            clear();
+
+            for (String name : profAreaNames) {
+
+                if (name.isEmpty()) {
+                    printError("Id not valid: " + name);
+                    continue;   
+                }
+
+                selectedProfArea.add(profAreaService.getProfAreaById(Integer.parseInt(name)));
+            
+            }
+            
+            for (ProfArea profA : selectedProfArea) {
+
+                talentService.disassociateProfAreas(new TalentDisassociateProf(
+                    currentTalent,
+                    profA
+                ));
+                
+            }
+
+            printSuccess("The ProfArea(s) was disassociate!");
+
+        } catch (NumberFormatException e) {
+            
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                alterDomain();
+            }
+
+        } catch (Exception e) {
+            
+            printError(e.getMessage());
+
+            if (repeatAction("Do you wanna repeat?")) {
+                alterDomain();
+            }
+
+        }
+
+    }
+
+    
+
+    private void listAllProfAreas() throws IOException {
+        for (ProfArea profArea : profAreaService.getAll()) {
+            printInfo(profArea.toString());
+        }
     }
 
     private void listAllSkills() throws IOException {
